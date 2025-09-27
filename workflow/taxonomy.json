@@ -10,7 +10,7 @@
     "suggested_fix": "The loop condition `range(len(items) + 1)` should be changed to `range(len(items))` to prevent iterating beyond the list's bounds.",
     "file_target": "benchmark/services/post_service.py",
     "generated": false,
-    "error": ""
+    "error": "Command '['git', 'push', '-u', 'origin', 'feat/benchmark-LOG-001']' returned non-zero exit status 1."
   },
   {
     "issue_id": "LOG-002",
@@ -486,7 +486,7 @@
     "category": "Business Logic & Requirement Mismatches",
     "description": "The code allows state transitions that violate the defined business process workflow, potentially leading to invalid business states or operations.",
     "difficulty": "Hard",
-    "requirement": "Order status must follow the sequence: pending → confirmed → shipped → delivered. Orders can only be cancelled if they are pending or confirmed.",
+    "requirement": "Order status must follow the sequence: pending \u2192 confirmed \u2192 shipped \u2192 delivered. Orders can only be cancelled if they are pending or confirmed.",
     "flawed_snippet": "@app.patch(\"/orders/{order_id}/cancel\")\ndef cancel_order(order_id: int):\n    order = database.get_order(order_id)\n    order.status = \"cancelled\"\n    return database.save_order(order)",
     "suggested_fix": "Add workflow validation: `if order.status not in [\"pending\", \"confirmed\"]: raise HTTPException(400, \"Cannot cancel order in current status\")` before allowing the status change to enforce the business workflow rules.",
     "file_target": "benchmark/services/post_service.py",

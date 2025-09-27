@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "ground_truth_reviews": [
+      {
+        "line_number": 90,
+        "comment": "The loop condition `range(len(_posts_db) - 1)` is incorrect and creates an off-by-one error. This logic will cause the last post in the database to always be excluded from the returned list. The loop should iterate over all items by changing the range to `range(len(_posts_db))`."
+      }
+    ],
+    "title": "Refactor: Improve readability in get_all_posts",
+    "body": "This change refactors the list comprehension in the `get_all_posts` method to a standard for-loop. This makes the code easier to follow and simplifies step-through debugging if needed."
+  }
+]
