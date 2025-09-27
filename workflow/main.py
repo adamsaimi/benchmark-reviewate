@@ -35,6 +35,12 @@ def create_and_checkout_branch(branch_name: str):
     run_command(["git", "reset", "--hard", "origin/main"])
     run_command(["git", "checkout", "-b", branch_name])
 
+def reset_to_main():
+    """Resets the current branch to match origin/main."""
+    print("\n--- Resetting to main branch ---")
+    run_command(["git", "reset", "--hard"])
+    run_command(["git", "checkout", "main"])
+
 def commit_and_push(branch_name: str, commit_message: str):
     """Commits all changes and pushes the branch."""
     print("\n--- Committing and pushing changes ---")
@@ -149,7 +155,7 @@ def main():
             bug_details["generated"] = False
             bug_details["error"] = str(e)
             # Reset to main to ensure the next loop starts clean
-            run_command(["git", "checkout", "main"])
+            reset_to_main()
         
         finally:
             # Update the state in our local taxonomy object
