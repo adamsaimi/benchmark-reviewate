@@ -161,17 +161,21 @@ def main():
             # Update the state in our local taxonomy object
             run_command(["git", "checkout", "main"])
             bug_details["generated"] = True
-            generated_data["issue_id"] = bug_details["issue_id"]
+            
             # WORKFLOW STEP 4: Save the Gemini output (ground truth)
+            
+            output = generated_data.model_dump(exclude={"buggy_code"})  # Exclude code for brevity
+            output["issue_id"] = bug_details["issue_id"]
+            
             # Create a directory for ground truth reviews if it doesn't exist
             os.makedirs("ground_truth_reviews", exist_ok=True)
-            ground_truth_path = f"ground_truth_reviews/{generated_data['issue_id']}.json"
+            ground_truth_path = f"ground_truth_reviews/{output['issue_id']}.json"
             with open(ground_truth_path, 'w', encoding='utf-8') as f:
-                json.dump(generated_data.model_dump(exclude={"buggy_code"}), f, indent=2)
+                json.dump(output, f, indent=2)
             print(f"Ground truth saved to {ground_truth_path}")
             
             # Add the full output to our summary list
-            all_generated_outputs.append(generated_data.model_dump(exclude={"buggy_code"}))  # Exclude code for brevity
+            all_generated_outputs.append(output) 
 
             with open("workflow/taxonomy.json", 'w', encoding='utf-8') as f:
                 json.dump(taxonomy, f, indent=2)
