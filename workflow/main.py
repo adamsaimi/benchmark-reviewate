@@ -168,7 +168,7 @@ def main():
         finally:
             # IMPORTANT: Save the state of the taxonomy after every attempt
             # This makes the script resumable.
-            with open("taxonomy.json", 'w', encoding='utf-8') as f:
+            with open("workflow/taxonomy.json", 'w', encoding='utf-8') as f:
                 json.dump(taxonomy, f, indent=2)
 
             run_command(["git", "checkout", "main"])
