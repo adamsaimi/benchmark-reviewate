@@ -1,0 +1,137 @@
+# Defect Targeting Analysis Prompt
+
+Act as a senior software architect. Your task is to analyze a list of software defects and determine the single most logical file to modify to introduce each defect from the file structure and current codebase.
+
+## Codebase Architecture and File Descriptions
+
+This is a clean, well-structured FastAPI application following industry best practices with clear separation of concerns. The architecture follows a layered approach:
+
+### Project Structure
+```
+benchmark/
+├── __init__.py                 # Package initialization
+├── main.py                     # FastAPI app initialization and configuration
+├── config.py                   # Application configuration and constants
+├── schemas.py                  # Pydantic models for data validation
+├── routers/
+│   ├── __init__.py             # Router package initialization
+│   └── posts.py                # HTTP endpoints for post operations
+└── services/
+    ├── __init__.py             # Services package initialization
+    └── post_service.py         # Business logic for post operations
+app.py                          # Application entry point for deployment
+tests/
+├── __init__.py                 # Test package initialization
+├── conftest.py                 # Test configuration and fixtures
+├── test_api.py                 # API endpoint integration tests
+└── test_services.py            # Business logic unit tests
+```
+
+### File Descriptions
+
+#### Core Application Files
+
+**`benchmark/main.py`** (32 lines)
+- **Purpose**: Main FastAPI application entry point and configuration
+- **Responsibilities**: 
+  - Initializes the FastAPI application with metadata
+  - Configures routing by including router modules
+  - Provides root health check endpoint
+- **Key Components**: FastAPI app instance, router inclusion, health endpoint
+- **Dependencies**: Imports from config, routers
+- **Best for**: Application-level configuration issues, middleware problems, global error handling
+
+**`benchmark/config.py`** (18 lines)  
+- **Purpose**: Centralized configuration constants and settings
+- **Responsibilities**:
+  - Defines API metadata (title, description, version)
+  - Contains validation constraints (lengths, limits)
+  - Stores reusable message constants
+- **Key Components**: Type-hinted Final constants for configuration
+- **Dependencies**: Uses typing.Final for immutable constants
+- **Best for**: Configuration-related issues, magic numbers, constant definitions
+
+**`benchmark/schemas.py`** (57 lines)
+- **Purpose**: Data contracts and Pydantic models for API validation
+- **Responsibilities**:
+  - Defines request/response data structures
+  - Implements field validation rules
+  - Provides type safety for data transfers
+- **Key Components**: PostBase, PostCreate, Post schemas with validation
+- **Dependencies**: Pydantic, datetime, config constants
+- **Best for**: Data validation issues, type safety problems, schema design flaws
+
+#### API Layer
+
+**`benchmark/routers/posts.py`** (70 lines)
+- **Purpose**: HTTP routing and REST API endpoint definitions
+- **Responsibilities**:
+  - Handles HTTP request/response logic
+  - Translates between HTTP and service layer
+  - Manages HTTP status codes and error responses
+- **Key Components**: POST, GET endpoints for CRUD operations
+- **Dependencies**: FastAPI routing, schemas, post_service
+- **Best for**: HTTP-specific issues, endpoint logic, status code problems, API design flaws
+
+#### Business Logic Layer
+
+**`benchmark/services/post_service.py`** (84 lines)
+- **Purpose**: Business logic and data operations service
+- **Responsibilities**:
+  - Implements core business logic for posts
+  - Manages in-memory data storage simulation
+  - Provides clean separation from HTTP concerns
+- **Key Components**: PostService class, CRUD operations, custom exceptions
+- **Dependencies**: Schemas, datetime utilities
+- **Best for**: Business logic errors, data handling issues, algorithm problems, service layer defects
+
+#### Application Entry Point
+
+**`app.py`** (10 lines)
+- **Purpose**: Simple application entry point for deployment
+- **Responsibilities**: Imports and exposes the main app instance
+- **Key Components**: App import statement
+- **Dependencies**: benchmark.main
+- **Best for**: Import issues, deployment configuration problems
+
+#### Supporting Files
+
+**`tests/`** directory contains:
+- `conftest.py`: Test fixtures and configuration
+- `test_api.py`: API endpoint integration tests  
+- `test_services.py`: Business logic unit tests
+
+### Architecture Principles
+
+1. **Separation of Concerns**: Clear boundaries between HTTP, business logic, and data layers
+2. **Dependency Flow**: Unidirectional dependencies (routers → services → schemas)
+3. **Type Safety**: Comprehensive type hints and Pydantic validation
+4. **Configuration Management**: Centralized constants and settings
+5. **Error Handling**: Custom exceptions with proper HTTP status mapping
+
+### File Selection Guidelines
+
+When determining the target file for a defect:
+
+- **HTTP/API issues**: Choose `routers/posts.py`
+- **Business logic problems**: Choose `services/post_service.py`
+- **Data validation issues**: Choose `schemas.py`
+- **Configuration problems**: Choose `config.py`
+- **Application setup issues**: Choose `main.py`
+- **Import/deployment issues**: Choose `app.py`
+- **Testing issues**: Choose appropriate test files
+
+## Task Instructions
+
+Using the issue dict , your job is to process this and add a new key-value pair, `"target_file": "path/to/your/suggestion.py"`, to the JSON object.
+
+**Rules for target_file paths:**
+- Use relative paths from the project root
+- For benchmark package files: `"benchmark/filename.py"`
+- For router files: `"benchmark/routers/posts.py"`  
+- For service files: `"benchmark/services/post_service.py"`
+- For test files: `"tests/test_filename.py"`
+- For root files: `"app.py"` or `"filename.py"`
+
+Here is the issue dict.
+
