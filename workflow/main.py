@@ -124,6 +124,7 @@ def main():
             prompt, prompter_to_use, target_file = format_prompt(bug_details, biz_prompter, standard_prompter)
             print(f"Using prompt from: {prompter_to_use.prompt_file}")
             print(f"Target file to modify: {target_file}")
+            
             # The magic happens here!
             generated_data: GeneratedCodeResponse = prompter_to_use.call_gemini_api(
                 prompt, 
@@ -135,28 +136,13 @@ def main():
             with open(target_file, 'w', encoding='utf-8') as f:
                 f.write(generated_data.buggy_code)
             
-            # WORKFLOW STEP 4: Save the Gemini output (ground truth)
-            # Create a directory for ground truth reviews if it doesn't exist
-            os.makedirs("ground_truth_reviews", exist_ok=True)
-            ground_truth_path = f"ground_truth_reviews/{bug_details['issue_id']}.json"
-            with open(ground_truth_path, 'w', encoding='utf-8') as f:
-                json.dump(generated_data.model_dump(), f, indent=2)
-            print(f"Ground truth saved to {ground_truth_path}")
-            
-            # Add the full output to our summary list
-            all_generated_outputs.append(generated_data.model_dump(exclude={"buggy_code"}))  # Exclude code for brevity
-
             # WORKFLOW STEP 3: Commit to branch and create merge request
             commit_message = f"feat(benchmark): Introduce {bug_details['issue_id']} - {bug_details['issue_name']}"
             commit_and_push(branch_name, commit_message)
 
             mr_title = generated_data.title
             mr_body = generated_data.body
-            create_merge_request(mr_title, mr_body)
-
-            # Update the state in our local taxonomy object
-            bug_details["generated"] = True
-            
+            create_merge_request(mr_title, mr_body)            
         except Exception as e:
             print(f"\n---!!! AN ERROR OCCURRED for {bug_details['issue_id']} !!!---")
             print(str(e))
@@ -166,12 +152,24 @@ def main():
             run_command(["git", "checkout", "main"])
         
         finally:
-            # IMPORTANT: Save the state of the taxonomy after every attempt
-            # This makes the script resumable.
+            # Update the state in our local taxonomy object
+            run_command(["git", "checkout", "main"])
+            bug_details["generated"] = True
+            generated_data["issue_id"] = bug_details["issue_id"]
+            # WORKFLOW STEP 4: Save the Gemini output (ground truth)
+            # Create a directory for ground truth reviews if it doesn't exist
+            os.makedirs("ground_truth_reviews", exist_ok=True)
+            ground_truth_path = f"ground_truth_reviews/{generated_data['issue_id']}.json"
+            with open(ground_truth_path, 'w', encoding='utf-8') as f:
+                json.dump(generated_data.model_dump(exclude={"buggy_code"}), f, indent=2)
+            print(f"Ground truth saved to {ground_truth_path}")
+            
+            # Add the full output to our summary list
+            all_generated_outputs.append(generated_data.model_dump(exclude={"buggy_code"}))  # Exclude code for brevity
+
             with open("workflow/taxonomy.json", 'w', encoding='utf-8') as f:
                 json.dump(taxonomy, f, indent=2)
 
-            run_command(["git", "checkout", "main"])
             
     # WORKFLOW STEP 5: Save all Gemini outputs into a single summary file
     with open("all_generated_outputs.json", 'w', encoding='utf-8') as f:
