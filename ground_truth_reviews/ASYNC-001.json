@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 59,
+      "comment": "The `get_all_posts` endpoint is defined as an `async` function, but it directly calls the synchronous `post_service.get_all_posts()` method. This is a significant performance issue as it will block the server's event loop, preventing it from handling other requests concurrently. To fix this, you should either make the service layer call asynchronous and `await` it, or run the synchronous call in a separate thread using `asyncio.to_thread` to avoid blocking."
+    }
+  ],
+  "title": "feat: Convert posts endpoint to async",
+  "body": "This MR converts the `get_all_posts` endpoint to be asynchronous to improve performance. This is the first step in making the posts service fully async.",
+  "issue_id": "ASYNC-001"
+}

@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 99,
+      "comment": "The email comparison here is case-sensitive. This can lead to incorrect search results if the provided email has a different casing than the one stored in the database (e.g., 'user@example.com' vs. 'User@Example.com'). To ensure correctness, you should normalize both emails to a common case, typically lowercase, before comparing them: `if post_dict[\"author_email\"].lower() == email.lower():`."
+    }
+  ],
+  "title": "feat: Add service method to find posts by author",
+  "body": "This change introduces a new method `get_posts_by_author_email` to the `PostService`. This allows retrieving all posts associated with a specific author's email address, which will be used by an upcoming API endpoint.",
+  "issue_id": "LOG-007"
+}

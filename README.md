@@ -25,9 +25,15 @@ benchmark/
 ├── app.py                    # Application entry point
 ├── requirements.txt          # Dependencies
 ├── pyproject.toml           # Project configuration
-├── start_server.sh          # Startup script
-└── README.md               # This file
+├── create_pull_requests.py  # Script to create the pull requests
+├── SCORE.md                 # Scoring methodology document
+├── BENCHMARK.md             # Benchmarking framework document
+└── README.md                # This file
 ```
+
+## Benchmarking Framework
+
+The benchmarking framework is explained in detail in the `BENCHMARK.md` file. It provides instructions on how to set up the environment, create pull requests with AI-generated and ground truth reviews, and run the benchmark to evaluate performance using precision, recall, and F1 score metrics.
 
 ## Features
 
@@ -50,19 +56,6 @@ benchmark/
 
 ## Quick Start
 
-### 1. Automated Setup (Recommended)
-
-```bash
-chmod +x start_server.sh
-./start_server.sh
-```
-
-This script will:
-- Create a virtual environment
-- Install dependencies
-- Run tests
-- Start the development server
-
 ### 2. Manual Setup
 
 ```bash
@@ -78,38 +71,6 @@ pytest tests/
 
 # Start the server
 uvicorn app:app --reload --port 8000
-```
-
-## API Endpoints
-
-### Health Check
-- **GET /** - Returns API status
-
-### Posts
-- **POST /posts/** - Create a new post
-- **GET /posts/** - Get all posts
-- **GET /posts/{post_id}** - Get a specific post by ID
-
-## Data Models
-
-### PostCreate (Input)
-```json
-{
-  "title": "My Blog Post",
-  "content": "This is the content of my post.",
-  "author_email": "author@example.com"
-}
-```
-
-### Post (Output)
-```json
-{
-  "id": 1,
-  "title": "My Blog Post", 
-  "content": "This is the content of my post.",
-  "author_email": "author@example.com",
-  "created_at": "2025-01-27T10:30:00.000Z"
-}
 ```
 
 ## Validation Rules

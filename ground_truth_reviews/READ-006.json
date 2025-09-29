@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 103,
+      "comment": "This method deviates from the project's established coding style (PEP 8). The method name `GetPostById` uses PascalCase and the parameter `postId` uses camelCase, whereas the rest of the codebase uses snake_case (e.g., `get_all_posts`). Additionally, the `return` statement inside the `if` block has an extra level of indentation. Please adhere to PEP 8 for consistency by renaming the method to `get_post_by_id`, the parameter to `post_id`, and fixing the indentation."
+    }
+  ],
+  "title": "refactor: Update post retrieval logic",
+  "body": "This commit modifies the function for retrieving a single post by its ID.",
+  "issue_id": "READ-006"
+}

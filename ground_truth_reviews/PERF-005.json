@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 90,
+      "comment": "This endpoint is defined as `async` but uses the synchronous `requests.get()` library for the HTTP call. This blocks the entire server's event loop while waiting for the network request to complete, preventing it from handling other concurrent requests. This negates the performance benefits of using an asynchronous framework like FastAPI. To fix this, we should use an asynchronous HTTP client, such as `httpx`. The call should be changed to `async with httpx.AsyncClient() as client: response = await client.get(...)` to perform a non-blocking I/O operation."
+    }
+  ],
+  "title": "feat: Add endpoint to fetch external post metadata",
+  "body": "This change adds a new endpoint `/posts/{post_id}/external-info` to retrieve supplementary information about a post from an external service.",
+  "issue_id": "PERF-005"
+}

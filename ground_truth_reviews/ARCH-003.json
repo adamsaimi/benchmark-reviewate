@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 38,
+      "comment": "This `PostService` class has taken on too many responsibilities beyond managing posts. It now also handles user creation, comment management, and notifications, which is an example of the 'God Object' anti-pattern. This violates the Single Responsibility Principle, making the class difficult to maintain, test, and reason about. Any change to user logic, for example, now requires modifying and re-deploying the post service. We should refactor this by extracting the unrelated logic into dedicated services, such as `UserService`, `CommentService`, and `NotificationService`."
+    }
+  ],
+  "title": "feat: Add user and comment functionality to service layer",
+  "body": "This change introduces support for creating users and adding comments to posts within the application. For expediency, all new business logic has been consolidated into the existing `PostService`. A placeholder for sending notifications upon post creation has also been added.",
+  "issue_id": "ARCH-003"
+}

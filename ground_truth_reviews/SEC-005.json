@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 75,
+      "comment": "This error response leaks internal exception details to the client. Exposing internal error messages or exception types can provide attackers with valuable information about the application's structure, libraries used, and potential weaknesses. It's a security best practice to return generic error messages for client-facing responses and log the detailed exception server-side for debugging."
+    }
+  ],
+  "title": "fix: Provide more detailed error messages for posts",
+  "body": "This change updates the `get_post` endpoint to include more specific information when a post is not found. This will help with debugging on the client side.",
+  "issue_id": "SEC-005"
+}

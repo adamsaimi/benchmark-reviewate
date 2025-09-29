@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 44,
+      "comment": "The file is opened without using a context manager (`with` statement). If an exception occurs during `json.load(file)` (e.g., due to malformed JSON), `file.close()` will not be called, resulting in a resource leak. Please use a `with open(...) as f:` block to ensure the file is closed automatically, even in the case of an error."
+    }
+  ],
+  "title": "feat: Add endpoint to read configuration",
+  "body": "This change introduces a new `/config` endpoint to read and return application settings from a `config.json` file.",
+  "issue_id": "PY-001"
+}

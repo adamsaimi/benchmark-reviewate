@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 68,
+      "comment": "This conditional expression is very complex and difficult to parse at a glance. Long, nested boolean logic like this increases cognitive load and makes the code harder to debug and maintain. To improve readability, please refactor this by extracting the sub-conditions into well-named boolean variables. For example, you could create variables like `is_privileged_subscriber` and `is_long_term_user` to make the final `if` statement read more like natural language."
+    }
+  ],
+  "title": "feat: Add authorization for post listing endpoint",
+  "body": "This change introduces role-based access control to the `GET /posts` endpoint. Now, only administrators or long-term, verified premium/enterprise subscribers can view all posts. Other users will receive an empty list.",
+  "issue_id": "READ-007"
+}

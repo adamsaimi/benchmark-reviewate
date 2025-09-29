@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 113,
+      "comment": "The discount calculation correctly applies the 15% rate for premium users on orders over $100. However, it fails to implement the business requirement that limits the total discount to a maximum of $50. For large orders, this will result in a discount greater than the allowed cap."
+    }
+  ],
+  "title": "feat: Add discount calculation for premium users",
+  "body": "This change introduces a new method to calculate the final price for an order, applying a 15% discount for premium users on orders over $100.",
+  "issue_id": "BIZ-001"
+}

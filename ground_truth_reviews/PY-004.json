@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 74,
+      "comment": "When catching `PostNotFoundException` and raising `HTTPException`, the original exception context is being lost. This makes debugging more difficult as the original stack trace is discarded. To preserve this valuable information, you should chain the exceptions using `raise from`. The fix would be to raise the new exception from the original one: `raise HTTPException(...) from e`."
+    }
+  ],
+  "title": "feat: Add 404 handling for get_post endpoint",
+  "body": "This change adds error handling to the `get_post` endpoint. When the service layer indicates a post is not found by raising `PostNotFoundException`, the API will now catch it and return a user-friendly 404 Not Found response instead of a generic 500 error.",
+  "issue_id": "PY-004"
+}

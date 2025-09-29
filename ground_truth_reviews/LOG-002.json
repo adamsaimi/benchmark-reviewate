@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 35,
+      "comment": "The current validation logic `if not post_create.title and not post_create.content:` is incorrect. It only raises an exception if *both* the title and content are missing. The check should fail if *either* of them is empty to prevent posts with no title or no content. The condition should be changed to use `or` instead of `and`: `if not post_create.title or not post_create.content:`."
+    }
+  ],
+  "title": "feat: Add validation for new post creation",
+  "body": "This MR adds a validation step to the post creation endpoint to ensure that incoming requests for new posts contain a title and content before processing.",
+  "issue_id": "LOG-002"
+}

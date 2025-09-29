@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 111,
+      "comment": "The `random` module is not cryptographically secure and should not be used for generating security-sensitive values like edit tokens. Its output is predictable, which could allow an attacker to guess tokens and gain unauthorized access to edit posts. Please use the `secrets` module, like `secrets.token_hex(16)`, for generating such tokens."
+    }
+  ],
+  "title": "feat: Add edit token generation for posts",
+  "body": "This change introduces a new service method to generate a temporary token that can be used to grant editing permissions for a specific post.",
+  "issue_id": "SEC-004"
+}

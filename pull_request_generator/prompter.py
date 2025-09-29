@@ -9,8 +9,9 @@ from typing import Type, TypeVar
 T = TypeVar('T')
 
 class Prompter:
-    def __init__(self, prompt_file:str):
+    def __init__(self, prompt_file:str, model: str = "gemini-2.5-flash"):
         self.prompt_file = os.path.abspath(prompt_file)
+        self.model = model
         self.api_key = os.getenv("API_KEY", "")
         if not self.api_key:
             raise ValueError("API_KEY environment variable not set.")
@@ -34,7 +35,7 @@ class Prompter:
         """
         client = genai.Client(api_key=self.api_key)
         response = client.models.generate_content(
-            model="gemini-2.5-pro",
+            model=self.model,
             contents=prompt,
             config={
                 "response_mime_type": "application/json",

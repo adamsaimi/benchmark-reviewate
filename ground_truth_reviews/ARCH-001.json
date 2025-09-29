@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 43,
+      "comment": "This `create_post` method violates the Single Responsibility Principle (SRP). It currently handles three distinct responsibilities: validating the author's email, creating the post entity, and sending a notification. This tight coupling makes the method difficult to test, maintain, and reason about. For instance, testing the post creation logic now also requires dealing with the notification side-effect, and changes to validation rules will require modifying this core business logic. These responsibilities should be separated into dedicated components (e.g., a validator, a repository, and a notification service), which the `PostService` would then orchestrate."
+    }
+  ],
+  "title": "feat: Add email validation and notifications for post creation",
+  "body": "This commit enhances the post creation process by adding validation to ensure the author's email is in a valid format. It also introduces a notification system to inform authors when their posts are successfully published.",
+  "issue_id": "ARCH-001"
+}

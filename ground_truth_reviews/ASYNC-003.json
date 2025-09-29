@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 87,
+      "comment": "The `get_post` function is declared as `async`, but the call to `post_service.get_post_by_id(post_id)` is not being awaited. This will cause the endpoint to return a coroutine object instead of the actual `Post` data. When FastAPI attempts to serialize the response, it will fail because the coroutine object does not match the `Post` response model, leading to a server-side error. The call should be awaited to ensure the asynchronous operation completes and returns the expected data: `return await post_service.get_post_by_id(post_id)`."
+    }
+  ],
+  "title": "feat: Convert post retrieval to be asynchronous",
+  "body": "This change updates the `get_post` endpoint to be an asynchronous operation. This will allow for non-blocking I/O when fetching post data, improving overall application performance.",
+  "issue_id": "ASYNC-003"
+}

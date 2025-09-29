@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 21,
+      "comment": "The max_length for the `content` field in the `PostCreate` schema is set using magic numbers. Please replace the hardcoded value `13` with a constant."
+    }
+  ],
+  "title": "feat: Content max length updated",
+  "body": "This MR updates the max length for the content field in the PostCreate schema.",
+  "issue_id": "READ-001"
+}

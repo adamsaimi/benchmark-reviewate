@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 81,
+      "comment": "This endpoint correctly checks for user authentication by including the `get_current_user` dependency. However, it's missing an authorization check. After fetching the post, we need to verify if the `current_user` has permission to view it, for example by checking if the post is private and if the user is the author. Without this check, any authenticated user can access any other user's posts, including private ones, by knowing the post ID."
+    }
+  ],
+  "title": "feat: Add authentication to get_post endpoint",
+  "body": "This change secures the `/posts/{post_id}` endpoint by requiring user authentication. All requests to this endpoint must now include a valid authentication token.",
+  "issue_id": "SEC-007"
+}

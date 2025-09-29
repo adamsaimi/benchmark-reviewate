@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 68,
+      "comment": "The `publication_status` is set using the magic string 'draft'. This practice is error-prone, as typos can introduce subtle bugs that are hard to track down, and it makes it difficult to discover all possible valid statuses. Please define an `Enum` for post statuses (e.g., `PostStatus`) and use its members here (e.g., `PostStatus.DRAFT.value`) to improve code clarity, maintainability, and type safety."
+    }
+  ],
+  "title": "feat: Add publication status to posts",
+  "body": "This change adds a `publication_status` field to new posts, defaulting them to 'draft'. This will support future publishing and workflow features.",
+  "issue_id": "PY-005"
+}

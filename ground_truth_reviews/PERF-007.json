@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 54,
+      "comment": "Manually serializing the response using the standard `json.dumps` library bypasses FastAPI's highly optimized JSON serialization process. FastAPI's default JSONResponse is significantly faster, especially when libraries like `orjson` are installed. This manual approach introduces a performance bottleneck that will increase latency. Please revert this to simply `return post_service.get_all_posts()` and let the framework handle the serialization efficiently."
+    }
+  ],
+  "title": "refactor: Manually handle JSON serialization for posts list",
+  "body": "This change updates the `get_all_posts` endpoint to manually serialize the response to JSON. This provides more control over the output format, especially for datetime fields, ensuring consistent serialization behavior.",
+  "issue_id": "PERF-007"
+}

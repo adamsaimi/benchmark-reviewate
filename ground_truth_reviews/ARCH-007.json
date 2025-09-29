@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 102,
+      "comment": "The use of a long `if/elif/else` chain for handling different export formats is not ideal for scalability or maintainability. This structure violates the Open/Closed Principle, as adding a new export format requires modifying this method directly.\n\nConsider refactoring this logic using the Strategy design pattern. You could define an `ExportStrategy` interface with an `export` method, and create concrete implementations like `JsonExportStrategy`, `CsvExportStrategy`, etc. A factory could then be used to select the appropriate strategy based on the `export_format` string. This would make the system much easier to extend with new formats in the future without changing the service class."
+    }
+  ],
+  "title": "feat: Add post export functionality",
+  "body": "This change introduces the ability to export posts into different formats (JSON, CSV, TXT). A new method, export_post, has been added to the PostService to handle this logic.",
+  "issue_id": "ARCH-007"
+}

@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 72,
+      "comment": "Catching the generic `Exception` here is too broad. It will swallow any and all errors that occur within the `try` block, including potential database connection issues or serialization errors, and incorrectly report them all as a 'Not Found' (404) error. This makes debugging incredibly difficult as the true root cause is hidden. We should only catch the specific `PostNotFoundException` that we expect to be raised when a post isn't found."
+    }
+  ],
+  "title": "feat: Refactor post retrieval error handling",
+  "body": "This change updates the error handling logic in the `get_post` endpoint to provide a more consistent response when an issue occurs during post retrieval.",
+  "issue_id": "LOG-004"
+}

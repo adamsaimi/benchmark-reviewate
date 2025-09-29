@@ -98,13 +98,12 @@ def main():
     print("Starting benchmark generation workflow...")
     
     # Initialize prompters for both types of bugs
-    standard_prompter = Prompter(prompt_file="workflow/code_generator.txt")
-    biz_prompter = Prompter(prompt_file="workflow/biz_code_generator.txt")
+    standard_prompter = Prompter(prompt_file="workflow/code_generator.txt", model="gemini-2.5-pro")
+    biz_prompter = Prompter(prompt_file="workflow/biz_code_generator.txt", model="gemini-2.5-pro")
 
     # STEP 1: Read the taxonomy file
     taxonomy = standard_prompter.get_taxonomy()
     
-    all_generated_outputs = []
 
     # STEP 2: For each issue in the taxonomy...
     for i, bug_details in enumerate(taxonomy):
@@ -175,17 +174,9 @@ def main():
                 json.dump(output, f, indent=2)
             print(f"Ground truth saved to {ground_truth_path}")
             
-            # Add the full output to our summary list
-            all_generated_outputs.append(output) 
-
             with open("workflow/taxonomy.json", 'w', encoding='utf-8') as f:
                 json.dump(taxonomy, f, indent=2)
 
-            
-    # WORKFLOW STEP 5: Save all Gemini outputs into a single summary file
-    with open("all_generated_outputs.json", 'w', encoding='utf-8') as f:
-        json.dump(all_generated_outputs, f, indent=2)
-        
     print("\n========================================================")
     print("Workflow finished!")
     print("========================================================")

@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 13,
+      "comment": "When a user selects a date and time, `date.toISOString()` is called to format it. This method always returns a timestamp in UTC (Z) timezone. If a user in a different timezone (e.g., UTC+2) selects '10:00', this will be converted to '08:00Z'. When this UTC time is displayed back to the user in their local timezone, they will see '08:00', which is not what they originally selected. To fix this, we should format the date in a way that preserves the local timezone information or avoids timezone conversion altogether if not required."
+    }
+  ],
+  "title": "feat: Implement DateTimePicker component",
+  "body": "This commit introduces a new `DateTimePicker` component using the `react-datetime` library. It allows users to select a date and time from a calendar view and will be used in the event creation form.",
+  "issue_id": "BIZ-004"
+}

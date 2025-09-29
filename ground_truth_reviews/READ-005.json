@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 65,
+      "comment": "The `get_post_by_id` function is missing a docstring. Public methods should be documented to explain their purpose, arguments, return values, and any exceptions they might raise. This makes the code easier to use and maintain. Please add a docstring explaining that it retrieves a post by ID and raises `PostNotFoundException` if the post doesn't exist."
+    }
+  ],
+  "title": "feat: Add post retrieval service methods",
+  "body": "This commit introduces methods to fetch posts from the in-memory store. It adds `get_post_by_id` to retrieve a single post and `get_all_posts` to retrieve the complete list.",
+  "issue_id": "READ-005"
+}

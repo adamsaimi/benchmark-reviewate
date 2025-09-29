@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 78,
+      "comment": "The service correctly adds a check to prevent authors from exceeding their post limit. However, it misses the corresponding action to update the author's post count after a successful creation. This is similar to checking product stock without reserving the item upon purchase. Because `_author_post_counts` is never updated, the check will always use the default value of 0, rendering the post limit ineffective."
+    }
+  ],
+  "title": "feat: Implement author post limits",
+  "body": "This change introduces a new business rule to limit the number of posts an author can create. A check is added to the post creation logic to enforce this limit.",
+  "issue_id": "BIZ-002"
+}

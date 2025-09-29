@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 118,
+      "comment": "This implementation suffers from the N+1 query problem. It fetches all posts in one query (`get_all_posts`) and then executes a separate query (`_get_user_by_email`) inside the loop for each post to get author details. As the number of posts grows, this will lead to a large number of database calls, severely impacting performance. To fix this, you should fetch all posts and their related authors in a single, more efficient operation, for example by joining the posts and users tables in the initial query or by fetching all required authors in a second, batched query after the initial post fetch."
+    }
+  ],
+  "title": "feat: Add service to retrieve posts with author details",
+  "body": "This change introduces a new service method `get_all_posts_with_author_details` to provide a list of posts, each enriched with the corresponding author's information. This supports the new social feed feature.",
+  "issue_id": "PERF-001"
+}

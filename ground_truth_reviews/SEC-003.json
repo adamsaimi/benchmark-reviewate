@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 53,
+      "comment": "This endpoint is vulnerable to a path traversal attack. The `file.filename` from user input is used directly to construct a file path. An attacker can provide a malicious filename like `\"../../etc/passwd\"` to navigate the file system and overwrite arbitrary files that the application has write permissions for. This could lead to remote code execution or denial of service. The filename must be sanitized before use. At a minimum, use `os.path.basename()` to strip any directory traversal characters, and consider validating against an allowlist of safe characters and extensions."
+    }
+  ],
+  "title": "feat: Add file upload endpoint for posts",
+  "body": "This change introduces a new endpoint `/posts/upload` to allow users to upload files, such as images, to be associated with their posts.",
+  "issue_id": "SEC-003"
+}

@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 76,
+      "comment": "While this loop is functionally correct, it's not idiomatic Python. We should avoid manual index management with `range(len(...))` when we can iterate directly over the sequence. This improves readability and is less prone to potential off-by-one errors. Please refactor this to use a direct for-each loop: `for post_dict in _posts_db:`."
+    }
+  ],
+  "title": "feat: Implement post retrieval logic",
+  "body": "This commit adds the core service logic for fetching posts. It includes methods for getting a single post by its ID and for retrieving all posts.",
+  "issue_id": "PY-006"
+}

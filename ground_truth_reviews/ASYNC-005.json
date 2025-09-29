@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 88,
+      "comment": "This CPU-intensive calculation is running directly in an `async` function, which will block the event loop. While the calculation is running, the server will be unable to process any other incoming requests, severely impacting application performance and concurrency. To fix this, CPU-bound operations should be delegated to a separate thread pool using `asyncio.to_thread`."
+    }
+  ],
+  "title": "feat: Add endpoint for numerical calculations",
+  "body": "This change adds a new `/posts/calculate` endpoint to perform a sum of squares calculation on a list of integers. This provides a utility for clients needing to offload simple computations.",
+  "issue_id": "ASYNC-005"
+}

@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 84,
+      "comment": "The `delete_post` endpoint is missing an authentication check. This is a critical security vulnerability as it allows any unauthenticated user to delete arbitrary posts from the system by simply knowing their ID. Please add an authentication dependency (e.g., `current_user: User = Depends(get_current_user)`) to the function signature to ensure only authorized users can perform this destructive action."
+    }
+  ],
+  "title": "feat: Add endpoint to delete posts",
+  "body": "This change introduces a new DELETE endpoint at `/posts/{post_id}` to allow for the removal of posts. It integrates with the `PostService` to handle the deletion logic.",
+  "issue_id": "SEC-006"
+}

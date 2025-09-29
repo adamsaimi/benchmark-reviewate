@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 101,
+      "comment": "This method constructs a raw SQL query using an f-string, which directly embeds the `author_email` parameter into the query string. This creates a severe SQL injection vulnerability. A malicious user could provide a crafted email string (e.g., `' OR 1=1 --`) to manipulate the query, leading to unauthorized data access, modification, or deletion. To fix this, you must use parameterized queries where the query string uses placeholders (like `%s` or `?`) and the actual values are passed as a separate argument to the database execution method."
+    }
+  ],
+  "title": "feat: Add search functionality for posts by author",
+  "body": "This commit adds a new service method to enable searching for posts by their author's email. This provides a way to filter the post list and is the first step towards a more comprehensive search API.",
+  "issue_id": "SEC-001"
+}

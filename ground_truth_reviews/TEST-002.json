@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 53,
+      "comment": "The test coverage for `get_post_by_id` is incomplete. While the happy path is tested, there is no test case to verify the behavior when a post with the given ID does not exist. This could lead to undetected regressions if the error handling logic (e.g., raising `PostNotFoundException`) is changed or broken in the future. Please add a test to cover this important failure scenario."
+    }
+  ],
+  "title": "feat: Remove test not found",
+  "body": "This MR removes the test for the not found scenario in the PostService.",
+  "issue_id": "TEST-002"
+}

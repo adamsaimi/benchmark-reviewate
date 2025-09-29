@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 53,
+      "comment": "The test coverage is now lower than before. Lowering test coverage is never a good idea, please ensure that all critical paths are tested."
+    }
+  ],
+  "title": "feat: Remove test not found",
+  "body": "This MR removes some tests for the PostService.",
+  "issue_id": "TEST-005"
+}

@@ -1,0 +1,11 @@
+{
+  "ground_truth_reviews": [
+    {
+      "line_number": 65,
+      "comment": "The `PostService` directly instantiates `InMemoryPostRepository` within its constructor. This creates a tight coupling between the service layer and a specific data storage implementation, violating the Dependency Inversion Principle. This makes the service difficult to unit test in isolation (as we can't easily mock the repository) and prevents us from swapping the data source (e.g., to a real database) without modifying the service's code. To fix this, we should use dependency injection: the repository instance should be passed into the `PostService` constructor, ideally type-hinted against an abstract base class or protocol. For example: `def __init__(self, repository: PostRepositoryInterface):`."
+    }
+  ],
+  "title": "feat: Refactor PostService to use a repository pattern",
+  "body": "This MR refactors the `PostService` to encapsulate data access logic within a new `InMemoryPostRepository`. This improves separation of concerns by moving direct database interactions out of the service layer.",
+  "issue_id": "ARCH-002"
+}
