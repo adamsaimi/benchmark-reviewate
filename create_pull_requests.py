@@ -125,7 +125,6 @@ def create_all_pull_requests(repo_name: str):
                 "--head", branch_name,
                 "--title", data['title'],
                 "--body", data['body'],
-                "--label", "reviewate"
             ]
 
             pr_url = run_command(command, capture_output=True)
