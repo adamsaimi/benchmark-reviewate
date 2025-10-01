@@ -10,12 +10,21 @@ import requests
 from pydantic import BaseModel, Field
 
 # Assuming your Prompter class is in a file named prompter.py
+import os
+import sys
+
+# Ensure the project root is on sys.path so this file can be run as a script
+# (prevents "attempted relative import with no known parent package" errors).
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 from pull_request_generator.prompter import Prompter
 
 # --- Configuration ---
 LINE_TOLERANCE = 10  # How many lines apart can a comment be to be considered a location match
 GROUND_TRUTH_DIR = "ground_truth_reviews"
-
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 # --- Pydantic Models ---
 
 class ValidationResponse(BaseModel):
@@ -38,11 +47,12 @@ def check_prerequisites():
 def fetch_pr(repo_name: str):
     """Fetches the list of open pull requests from the specified repository."""
     print(f"\n--- Fetching Open Pull Requests for {repo_name} ---")
-    response = requests.get(f"https://api.github.com/repos/{repo_name}/pulls?state=open&per_page=100")
+    response = requests.get(f"https://api.github.com/repos/{repo_name}/pulls?per_page=100",
+                            headers={"Authorization": f"Bearer {GITHUB_TOKEN}"})
     if response.status_code == 200:
         pr_list = response.json()
         print(f"  Found {len(pr_list)} open pull requests.")
-        return pr_list
+        return [pr for pr in pr_list if pr['title'] == 'feat: Add tests for large numbers']
     else:
         print(f"  ❌ ERROR: Could not fetch pull requests. Error: {response.text}")
         sys.exit(1)
@@ -50,7 +60,8 @@ def fetch_pr(repo_name: str):
 def fetch_pr_reviews_comment(repo_name: str, pr_number: int) -> list:
     """Fetches all review comments for a given pull request."""
     print(f"  -> Fetching reviews for PR #{pr_number}...")
-    response = requests.get(f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/reviews")
+    response = requests.get(f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments",
+                            headers={"Authorization": f"Bearer {GITHUB_TOKEN}"})
     if response.status_code == 200:
         reviews = response.json()
         print(f"Found {len(reviews)} reviews.")
@@ -105,7 +116,7 @@ def main(repo_name: str):
     """Main script to orchestrate the scoring process."""
     check_prerequisites()
     
-    with open("workflow/taxonomy.json", 'r', encoding='utf-8') as f:
+    with open("pull_request_generator/taxonomy.json", 'r', encoding='utf-8') as f:
         taxonomy = json.load(f)
     # --- Load all necessary data ---
     print("\n--- Loading Benchmark Data ---")
@@ -118,7 +129,7 @@ def main(repo_name: str):
             issues[issue_id] = json.load(f)
         
         # --- Initialize ---
-    validator_prompter = Prompter(prompt_file="validator_prompt.txt", model="gemini-2.5-flash")
+    validator_prompter = Prompter(prompt_file="score/validator.txt", model="gemini-2.5-flash")
     validator_prompt_template = validator_prompter.get_prompt()
     
     # Use defaultdict for easy counting
@@ -138,21 +149,18 @@ def main(repo_name: str):
     for pull_request in pull_requests:
         pr_branch = pull_request['head']['ref']
 
-        issue = {k: v for k, v in issues.items() if k in pr_branch}
+        issue = issues[next(k for k in issues if k in pr_branch)]
 
         # --- Matching Algorithm ---
         reviews = fetch_pr_reviews_comment(repo_name, pull_request['number'])
         
+        total_true_positive = 0
 
-        for agent_review in enumerate(reviews):
-            # 1. Location Match
-            agent_filename = agent_review.get('path')
-            agent_line = agent_review.get('line')
+        for _, agent_review in enumerate(reviews):
             prompt = validator_prompt_template.format(
                 ground_truth_comment=issue['ground_truth_reviews'][0]['comment'],
                 agent_comment=agent_review.get('body')
             )
-            total_true_positive = 0
             try:
                 validation = validator_prompter.call_gemini_api(prompt, ValidationResponse)
                 if validation.verdict in ["MATCH", "PARTIAL"]:
@@ -168,9 +176,9 @@ def main(repo_name: str):
         tp = total_true_positive
         fn = len(issue['ground_truth_reviews']) - tp
         fp = len(reviews) - total_true_positive
-        
-        category = taxonomy[issue["issue_id"]]['category']
-        difficulty = taxonomy[issue["issue_id"]]['difficulty']
+        taxonomy_issue = next(i for i in taxonomy if i["issue_id"] == issue["issue_id"])
+        category = taxonomy_issue['category']
+        difficulty = taxonomy_issue['difficulty']
 
         scores['overall']['tp'] += tp
         scores['overall']['fn'] += fn

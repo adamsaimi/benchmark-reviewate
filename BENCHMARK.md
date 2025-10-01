@@ -34,10 +34,13 @@ Some people, use reviewers, some people use labels.
 
 7. **Run the benchmark**: Execute the benchmark script to evaluate the AI-generated reviews against the ground truth reviews:
    ```bash
-    python score.py
+    python score.py {repo_name} 
+
+    # Example
+    python score.py your-username/benchmark
    ```
 
-> You need to have a gemini api key setup in your environment variables as `API_KEY` to run the benchmark.
+> You need to have a gemini api key setup in your environment variables as `API_KEY` to run the benchmark and a github token as `GITHUB_TOKEN` to create the pull requests and fetch them.
 
 ## Methodology
 
