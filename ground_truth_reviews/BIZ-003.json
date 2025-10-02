@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Implement post cancellation logic",
-  "body": "This change introduces the ability to cancel a post. It adds a new `cancel_post` method to the `PostService` which sets the post's status to 'cancelled'.",
+  "body": "This change introduces the ability to cancel a post. It adds a new `cancel_post` method to the `PostService` which sets the post's status to 'cancelled'. See https://github.com/Reviewate/benchmark/issues/66",
   "issue_id": "BIZ-003"
 }

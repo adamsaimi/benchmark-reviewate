@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Add post editing with access control",
-  "body": "This PR implements the ability to update posts with proper access control validation. Users can edit posts they created, and administrators can edit any post. The `update_post` method has been added to the `PostService` class with authorization checks.",
+  "body": "This PR implements the ability to update posts with proper access control validation. Users can edit posts they created, and administrators can edit any post. The `update_post` method has been added to the `PostService` class with authorization checks. See https://github.com/Reviewate/benchmark/issues/67",
   "issue_id": "BIZ-004"
 }

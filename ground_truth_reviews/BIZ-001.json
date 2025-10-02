@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Add discount calculation for premium users",
-  "body": "This change introduces a new method to calculate the final price for an order, applying a 15% discount for premium users on orders over $100.",
+  "body": "This change introduces a new method to calculate the final price for an order, applying a 15% discount for premium users on orders over $100. See https://github.com/Reviewate/benchmark/issues/64",
   "issue_id": "BIZ-001"
 }

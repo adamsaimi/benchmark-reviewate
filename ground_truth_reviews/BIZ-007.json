@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Add monthly revenue reporting method",
-  "body": "This PR introduces a new service method, `get_monthly_revenue`, to calculate the total revenue for a specified month. It aggregates order totals to provide a high-level financial summary.",
+  "body": "This PR introduces a new service method, `get_monthly_revenue`, to calculate the total revenue for a specified month. It aggregates order totals to provide a high-level financial summary. See https://github.com/Reviewate/benchmark/issues/70",
   "issue_id": "BIZ-007"
 }

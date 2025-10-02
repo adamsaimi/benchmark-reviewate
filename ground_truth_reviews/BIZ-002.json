@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Implement author post limits",
-  "body": "This change introduces a new business rule to limit the number of posts an author can create. A check is added to the post creation logic to enforce this limit.",
+  "body": "This change introduces a new business rule to limit the number of posts an author can create. A check is added to the post creation logic to enforce this limit. See https://github.com/Reviewate/benchmark/issues/65",
   "issue_id": "BIZ-002"
 }

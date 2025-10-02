@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Implement transaction fee calculation",
-  "body": "Adds a new method to the PostService for calculating transaction fees based on the provided tiered pricing model. This will be used in upcoming features related to paid posts.",
+  "body": "Adds a new method to the PostService for calculating transaction fees based on the provided tiered pricing model. This will be used in upcoming features related to paid posts. See https://github.com/Reviewate/benchmark/issues/68",
   "issue_id": "BIZ-005"
 }

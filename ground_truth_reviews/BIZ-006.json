@@ -6,6 +6,6 @@
     }
   ],
   "title": "feat: Implement post deletion functionality",
-  "body": "This change adds a new service method, `delete_post`, to allow for removing posts. It implements a soft-delete pattern by flagging posts as deleted rather than permanently removing them from the database. This allows for potential recovery and keeps listing endpoints clean.",
+  "body": "This change adds a new service method, `delete_post`, to allow for removing posts. It implements a soft-delete pattern by flagging posts as deleted rather than permanently removing them from the database. This allows for potential recovery and keeps listing endpoints clean. See https://github.com/Reviewate/benchmark/issues/69",
   "issue_id": "BIZ-006"
 }
