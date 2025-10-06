@@ -6,9 +6,10 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
@@ -19,6 +20,14 @@ from benchmark.database import get_db
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
+
+
+class ProtectedPostCreate(BaseModel):
+    title: str
+    content: str
+    password: str
+    author_email: EmailStr
+    author_name: Optional[str] = None
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -57,6 +66,27 @@ def create_post(
         The newly created post with all metadata
     """
     return post_service.create_post(post_create)
+
+
+@router.post("/protected", status_code=status.HTTP_201_CREATED, response_model=Post)
+def create_protected_post(
+    post_create: ProtectedPostCreate,
+    post_service: PostService = Depends(get_post_service)
+) -> Post:
+    """
+    Create a new protected post with a password.
+    
+    Creates a new post with the provided data including a password, and returns
+    the created post with system-generated metadata.
+    
+    Args:
+        post_create: The protected post data to create
+        post_service: Injected post service instance
+        
+    Returns:
+        The newly created post with all metadata
+    """
+    return post_service.create_post_with_password(post_create)
 
 
 @router.get("/", response_model=List[Post])

@@ -120,6 +120,43 @@ class PostService:
             self.db.rollback()
             raise e
 
+    def create_post_with_password(self, post_create: any) -> Post:
+        """
+        Create a new protected post with a password.
+        
+        Args:
+            post_create: The post data including password provided by the user
+            
+        Returns:
+            The newly created post with system-generated fields
+            
+        Raises:
+            SQLAlchemyError: If there's a database error during creation
+        """
+        try:
+            # Get or create user
+            user = self.get_or_create_user(
+                email=str(post_create.author_email),
+                name=post_create.author_name or str(post_create.author_email).split('@')[0]
+            )
+            
+            # Create post
+            db_post = PostModel(
+                title=post_create.title,
+                content=post_create.content,
+                password=post_create.password,
+                author_id=user.id
+            )
+            
+            self.db.add(db_post)
+            self.db.commit()
+            self.db.refresh(db_post)
+            
+            return Post.model_validate(db_post)
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
+
     def get_post_by_id(self, post_id: int) -> Post:
         """
         Retrieve a specific post by its unique identifier.
