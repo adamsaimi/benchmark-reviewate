@@ -175,7 +175,7 @@ def main():
     prompt_file = "pull_request_generator/enhanced_code_generator.txt"
     prompter = Prompter(
         prompt_file=prompt_file,
-        model="gemini-2.5-flash"
+        model="gemini-2.5-pro"
     )
 
     # STEP 1: Load the prompt template
