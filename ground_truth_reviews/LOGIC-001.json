@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-001",
+  "issue_name": "Off-by-One Error in Pagination",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 88,
+      "comment": "The pagination offset calculation is incorrect, leading to an off-by-one error. The formula `page * per_page` causes page 1 to skip the first set of results. For instance, if `per_page` is 10, a request for page 1 will incorrectly start from the 11th item. The standard and correct approach is to calculate the offset as `(page - 1) * per_page` to ensure that page 1 starts with an offset of 0."
+    }
+  ],
+  "title": "feat: Add pagination to posts endpoint",
+  "body": "Added pagination support to the posts listing endpoint to improve performance with large datasets. Users can now specify page number and items per page."
+}
