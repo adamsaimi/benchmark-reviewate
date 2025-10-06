@@ -1,6 +1,7 @@
 [
   {
     "issue_id": "LOGIC-001",
+    "generated": false,
     "issue_name": "Off-by-One Error in Pagination",
     "category": "Correctness & Logic Errors",
     "description": "Incorrect calculation of page boundaries leads to missing or duplicate items in paginated results. Common when manually calculating offsets and limits.",
@@ -26,6 +27,7 @@
   },
   {
     "issue_id": "LOGIC-002",
+    "generated": false,
     "issue_name": "Integer Division Precision Loss",
     "category": "Correctness & Logic Errors",
     "description": "Using integer division when float precision is needed results in incorrect calculations, especially in financial or percentage operations.",
@@ -51,6 +53,7 @@
   },
   {
     "issue_id": "LOGIC-003",
+    "generated": false,
     "issue_name": "Missing Null/None Check",
     "category": "Correctness & Logic Errors",
     "description": "Attempting to access attributes or methods on None values causes AttributeError exceptions at runtime.",
@@ -76,6 +79,7 @@
   },
   {
     "issue_id": "LOGIC-004",
+    "generated": false,
     "issue_name": "Incorrect Boolean Logic in Conditions",
     "category": "Correctness & Logic Errors",
     "description": "Using wrong logical operators (and/or) or incorrect condition ordering leads to unintended code execution paths.",
@@ -101,6 +105,7 @@
   },
   {
     "issue_id": "LOGIC-005",
+    "generated": false,
     "issue_name": "Mutable Default Argument",
     "category": "Correctness & Logic Errors",
     "description": "Using mutable objects as default arguments causes shared state between function calls, leading to unexpected behavior.",
@@ -126,6 +131,7 @@
   },
   {
     "issue_id": "LOGIC-006",
+    "generated": false,
     "issue_name": "Time Zone Naive Datetime Comparison",
     "category": "Correctness & Logic Errors",
     "description": "Comparing timezone-aware and naive datetime objects causes TypeErrors or incorrect results in time-based logic.",
@@ -151,6 +157,7 @@
   },
   {
     "issue_id": "LOGIC-007",
+    "generated": false,
     "issue_name": "Incorrect Exception Handling Order",
     "category": "Correctness & Logic Errors",
     "description": "Catching broad exceptions before specific ones prevents proper error handling and makes debugging difficult.",
@@ -176,6 +183,7 @@
   },
   {
     "issue_id": "LOGIC-008",
+    "generated": false,
     "issue_name": "Float Comparison with Equality",
     "category": "Correctness & Logic Errors",
     "description": "Directly comparing floating-point numbers with == operator fails due to precision issues, causing logical errors.",
@@ -201,6 +209,7 @@
   },
   {
     "issue_id": "LOGIC-009",
+    "generated": false,
     "issue_name": "Incorrect Loop Variable Scope",
     "category": "Correctness & Logic Errors",
     "description": "Closure capturing loop variables leads to all callbacks referencing the same final value instead of their intended values.",
@@ -226,6 +235,7 @@
   },
   {
     "issue_id": "LOGIC-010",
+    "generated": false,
     "issue_name": "Incorrect Dictionary Key Update",
     "category": "Correctness & Logic Errors",
     "description": "Modifying dictionary keys during iteration causes RuntimeError, and using unhashable types as keys causes TypeError.",
@@ -251,6 +261,7 @@
   },
   {
     "issue_id": "SEC-001",
+    "generated": false,
     "issue_name": "SQL Injection Vulnerability",
     "category": "Security Vulnerabilities",
     "description": "Constructing SQL queries with string concatenation allows attackers to inject malicious SQL code, potentially exposing or modifying data.",
@@ -276,6 +287,7 @@
   },
   {
     "issue_id": "SEC-002",
+    "generated": false,
     "issue_name": "Missing Authentication Check",
     "category": "Security Vulnerabilities",
     "description": "Endpoints that should require authentication are publicly accessible, allowing unauthorized access to sensitive operations or data.",
@@ -301,6 +313,7 @@
   },
   {
     "issue_id": "SEC-003",
+    "generated": false,
     "issue_name": "Hardcoded Credentials",
     "category": "Security Vulnerabilities",
     "description": "Storing passwords, API keys, or secrets directly in source code exposes them to anyone with code access and version control history.",
@@ -326,6 +339,7 @@
   },
   {
     "issue_id": "SEC-004",
+    "generated": false,
     "issue_name": "Insufficient Authorization Check",
     "category": "Security Vulnerabilities",
     "description": "Authenticated users can access or modify resources they shouldn't own, leading to unauthorized data access or modification.",
@@ -339,7 +353,7 @@
           "step": 1,
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
-          "instruction": "Modify the update_post endpoint (PUT '/posts/{post_id}') to accept authenticated user via Depends(get_current_user) but do NOT check if the user is the post owner. Allow any authenticated user to update any post without ownership verification.",
+          "instruction": "Modify the update_post endpoint (POST '/posts/{post_id}') to accept authenticated user via Depends(get_current_user) but do NOT check if the user is the post owner. Allow any authenticated user to update any post without ownership verification.",
           "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
         }
       ],
@@ -351,6 +365,7 @@
   },
   {
     "issue_id": "SEC-005",
+    "generated": false,
     "issue_name": "Mass Assignment Vulnerability",
     "category": "Security Vulnerabilities",
     "description": "Accepting all user input fields without validation allows attackers to modify unintended fields like admin status or permissions.",
@@ -376,6 +391,7 @@
   },
   {
     "issue_id": "SEC-006",
+    "generated": false,
     "issue_name": "Insecure Password Storage",
     "category": "Security Vulnerabilities",
     "description": "Storing passwords in plain text or using weak hashing algorithms makes user accounts vulnerable if the database is compromised.",
@@ -409,6 +425,7 @@
   },
   {
     "issue_id": "SEC-007",
+    "generated": false,
     "issue_name": "Cross-Site Scripting (XSS)",
     "category": "Security Vulnerabilities",
     "description": "Rendering user-supplied content without escaping allows attackers to inject malicious scripts that execute in other users' browsers.",
@@ -434,6 +451,7 @@
   },
   {
     "issue_id": "SEC-008",
+    "generated": false,
     "issue_name": "Insecure Direct Object Reference",
     "category": "Security Vulnerabilities",
     "description": "Using predictable IDs without authorization allows attackers to access other users' resources by guessing or incrementing IDs.",
@@ -459,6 +477,7 @@
   },
   {
     "issue_id": "SEC-009",
+    "generated": false,
     "issue_name": "Missing Rate Limiting",
     "category": "Security Vulnerabilities",
     "description": "Endpoints without rate limiting are vulnerable to brute force attacks, DoS attacks, and abuse of expensive operations.",
@@ -484,6 +503,7 @@
   },
   {
     "issue_id": "SEC-010",
+    "generated": false,
     "issue_name": "Sensitive Data Exposure in Logs",
     "category": "Security Vulnerabilities",
     "description": "Logging sensitive information like passwords, tokens, or PII creates security risks and compliance violations if logs are compromised.",
@@ -509,6 +529,7 @@
   },
   {
     "issue_id": "PERF-001",
+    "generated": false,
     "issue_name": "N+1 Query Problem",
     "category": "Performance Issues",
     "description": "Loading related data in a loop executes N additional queries instead of a single optimized query, causing severe performance degradation.",
@@ -542,6 +563,7 @@
   },
   {
     "issue_id": "PERF-002",
+    "generated": false,
     "issue_name": "Missing Database Index",
     "category": "Performance Issues",
     "description": "Querying or sorting on unindexed columns causes full table scans, dramatically slowing down as data grows.",
@@ -575,6 +597,7 @@
   },
   {
     "issue_id": "PERF-003",
+    "generated": false,
     "issue_name": "Loading Entire Table into Memory",
     "category": "Performance Issues",
     "description": "Using .all() on large tables loads all records into memory, causing excessive memory usage and potential crashes.",
@@ -600,6 +623,7 @@
   },
   {
     "issue_id": "PERF-004",
+    "generated": false,
     "issue_name": "Inefficient String Concatenation",
     "category": "Performance Issues",
     "description": "Building strings in loops with + operator creates new string objects each iteration, causing O(n²) time complexity.",
@@ -625,6 +649,7 @@
   },
   {
     "issue_id": "PERF-005",
+    "generated": false,
     "issue_name": "Unnecessary Data Transfer",
     "category": "Performance Issues",
     "description": "Fetching all columns when only specific fields are needed wastes bandwidth and memory, especially with large blob/text fields.",
@@ -650,6 +675,7 @@
   },
   {
     "issue_id": "PERF-006",
+    "generated": false,
     "issue_name": "Synchronous I/O in Async Context",
     "category": "Performance Issues",
     "description": "Using blocking I/O operations in async functions blocks the event loop, preventing concurrent request handling.",
@@ -675,6 +701,7 @@
   },
   {
     "issue_id": "PERF-007",
+    "generated": false,
     "issue_name": "Unoptimized Regular Expression",
     "category": "Performance Issues",
     "description": "Complex regex patterns with backtracking can cause catastrophic performance degradation on certain inputs.",
@@ -700,6 +727,7 @@
   },
   {
     "issue_id": "PERF-008",
+    "generated": false,
     "issue_name": "Inefficient Loop with Function Calls",
     "category": "Performance Issues",
     "description": "Calling expensive functions repeatedly inside loops when the result doesn't change wastes CPU cycles.",
@@ -725,6 +753,7 @@
   },
   {
     "issue_id": "PERF-009",
+    "generated": false,
     "issue_name": "Missing Response Caching",
     "category": "Performance Issues",
     "description": "Repeatedly computing expensive operations for identical requests wastes resources when results could be cached.",
@@ -750,6 +779,7 @@
   },
   {
     "issue_id": "PERF-010",
+    "generated": false,
     "issue_name": "Inefficient Data Structure Choice",
     "category": "Performance Issues",
     "description": "Using lists for membership testing instead of sets results in O(n) lookups instead of O(1), causing performance issues with large datasets.",
@@ -775,6 +805,7 @@
   },
   {
     "issue_id": "ASYNC-001",
+    "generated": false,
     "issue_name": "Race Condition on Shared State",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Multiple async tasks modifying shared state without synchronization causes data corruption and inconsistent results.",
@@ -800,6 +831,7 @@
   },
   {
     "issue_id": "ASYNC-002",
+    "generated": false,
     "issue_name": "Missing Await Keyword",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Forgetting await on async functions returns a coroutine object instead of the actual result, causing silent failures.",
@@ -825,6 +857,7 @@
   },
   {
     "issue_id": "ASYNC-003",
+    "generated": false,
     "issue_name": "Blocking Operation in Event Loop",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "CPU-intensive or blocking operations in async functions freeze the event loop, preventing other tasks from running.",
@@ -850,6 +883,7 @@
   },
   {
     "issue_id": "ASYNC-004",
+    "generated": false,
     "issue_name": "Improper Task Cancellation Handling",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Not handling CancelledError properly leads to resource leaks and incomplete cleanup when tasks are cancelled.",
@@ -875,6 +909,7 @@
   },
   {
     "issue_id": "ASYNC-005",
+    "generated": false,
     "issue_name": "Deadlock with Asyncio Locks",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Acquiring locks in different orders across coroutines or holding locks across await points can cause deadlocks.",
@@ -900,6 +935,7 @@
   },
   {
     "issue_id": "ASYNC-006",
+    "generated": false,
     "issue_name": "Fire-and-Forget Task Without Error Handling",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Creating tasks without awaiting or storing references causes exceptions to be silently ignored and prevents proper cleanup.",
@@ -925,6 +961,7 @@
   },
   {
     "issue_id": "ASYNC-007",
+    "generated": false,
     "issue_name": "Mixing Sync and Async Database Calls",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Using synchronous database drivers in async code blocks the event loop, negating the benefits of async programming.",
@@ -950,6 +987,7 @@
   },
   {
     "issue_id": "ASYNC-008",
+    "generated": false,
     "issue_name": "Incorrect Use of asyncio.gather",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Not handling exceptions properly in asyncio.gather causes one failure to hide or cancel other tasks unexpectedly.",
@@ -975,6 +1013,7 @@
   },
   {
     "issue_id": "ASYNC-009",
+    "generated": false,
     "issue_name": "Context Variable Not Propagating",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Creating tasks without copying context causes request-specific data like user info to be lost in spawned tasks.",
@@ -1008,6 +1047,7 @@
   },
   {
     "issue_id": "ASYNC-010",
+    "generated": false,
     "issue_name": "Semaphore Misuse Leading to Resource Exhaustion",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Not limiting concurrent operations with semaphores can exhaust system resources like database connections or memory.",
@@ -1033,6 +1073,7 @@
   },
   {
     "issue_id": "ARCH-001",
+    "generated": false,
     "issue_name": "Tight Coupling Between Layers",
     "category": "Code Architecture & Design Patterns",
     "description": "Direct dependencies between presentation, business logic, and data layers make code hard to test and modify.",
@@ -1058,6 +1099,7 @@
   },
   {
     "issue_id": "ARCH-002",
+    "generated": false,
     "issue_name": "God Object Anti-Pattern",
     "category": "Code Architecture & Design Patterns",
     "description": "Single class with too many responsibilities violates Single Responsibility Principle, making code hard to maintain and test.",
@@ -1083,6 +1125,7 @@
   },
   {
     "issue_id": "ARCH-003",
+    "generated": false,
     "issue_name": "Missing Dependency Injection",
     "category": "Code Architecture & Design Patterns",
     "description": "Hard-coded dependencies make code difficult to test and tightly couples implementation details.",
@@ -1108,6 +1151,7 @@
   },
   {
     "issue_id": "ARCH-004",
+    "generated": false,
     "issue_name": "Circular Dependencies",
     "category": "Code Architecture & Design Patterns",
     "description": "Modules importing each other creates circular dependencies causing import errors and tight coupling.",
@@ -1141,6 +1185,7 @@
   },
   {
     "issue_id": "ARCH-005",
+    "generated": false,
     "issue_name": "Anemic Domain Model",
     "category": "Code Architecture & Design Patterns",
     "description": "Domain objects with only data and no behavior push all logic to service layer, missing OOP benefits.",
@@ -1174,6 +1219,7 @@
   },
   {
     "issue_id": "ARCH-006",
+    "generated": false,
     "issue_name": "Missing Abstraction Layer",
     "category": "Code Architecture & Design Patterns",
     "description": "Direct use of external libraries throughout codebase makes it hard to swap implementations or mock for testing.",
@@ -1199,6 +1245,7 @@
   },
   {
     "issue_id": "ARCH-007",
+    "generated": false,
     "issue_name": "Violation of Interface Segregation",
     "category": "Code Architecture & Design Patterns",
     "description": "Large interfaces force implementations to provide methods they don't need, creating unnecessary coupling.",
@@ -1224,6 +1271,7 @@
   },
   {
     "issue_id": "ARCH-008",
+    "generated": false,
     "issue_name": "Missing Factory Pattern",
     "category": "Code Architecture & Design Patterns",
     "description": "Complex object creation logic scattered throughout code makes it hard to modify instantiation behavior.",
@@ -1249,6 +1297,7 @@
   },
   {
     "issue_id": "ARCH-009",
+    "generated": false,
     "issue_name": "Lack of Event-Driven Architecture",
     "category": "Code Architecture & Design Patterns",
     "description": "Synchronous coupling between unrelated operations makes code inflexible and hard to scale.",
@@ -1274,6 +1323,7 @@
   },
   {
     "issue_id": "ARCH-010",
+    "generated": false,
     "issue_name": "Configuration in Code",
     "category": "Code Architecture & Design Patterns",
     "description": "Hard-coding configuration values in application code requires code changes and redeployment for configuration updates.",
@@ -1299,6 +1349,7 @@
   },
   {
     "issue_id": "PY-001",
+    "generated": false,
     "issue_name": "Not Using Context Managers",
     "category": "Python Best Practices & Idioms",
     "description": "Manually managing resources like files or connections risks resource leaks if exceptions occur before cleanup.",
@@ -1324,6 +1375,7 @@
   },
   {
     "issue_id": "PY-002",
+    "generated": false,
     "issue_name": "Using Bare Except",
     "category": "Python Best Practices & Idioms",
     "description": "Catching all exceptions including system exits and keyboard interrupts makes debugging difficult and can hide critical errors.",
@@ -1349,6 +1401,7 @@
   },
   {
     "issue_id": "PY-003",
+    "generated": false,
     "issue_name": "Not Using List Comprehensions",
     "category": "Python Best Practices & Idioms",
     "description": "Using explicit loops instead of comprehensions results in more verbose, less Pythonic, and potentially slower code.",
@@ -1374,6 +1427,7 @@
   },
   {
     "issue_id": "PY-004",
+    "generated": false,
     "issue_name": "Missing Type Hints",
     "category": "Python Best Practices & Idioms",
     "description": "Lack of type hints makes code harder to understand and prevents static type checkers from catching errors.",
@@ -1399,6 +1453,7 @@
   },
   {
     "issue_id": "PY-005",
+    "generated": false,
     "issue_name": "Using os.path Instead of pathlib",
     "category": "Python Best Practices & Idioms",
     "description": "Using os.path for file path operations is less readable and more error-prone than pathlib's object-oriented approach.",
@@ -1424,6 +1479,7 @@
   },
   {
     "issue_id": "PY-006",
+    "generated": false,
     "issue_name": "Not Using Dataclasses",
     "category": "Python Best Practices & Idioms",
     "description": "Manually writing __init__, __repr__, and __eq__ methods for data containers is verbose when dataclasses provide this automatically.",
@@ -1449,6 +1505,7 @@
   },
   {
     "issue_id": "PY-007",
+    "generated": false,
     "issue_name": "Using * Imports",
     "category": "Python Best Practices & Idioms",
     "description": "Wildcard imports pollute namespace, make it unclear where names come from, and can cause name conflicts.",
@@ -1474,6 +1531,7 @@
   },
   {
     "issue_id": "PY-008",
+    "generated": false,
     "issue_name": "Not Using Enumerate",
     "category": "Python Best Practices & Idioms",
     "description": "Manually tracking index in loops is error-prone and less Pythonic than using enumerate built-in.",
@@ -1499,6 +1557,7 @@
   },
   {
     "issue_id": "PY-009",
+    "generated": false,
     "issue_name": "Using isinstance for Type Checking Multiple Times",
     "category": "Python Best Practices & Idioms",
     "description": "Repeated isinstance checks for the same object is inefficient compared to single check with tuple of types.",
@@ -1524,6 +1583,7 @@
   },
   {
     "issue_id": "PY-010",
+    "generated": false,
     "issue_name": "Not Using __slots__",
     "category": "Python Best Practices & Idioms",
     "description": "For classes with many instances, not using __slots__ wastes memory by maintaining a __dict__ for each instance.",
@@ -1544,6 +1604,292 @@
       "pr_info": {
         "title": "feat: Add post caching structure",
         "body": "Lightweight cache objects for frequently accessed posts."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-001",
+    "generated": false,
+    "issue_name": "Missing Revenue Status Validation",
+    "category": "Business Logic & Domain Rules",
+    "description": "Revenue calculations include orders in all statuses instead of only completed transactions, leading to inflated and inaccurate financial reporting.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nWe need to implement correct monthly revenue calculation that aligns with business definitions and KPI requirements.\n\n### Business Requirements\n- Monthly revenue should include only completed orders (status='delivered')\n- Exclude cancelled and pending orders from revenue calculations\n- Provide accurate business intelligence metrics\n\n### Acceptance Criteria\n- [ ] Filter revenue by 'delivered' status only\n- [ ] Exclude cancelled orders from totals\n- [ ] Exclude pending orders from totals",
+    "flawed_snippet": "@app.get('/revenue/monthly')\ndef get_monthly_revenue(month: int, year: int):\n    # Incorrectly includes ALL orders regardless of status\n    orders = db.query(Order).filter(\n        extract('month', Order.created_at) == month,\n        extract('year', Order.created_at) == year\n    ).all()\n    return {'revenue': sum(order.total for order in orders)}",
+    "suggested_fix": "Filter by delivered status: `orders = db.query(Order).filter(\n    extract('month', Order.created_at) == month,\n    extract('year', Order.created_at) == year,\n    Order.status == 'delivered'\n).all()`",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/models.py",
+          "operation": "modify",
+          "instruction": "Add Order model with fields: id, total, status (without default or validation), created_at. Do not add status filtering in the model.",
+          "context_files": []
+        },
+        {
+          "step": 2,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.get(\"/revenue/monthly\")' that queries all orders for a given month and year using extract() for date filtering, but does NOT filter by status - includes all orders (pending, cancelled, delivered) in revenue calculation.",
+          "context_files": ["benchmark/models.py"],
+          "depends_on": [1]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add monthly revenue reporting",
+        "body": "Implemented monthly revenue calculation endpoint for business analytics."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-002",
+    "generated": false,
+    "issue_name": "Refund Amount Not Deducted from Revenue",
+    "category": "Business Logic & Domain Rules",
+    "description": "Refunded amounts are not subtracted from revenue calculations, causing financial discrepancies and incorrect profit/loss statements.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nImplement proper refund handling in revenue calculation to ensure accurate financial reporting.\n\n### Business Requirements\n- Subtract refunded amounts from order totals\n- Track partial and full refunds separately\n- Update revenue metrics when refunds are processed\n\n### Acceptance Criteria\n- [ ] Subtract full refund amounts from revenue\n- [ ] Handle partial refunds correctly\n- [ ] Update historical revenue when refunds occur",
+    "flawed_snippet": "def calculate_order_revenue(order: Order) -> Decimal:\n    # Missing refund deduction\n    return order.total_amount",
+    "suggested_fix": "Deduct refunds: `def calculate_order_revenue(order: Order) -> Decimal:\n    revenue = order.total_amount\n    if order.refund_amount:\n        revenue -= order.refund_amount\n    return revenue`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def calculate_order_revenue(self, order)' that returns 'order.total_amount' without checking or subtracting 'order.refund_amount' even though refund_amount field exists on the order model.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add order revenue calculation",
+        "body": "Helper method to calculate revenue from orders."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-003",
+    "generated": false,
+    "issue_name": "Inventory Not Reserved During Checkout",
+    "category": "Business Logic & Domain Rules",
+    "description": "Inventory is only decremented after payment, allowing overselling when multiple users checkout the same item simultaneously.",
+    "difficulty": "Hard",
+    "requirements": "### Description\nImplement inventory reservation during checkout to prevent overselling and ensure stock accuracy.\n\n### Business Requirements\n- Reserve inventory when user starts checkout\n- Release reservation if checkout not completed within 15 minutes\n- Prevent overselling of limited stock items\n\n### Acceptance Criteria\n- [ ] Reserve inventory at checkout start\n- [ ] Implement 15-minute reservation timeout\n- [ ] Auto-release expired reservations",
+    "flawed_snippet": "def process_payment(order_id: int, payment_info: dict):\n    order = db.query(Order).get(order_id)\n    # Payment processed first, inventory updated after\n    payment_result = payment_gateway.charge(payment_info)\n    if payment_result.success:\n        update_inventory(order.items)",
+    "suggested_fix": "Reserve inventory first: `def start_checkout(cart_items: list) -> str:\n    reservation_id = create_inventory_reservation(cart_items, expires_in=900)\n    if not reservation_id:\n        raise OutOfStockError()\n    return reservation_id`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/checkout/process\")' that processes payment first, then decrements inventory only after payment succeeds - no inventory reservation during checkout, allowing race conditions and overselling.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add checkout processing",
+        "body": "Implemented payment processing and inventory management."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-004",
+    "generated": false,
+    "issue_name": "Promotional Discount Stacking Not Controlled",
+    "category": "Business Logic & Domain Rules",
+    "description": "Multiple promotional codes can be applied to a single order without business rule validation, leading to revenue loss and pricing abuse.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nImplement discount stacking rules to prevent unauthorized promotional code combinations.\n\n### Business Requirements\n- Allow only one promotional code per order\n- Prevent combining percentage and fixed discounts\n- Enforce maximum discount caps per order\n\n### Acceptance Criteria\n- [ ] Limit to one promo code per order\n- [ ] Prevent percentage + fixed discount stacking\n- [ ] Enforce 50% maximum discount cap",
+    "flawed_snippet": "def apply_discounts(order: Order, promo_codes: List[str]):\n    # Applies all codes without validation\n    for code in promo_codes:\n        discount = get_discount(code)\n        order.total -= discount.amount",
+    "suggested_fix": "Validate discount rules: `def apply_discounts(order: Order, promo_codes: List[str]):\n    if len(promo_codes) > 1:\n        raise ValidationError('Only one promo code allowed')\n    discount = get_discount(promo_codes[0])\n    validate_discount_rules(order, discount)\n    order.total -= discount.amount`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def apply_discounts(self, order, promo_codes: list)' that iterates through all promo_codes in a loop and applies each discount to order.total without validating stacking rules, count limits, or maximum discount caps.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add promotional code support",
+        "body": "Customers can now apply promo codes to orders."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-005",
+    "generated": false,
+    "issue_name": "Subscription Renewal Without Payment Validation",
+    "category": "Business Logic & Domain Rules",
+    "description": "Subscriptions auto-renew without validating payment method is still valid, causing service interruptions and customer complaints.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nImplement payment validation before subscription renewal to ensure uninterrupted service.\n\n### Business Requirements\n- Validate payment method 7 days before renewal\n- Send notification if payment method is invalid\n- Pause service gracefully if payment fails\n\n### Acceptance Criteria\n- [ ] Validate payment method 7 days pre-renewal\n- [ ] Send customer notification for invalid payment\n- [ ] Implement grace period before service pause",
+    "flawed_snippet": "def renew_subscription(subscription_id: int):\n    subscription = db.query(Subscription).get(subscription_id)\n    # No payment validation before renewal\n    subscription.renew_date = datetime.now() + timedelta(days=30)\n    charge_customer(subscription.user_id, subscription.amount)",
+    "suggested_fix": "Validate payment first: `def renew_subscription(subscription_id: int):\n    subscription = db.query(Subscription).get(subscription_id)\n    if not validate_payment_method(subscription.payment_method_id):\n        notify_customer_payment_issue(subscription.user_id)\n        return False\n    charge_customer(subscription.user_id, subscription.amount)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def renew_subscription(self, subscription_id)' that updates subscription.renew_date and calls charge_customer() without first validating the payment method is still valid or checking for expired cards.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add subscription auto-renewal",
+        "body": "Automatic subscription renewal for seamless service."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-006",
+    "generated": false,
+    "issue_name": "Customer Lifetime Value Calculation Incomplete",
+    "category": "Business Logic & Domain Rules",
+    "description": "CLV calculation excludes returns, refunds, and acquisition costs, providing misleading customer profitability metrics for business decisions.",
+    "difficulty": "Hard",
+    "requirements": "### Description\nImplement comprehensive CLV calculation including all cost factors for accurate customer profitability analysis.\n\n### Business Requirements\n- Include total revenue from all completed orders\n- Subtract refunds and returns cost\n- Factor in customer acquisition cost (CAC)\n- Consider support and service costs\n\n### Acceptance Criteria\n- [ ] Subtract refund amounts from CLV\n- [ ] Include return processing costs\n- [ ] Deduct customer acquisition cost",
+    "flawed_snippet": "def calculate_customer_lifetime_value(customer_id: int) -> Decimal:\n    orders = db.query(Order).filter(Order.customer_id == customer_id).all()\n    # Only sums order totals, missing refunds and costs\n    return sum(order.total for order in orders)",
+    "suggested_fix": "Include all factors: `def calculate_customer_lifetime_value(customer_id: int) -> Decimal:\n    customer = db.query(Customer).get(customer_id)\n    total_revenue = sum(o.total for o in customer.orders if o.status == 'delivered')\n    total_refunds = sum(r.amount for r in customer.refunds)\n    acquisition_cost = customer.acquisition_cost or 0\n    return total_revenue - total_refunds - acquisition_cost`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def calculate_customer_lifetime_value(self, customer_id)' that only sums order.total from all customer orders without subtracting refunds, returns costs, or acquisition costs.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add CLV calculation",
+        "body": "Customer lifetime value metrics for analytics dashboard."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-007",
+    "generated": false,
+    "issue_name": "Price Change Applied to Existing Orders",
+    "category": "Business Logic & Domain Rules",
+    "description": "Product price updates retroactively affect pending orders that were placed at the old price, causing customer billing disputes.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nImplement price snapshot mechanism to preserve order prices at time of purchase.\n\n### Business Requirements\n- Store product price at time of order creation\n- Prevent retroactive price changes on existing orders\n- Maintain price history for audit purposes\n\n### Acceptance Criteria\n- [ ] Snapshot price at order creation\n- [ ] Use snapshotted price for billing\n- [ ] Prevent price updates on existing orders",
+    "flawed_snippet": "class OrderItem(Base):\n    __tablename__ = 'order_items'\n    product_id = Column(Integer, ForeignKey('products.id'))\n    quantity = Column(Integer)\n    # Missing: price snapshot at order time\n    \n    @property\n    def total(self):\n        # Dynamically fetches current price, not order-time price\n        return self.product.current_price * self.quantity",
+    "suggested_fix": "Snapshot price: `class OrderItem(Base):\n    __tablename__ = 'order_items'\n    product_id = Column(Integer, ForeignKey('products.id'))\n    quantity = Column(Integer)\n    price_at_purchase = Column(Numeric(10, 2), nullable=False)\n    \n    @property\n    def total(self):\n        return self.price_at_purchase * self.quantity`",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/models.py",
+          "operation": "modify",
+          "instruction": "Add OrderItem model with product_id and quantity fields, but do NOT add price_at_purchase field. Add @property total that calculates using self.product.current_price * self.quantity.",
+          "context_files": []
+        },
+        {
+          "step": 2,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint that creates orders using OrderItem without snapshotting the price - relies on dynamic product.current_price lookup.",
+          "context_files": ["benchmark/models.py"],
+          "depends_on": [1]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add order item tracking",
+        "body": "Track individual items in orders with quantities."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-008",
+    "generated": false,
+    "issue_name": "Free Trial Conversion Not Tracked",
+    "category": "Business Logic & Domain Rules",
+    "description": "System doesn't track or enforce free trial to paid conversion, allowing users to create multiple trial accounts and never convert to paid.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nImplement free trial tracking and conversion enforcement to prevent trial abuse.\n\n### Business Requirements\n- Track trial start date and expiration\n- Enforce one trial per user (by email/payment method)\n- Auto-convert to paid or downgrade at trial end\n\n### Acceptance Criteria\n- [ ] Prevent multiple trials per email\n- [ ] Prevent multiple trials per payment method\n- [ ] Auto-handle trial expiration",
+    "flawed_snippet": "def create_trial_account(email: str):\n    # No check for existing trials\n    user = User(email=email, account_type='trial', created_at=datetime.now())\n    db.add(user)\n    db.commit()",
+    "suggested_fix": "Validate trial eligibility: `def create_trial_account(email: str, payment_method: str):\n    existing_trial = db.query(User).filter(\n        (User.email == email) | (User.payment_method == payment_method),\n        User.account_type == 'trial'\n    ).first()\n    if existing_trial:\n        raise TrialAlreadyUsedError()\n    user = User(email=email, account_type='trial', trial_expires_at=datetime.now() + timedelta(days=14))`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/trial/create\")' that creates trial accounts without checking if the email or payment method already had a trial - no validation for existing trials, no trial_expires_at field set.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add free trial signup",
+        "body": "Allow users to start free trial accounts."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-009",
+    "generated": false,
+    "issue_name": "Shipping Cost Not Calculated Based on Business Rules",
+    "category": "Business Logic & Domain Rules",
+    "description": "Shipping costs are hardcoded instead of calculated based on weight, destination, and shipping method, causing revenue loss and customer dissatisfaction.",
+    "difficulty": "Medium",
+    "requirements": "### Description\nImplement dynamic shipping cost calculation based on business rules and carrier rates.\n\n### Business Requirements\n- Calculate shipping based on package weight\n- Apply destination-based pricing (zones)\n- Offer free shipping for orders over $50\n- Support multiple shipping speeds\n\n### Acceptance Criteria\n- [ ] Calculate cost based on weight and zone\n- [ ] Apply free shipping threshold ($50+)\n- [ ] Support express vs standard rates",
+    "flawed_snippet": "def calculate_shipping(order: Order) -> Decimal:\n    # Hardcoded flat rate, ignores business rules\n    return Decimal('9.99')",
+    "suggested_fix": "Apply business rules: `def calculate_shipping(order: Order, destination_zone: str, shipping_speed: str) -> Decimal:\n    if order.total >= Decimal('50.00'):\n        return Decimal('0.00')\n    \n    total_weight = sum(item.product.weight * item.quantity for item in order.items)\n    base_rate = get_zone_rate(destination_zone, shipping_speed)\n    return base_rate * (total_weight / 1000)  # per kg`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def calculate_shipping(self, order)' that returns a hardcoded 'Decimal(\"9.99\")' without checking order total for free shipping threshold, weight, destination zone, or shipping speed.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add shipping cost calculation",
+        "body": "Calculate shipping costs for orders."
+      }
+    }
+  },
+  {
+    "issue_id": "BIZ-010",
+    "generated": false,
+    "issue_name": "Tax Calculation Missing Jurisdiction Rules",
+    "category": "Business Logic & Domain Rules",
+    "description": "Sales tax is calculated using a single rate instead of proper jurisdiction-based rates, causing tax compliance issues and audit risks.",
+    "difficulty": "Hard",
+    "requirements": "### Description\nImplement proper tax calculation based on customer location and product taxability rules.\n\n### Business Requirements\n- Calculate tax based on shipping address jurisdiction\n- Handle tax-exempt products (groceries, medications)\n- Support multiple tax jurisdictions (state, county, city)\n- Maintain tax exemption certificates\n\n### Acceptance Criteria\n- [ ] Use shipping address for tax jurisdiction\n- [ ] Exclude tax-exempt products from calculation\n- [ ] Apply combined state + local tax rates\n- [ ] Honor tax exemption certificates",
+    "flawed_snippet": "def calculate_tax(order: Order) -> Decimal:\n    # Uses single flat tax rate for all orders\n    TAX_RATE = Decimal('0.08')\n    return order.subtotal * TAX_RATE",
+    "suggested_fix": "Apply jurisdiction rules: `def calculate_tax(order: Order) -> Decimal:\n    if order.tax_exempt_certificate:\n        return Decimal('0.00')\n    \n    jurisdiction = get_tax_jurisdiction(order.shipping_address)\n    taxable_amount = sum(\n        item.total for item in order.items \n        if not item.product.is_tax_exempt\n    )\n    tax_rate = jurisdiction.state_rate + jurisdiction.local_rate\n    return taxable_amount * tax_rate`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def calculate_tax(self, order)' that uses hardcoded 'TAX_RATE = Decimal(\"0.08\")' and returns 'order.subtotal * TAX_RATE' without checking shipping address jurisdiction, tax-exempt products, or tax exemption certificates.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add tax calculation",
+        "body": "Calculate sales tax for orders."
       }
     }
   }

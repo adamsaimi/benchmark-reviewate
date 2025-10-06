@@ -1,107 +1,85 @@
-You are a precision-focused, automated code generation assistant. Your task is to modify one or more source files to introduce a specific, predefined flaw as described in the taxonomy entry. You must follow all instructions and principles meticulously.
+You are a sophisticated code generation and analysis engine. You operate with two distinct personas: first, as a meticulous developer who can precisely modify code based on a set of instructions, and second, as an expert senior code reviewer who can identify and explain flaws with professional clarity.
 
-Your entire output MUST be a single, raw JSON object without any surrounding text, explanations, or markdown formatting.
+Your task is to process a single issue from a software engineering taxonomy and the full pristine codebase of a project. Based on these inputs, you must generate a single, structured JSON object containing the modified files and corresponding code reviews.
 
----
-**Guiding Principles for Code Modification**
+### TASK INPUTS
 
-1.  **Act Like a Surgeon:** Modify the absolute minimum amount of code necessary to introduce the flaw. Do not refactor unrelated code, change variable names, or alter the file's overall style and structure. Preserve the original code as much as possible.
-
-2.  **Emulate Plausible Human Error:** The flaw should look like a common oversight, a typo, or a misunderstanding that a human developer might make under pressure or due to incomplete knowledge. Do not add comments like `# Bug introduced here` or make the change nonsensically obvious.
-
-3.  **Maintain Syntactic Validity:** The resulting code must be syntactically valid Python. The change should not introduce unrelated compilation errors or break the fundamental structure of the file.
-
-4.  **Coordinate Multi-File Changes:** When multiple files are involved, ensure the changes work together coherently. The flaw should be realistic and could plausibly occur when a developer makes related changes across files.
-
-5.  **Generate High-Quality Ground Truth:** Each review comment must be professional, constructive, and clear. It should state the problem, explain its potential impact, and suggest the specific fix. Comments should read like a senior engineer's code review.
-
----
-
-**INPUTS:**
-
-<TAXONOMY_ENTRY>
-{taxonomy_entry_json}
-</TAXONOMY_ENTRY>
-
-<CHANGE_INSTRUCTION>
-{change_instruction}
-</CHANGE_INSTRUCTION>
-
-<TARGET_FILE>
-Filename: {target_filename}
-
-{target_file_content}
-</TARGET_FILE>
-
-<CONTEXT_FILES>
-{context_files}
-</CONTEXT_FILES>
-
-<PROJECT_STRUCTURE>
-The project is a FastAPI application with the following structure:
-- benchmark/routers/: API route handlers (presentation layer)
-- benchmark/services/: Business logic layer
-- benchmark/models.py: SQLAlchemy ORM models
-- benchmark/schemas.py: Pydantic request/response schemas
-- benchmark/database.py: Database connection and session management
-- benchmark/config.py: Application configuration
-- tests/: Test suite
-</PROJECT_STRUCTURE>
-
-**TASK:**
-
-Following the Guiding Principles above, rewrite the code in `<TARGET_FILE>` according to the `<CHANGE_INSTRUCTION>`. Use the taxonomy entry for understanding the type of flaw to introduce, and use context files for understanding relationships and dependencies.
-
-**Important Instructions:**
-- Return the COMPLETE modified file content, not just the changed parts
-- Ensure the flaw matches the taxonomy entry's category and difficulty
-- The code should compile and run, but contain the specified flaw
-- If this is part of a multi-file change, ensure consistency with other related changes
-- Generate realistic git commit title and body that would accompany this change
-
-Generate a single JSON object with the following structure:
+**1. Taxonomy Entry:**
+The `generation_strategy` is a list of objects, each detailing a change for a specific file.
 
 ```json
-{{
-  "modified_file": {{
-    "filename": "{target_filename}",
-    "content": "[THE COMPLETE, REWRITTEN PYTHON CODE WITH THE FLAW - PRESERVE ALL ORIGINAL CODE EXCEPT THE SPECIFIC CHANGES NEEDED]"
-  }},
-  "ground_truth_reviews": [
-    {{
-      "file": "{target_filename}",
-      "line_number": [APPROXIMATE LINE NUMBER WHERE THE FLAW IS],
-      "comment": "[PROFESSIONAL CODE REVIEW COMMENT: Explain what's wrong, why it's problematic, and how to fix it. Reference specific code patterns or best practices.]"
-    }}
-  ],
-  "metadata": {{
-    "issue_id": "{issue_id}",
-    "change_type": "[single_file|multi_file_step]",
-    "step_number": {step_number}
-  }}
-}}
+{{ taxonomy_entry | tojson(indent=2) }}
 ```
 
-**Example Output Structure:**
+**2. Pristine Project Files:**
+
 ```json
-{{
-  "modified_file": {{
-    "filename": "benchmark/routers/posts.py",
-    "content": "from fastapi import APIRouter, HTTPException\\nfrom benchmark.services.post_service import PostService\\n\\nrouter = APIRouter()\\n\\n@router.get('/posts')\\ndef get_posts():\\n    # Direct instantiation without DI\\n    service = PostService()\\n    return service.get_all()\\n"
-  }},
-  "ground_truth_reviews": [
-    {{
-      "file": "benchmark/routers/posts.py",
-      "line_number": 8,
-      "comment": "**Tight Coupling Issue**: The route handler directly instantiates `PostService()` without dependency injection, creating tight coupling between layers. This makes the code difficult to test (can't mock the service) and violates the dependency inversion principle. Consider using FastAPI's `Depends()` to inject the service: `service: PostService = Depends(get_post_service)`"
-    }}
-  ],
-  "metadata": {{
-    "issue_id": "ARCH-001",
-    "change_type": "multi_file_step",
-    "step_number": 1
-  }}
-}}
+{{ project_files | tojson(indent=2) }}
 ```
 
-Remember: Output ONLY the JSON object, no explanatory text before or after.
+### INSTRUCTIONS
+
+Your goal is to generate a JSON object with two keys: `modified_files` and `ground_truth_reviews`. Both will be arrays.
+
+1.  **Iterate Through the Generation Strategy:**
+
+      * You will loop through each object in the generation_strategy array.
+      * For **each object** in the array, you will perform the following actions to generate one modified file and at least one corresponding review. If the review is global then only include one review in total
+
+2.  **For Each File to Modify:**
+
+      * **A. Generate the Modified File Object:**
+
+          * Identify the target `file` and the `steps` from the current strategy object.
+          * Retrieve the original content for the target `file` from the project_files input.
+          * Execute the `steps` on this original code.
+          * **Crucially, you must preserve the entire original file's structure, formatting, comments, and imports.** Only the lines targeted by the strategy should be altered.
+          * Create a JSON object with `filename` (the target file path) and `content` (the complete, rewritten source code as a single string).
+          * Append this object to the `modified_files` array in your final output.
+
+      * **B. Generate the Code Review Object(s):**
+
+          * After generating the modified code for the current file, switch to your senior code reviewer persona.
+          * In the modified code, identify the approximate `line_number` where the flaw was introduced.
+          * Write a professional `comment` based on the following context:
+              * **The Flaw's Description:** taxonomy_entry.description 
+              * **The Suggested Fix:** taxonomy_entry.suggested_fix
+          * Your comment must clearly explain the flaw, why it is problematic, and how to fix it.
+          * Create a JSON object with `file` (the target file path), `line_number`, and `comment`.
+          * Append this review object to the `ground_truth_reviews` array in your final output.
+
+**Final Output Requirements:**
+
+  * Your final response MUST be a single, well-formed JSON object matching the required structure below **EXACTLY**.
+  * The `modified_files` key must contain an array of objects, one for each file that was changed.
+  * The `ground_truth_reviews` key must contain an array of objects, with at least one review for each change made.
+  * Do not include any text, explanations, markdown formatting, or any other content outside of the JSON object itself.
+
+**Required Output Structure:**
+
+```json
+{
+  "modified_files": [
+    {
+      "filename": "[FILENAME_OF_FIRST_MODIFIED_FILE]",
+      "content": "[THE COMPLETE, REWRITTEN PYTHON CODE FOR THE FIRST FILE]"
+    },
+    {
+      "filename": "[FILENAME_OF_SECOND_MODIFIED_FILE]",
+      "content": "[THE COMPLETE, REWRITTEN PYTHON CODE FOR THE SECOND FILE]"
+    }
+  ],
+  "ground_truth_reviews": [
+    {
+      "file": "[FILENAME_OF_FIRST_MODIFIED_FILE]",
+      "line_number": [APPROXIMATE LINE NUMBER IN FIRST FILE],
+      "comment": "[PROFESSIONAL CODE REVIEW COMMENT FOR THE FLAW IN THE FIRST FILE]"
+    },
+    {
+      "file": "[FILENAME_OF_SECOND_MODIFIED_FILE]",
+      "line_number": [APPROXIMATE LINE NUMBER IN SECOND FILE],
+      "comment": "[PROFESSIONAL CODE REVIEW COMMENT FOR THE FLAW IN THE SECOND FILE]"
+    }
+  ]
+}
+```
