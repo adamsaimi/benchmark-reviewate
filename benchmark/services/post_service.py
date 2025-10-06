@@ -179,3 +179,13 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def generate_summary_report(self) -> str:
+        """
+        Generates a summary report of all posts.
+        """
+        posts = self.db.query(PostModel).all()
+        report = ""
+        for post in posts:
+            report += f"{post.title}: {post.content}\n"
+        return report
