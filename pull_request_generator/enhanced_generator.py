@@ -255,8 +255,8 @@ def main():
             
             # STEP 4.5: Save ground truth reviews
             print("\n--- Saving ground truth ---")
-            os.makedirs("ground_truth_reviews", exist_ok=True)
-            ground_truth_path = f"ground_truth_reviews/{issue_id}.json"
+            os.makedirs("gr_reviews_ignore", exist_ok=True)
+            ground_truth_path = f"gr_reviews_ignore/{issue_id}.json"
             
             ground_truth_data = {
                 "issue_id": issue_id,
