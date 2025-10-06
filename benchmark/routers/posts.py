@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -106,6 +107,28 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.patch("/{post_id}", response_model=Post)
+def update_post(
+    post_id: int,
+    data: dict,
+    db: Session = Depends(get_db)
+) -> Post:
+    post = db.query(PostModel).filter(PostModel.id == post_id).first()
+
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=POST_NOT_FOUND_MESSAGE
+        )
+
+    for key, value in data.items():
+        setattr(post, key, value)
+
+    db.commit()
+    db.refresh(post)
+    return post
 
 
 # ============================================================================
