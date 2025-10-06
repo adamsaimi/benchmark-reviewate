@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import re
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -149,6 +150,13 @@ class PostService:
         """
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
+
+    def validate_content_pattern(self, content: str) -> bool:
+        """
+        Validates the post content against a specific regex pattern.
+        """
+        pattern = r"^(a+)+$"
+        return bool(re.match(pattern, content))
     
     def get_user_by_email(self, email: str) -> User:
         """
