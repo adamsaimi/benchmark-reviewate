@@ -9,12 +9,14 @@ Includes user endpoints for simplicity.
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.database import get_db
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
-from benchmark.database import get_db
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -106,6 +108,19 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/search", response_model=List[Post])
+def search_posts_by_title(
+    title: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Search for posts by title using a raw SQL query.
+    """
+    query = f"SELECT * FROM posts WHERE title LIKE '%{title}%'"
+    posts = db.query(PostModel).from_statement(text(query)).all()
+    return posts
 
 
 # ============================================================================
