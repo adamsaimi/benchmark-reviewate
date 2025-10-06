@@ -40,7 +40,7 @@ Your goal is to generate a JSON object with two keys: `modified_files` and `grou
           * Single Flaw Focus: You must introduce only the single, specific flaw described in the taxonomy. The rest of the code must remain functionally correct and should not contain any other accidental bugs or logical errors.
           * No Code Noise: Do not add any extra comments (e.g., # TODO), print() statements, pass statements, or any placeholder logic. The final code should appear clean and production-ready, aside from the one intended flaw.
           * If you need to modify or add a function to an other file than the generated strategy suggests, do it so that you do not create any noise.
-      
+          * If you need to modify tests aswell then do it. If a service function has been changed for example, make the necessary changes.
       * **B. Generate the Code Review Object(s):**
 
           * After generating the modified code for the current file, switch to your senior code reviewer persona.

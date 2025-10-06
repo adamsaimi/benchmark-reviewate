@@ -15,7 +15,9 @@ CORE_CONTEXT_FILES = [
     "benchmark/config.py",
     "benchmark/models.py",
     "benchmark/routers/posts.py",
-    "benchmark/services/post_service.py"
+    "benchmark/services/post_service.py",
+    "tests/test_services.py",
+    "tests/test_api.py"
 ]
 
 # --- 1. Pydantic Models for Enhanced Generator Response ---
@@ -101,6 +103,10 @@ def load_project_files() -> Dict[str, str]:
         "benchmark/routers/posts.py",
         "benchmark/services/__init__.py",
         "benchmark/services/post_service.py",
+        "tests/__init__.py",
+        "tests/conftest.py",
+        "tests/test_services.py",
+        "tests/test_api.py",
     ]
     
     for file_path_str in files_to_load:
@@ -189,9 +195,7 @@ def main():
 
     # STEP 4: For each issue in the taxonomy...
     for i, taxonomy_entry in enumerate(taxonomy):
-        if i > 0:
-            break  # TEMPORARY: Process only the first issue for testing
-        
+
         # Skip if already generated
         if taxonomy_entry.get("generated", False):
             print(f"\n⏭  Skipping [{taxonomy_entry['issue_id']}] - Already generated.")
@@ -224,8 +228,7 @@ def main():
                  print(f"Added target file to context: {target_file}")
 
             prompt = format_enhanced_prompt(taxonomy_entry, prompt_context_files, prompt_template)
-            with open(f"{issue_id}_enhanced_prompt.txt", 'w', encoding='utf-8') as f:
-                f.write(prompt)
+
             print(f"Prompt size: ~{len(prompt)} characters")
             print("Calling Gemini API...")
             
