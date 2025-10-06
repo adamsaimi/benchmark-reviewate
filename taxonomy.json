@@ -59,7 +59,7 @@
   },
   {
     "issue_id": "LOGIC-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Null/None Check",
     "category": "Correctness & Logic Errors",
     "description": "Attempting to access attributes or methods on None values causes AttributeError exceptions at runtime.",
