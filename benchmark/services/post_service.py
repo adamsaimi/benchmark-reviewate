@@ -108,6 +108,7 @@ class PostService:
             db_post = PostModel(
                 title=post_create.title,
                 content=post_create.content,
+                author_email=user.email,
                 author_id=user.id
             )
             
