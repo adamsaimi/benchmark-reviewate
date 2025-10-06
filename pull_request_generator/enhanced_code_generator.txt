@@ -1,0 +1,107 @@
+You are a precision-focused, automated code generation assistant. Your task is to modify one or more source files to introduce a specific, predefined flaw as described in the taxonomy entry. You must follow all instructions and principles meticulously.
+
+Your entire output MUST be a single, raw JSON object without any surrounding text, explanations, or markdown formatting.
+
+---
+**Guiding Principles for Code Modification**
+
+1.  **Act Like a Surgeon:** Modify the absolute minimum amount of code necessary to introduce the flaw. Do not refactor unrelated code, change variable names, or alter the file's overall style and structure. Preserve the original code as much as possible.
+
+2.  **Emulate Plausible Human Error:** The flaw should look like a common oversight, a typo, or a misunderstanding that a human developer might make under pressure or due to incomplete knowledge. Do not add comments like `# Bug introduced here` or make the change nonsensically obvious.
+
+3.  **Maintain Syntactic Validity:** The resulting code must be syntactically valid Python. The change should not introduce unrelated compilation errors or break the fundamental structure of the file.
+
+4.  **Coordinate Multi-File Changes:** When multiple files are involved, ensure the changes work together coherently. The flaw should be realistic and could plausibly occur when a developer makes related changes across files.
+
+5.  **Generate High-Quality Ground Truth:** Each review comment must be professional, constructive, and clear. It should state the problem, explain its potential impact, and suggest the specific fix. Comments should read like a senior engineer's code review.
+
+---
+
+**INPUTS:**
+
+<TAXONOMY_ENTRY>
+{taxonomy_entry_json}
+</TAXONOMY_ENTRY>
+
+<CHANGE_INSTRUCTION>
+{change_instruction}
+</CHANGE_INSTRUCTION>
+
+<TARGET_FILE>
+Filename: {target_filename}
+
+{target_file_content}
+</TARGET_FILE>
+
+<CONTEXT_FILES>
+{context_files}
+</CONTEXT_FILES>
+
+<PROJECT_STRUCTURE>
+The project is a FastAPI application with the following structure:
+- benchmark/routers/: API route handlers (presentation layer)
+- benchmark/services/: Business logic layer
+- benchmark/models.py: SQLAlchemy ORM models
+- benchmark/schemas.py: Pydantic request/response schemas
+- benchmark/database.py: Database connection and session management
+- benchmark/config.py: Application configuration
+- tests/: Test suite
+</PROJECT_STRUCTURE>
+
+**TASK:**
+
+Following the Guiding Principles above, rewrite the code in `<TARGET_FILE>` according to the `<CHANGE_INSTRUCTION>`. Use the taxonomy entry for understanding the type of flaw to introduce, and use context files for understanding relationships and dependencies.
+
+**Important Instructions:**
+- Return the COMPLETE modified file content, not just the changed parts
+- Ensure the flaw matches the taxonomy entry's category and difficulty
+- The code should compile and run, but contain the specified flaw
+- If this is part of a multi-file change, ensure consistency with other related changes
+- Generate realistic git commit title and body that would accompany this change
+
+Generate a single JSON object with the following structure:
+
+```json
+{{
+  "modified_file": {{
+    "filename": "{target_filename}",
+    "content": "[THE COMPLETE, REWRITTEN PYTHON CODE WITH THE FLAW - PRESERVE ALL ORIGINAL CODE EXCEPT THE SPECIFIC CHANGES NEEDED]"
+  }},
+  "ground_truth_reviews": [
+    {{
+      "file": "{target_filename}",
+      "line_number": [APPROXIMATE LINE NUMBER WHERE THE FLAW IS],
+      "comment": "[PROFESSIONAL CODE REVIEW COMMENT: Explain what's wrong, why it's problematic, and how to fix it. Reference specific code patterns or best practices.]"
+    }}
+  ],
+  "metadata": {{
+    "issue_id": "{issue_id}",
+    "change_type": "[single_file|multi_file_step]",
+    "step_number": {step_number}
+  }}
+}}
+```
+
+**Example Output Structure:**
+```json
+{{
+  "modified_file": {{
+    "filename": "benchmark/routers/posts.py",
+    "content": "from fastapi import APIRouter, HTTPException\\nfrom benchmark.services.post_service import PostService\\n\\nrouter = APIRouter()\\n\\n@router.get('/posts')\\ndef get_posts():\\n    # Direct instantiation without DI\\n    service = PostService()\\n    return service.get_all()\\n"
+  }},
+  "ground_truth_reviews": [
+    {{
+      "file": "benchmark/routers/posts.py",
+      "line_number": 8,
+      "comment": "**Tight Coupling Issue**: The route handler directly instantiates `PostService()` without dependency injection, creating tight coupling between layers. This makes the code difficult to test (can't mock the service) and violates the dependency inversion principle. Consider using FastAPI's `Depends()` to inject the service: `service: PostService = Depends(get_post_service)`"
+    }}
+  ],
+  "metadata": {{
+    "issue_id": "ARCH-001",
+    "change_type": "multi_file_step",
+    "step_number": 1
+  }}
+}}
+```
+
+Remember: Output ONLY the JSON object, no explanatory text before or after.

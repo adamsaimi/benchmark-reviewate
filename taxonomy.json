@@ -1,0 +1,1550 @@
+[
+  {
+    "issue_id": "LOGIC-001",
+    "issue_name": "Off-by-One Error in Pagination",
+    "category": "Correctness & Logic Errors",
+    "description": "Incorrect calculation of page boundaries leads to missing or duplicate items in paginated results. Common when manually calculating offsets and limits.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def get_posts(page: int, per_page: int):\n    offset = page * per_page\n    return db.query(Post).offset(offset).limit(per_page).all()",
+    "suggested_fix": "Start counting pages from 1 and adjust offset calculation: `offset = (page - 1) * per_page` or clearly document that pages start from 0.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add pagination to the get_posts endpoint with query parameters 'page' (default 1) and 'per_page' (default 10). Calculate offset as 'page * per_page' instead of '(page - 1) * per_page', introducing an off-by-one error where page 1 skips the first 10 items.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/schemas.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add pagination to posts endpoint",
+        "body": "Added pagination support to the posts listing endpoint to improve performance with large datasets. Users can now specify page number and items per page."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-002",
+    "issue_name": "Integer Division Precision Loss",
+    "category": "Correctness & Logic Errors",
+    "description": "Using integer division when float precision is needed results in incorrect calculations, especially in financial or percentage operations.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def calculate_discount(price: int, discount_percent: int) -> int:\n    discount = price * discount_percent / 100\n    return price - discount",
+    "suggested_fix": "Use float division or Decimal type for monetary calculations: `from decimal import Decimal` and perform calculations with Decimal types to avoid precision loss.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'calculate_discount(price: int, discount_percent: int) -> int' that calculates discounts. Use integer types and division, causing precision loss when the result should include decimals. Return 'price - (price * discount_percent / 100)' without using Decimal type.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add discount calculation utility",
+        "body": "Implemented discount calculation helper method for future pricing features."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-003",
+    "issue_name": "Missing Null/None Check",
+    "category": "Correctness & Logic Errors",
+    "description": "Attempting to access attributes or methods on None values causes AttributeError exceptions at runtime.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def get_user_email(user_id: int) -> str:\n    user = db.query(User).filter(User.id == user_id).first()\n    return user.email.lower()",
+    "suggested_fix": "Add None check before accessing attributes: `if user is None: return None` or use Optional type hints and handle the None case appropriately.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add a new endpoint GET '/posts/{post_id}/author-email' that fetches a post and returns the author's email in lowercase. Access 'post.author.email.lower()' directly without checking if post or post.author is None, causing potential AttributeError.",
+          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add author email endpoint",
+        "body": "Added endpoint to retrieve post author's email for notification purposes."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-004",
+    "issue_name": "Incorrect Boolean Logic in Conditions",
+    "category": "Correctness & Logic Errors",
+    "description": "Using wrong logical operators (and/or) or incorrect condition ordering leads to unintended code execution paths.",
+    "difficulty": "Medium",
+    "flawed_snippet": "def can_access_resource(user, resource):\n    if user.is_admin or user.id == resource.owner_id and resource.is_public:\n        return True\n    return False",
+    "suggested_fix": "Use explicit parentheses to clarify operator precedence: `if user.is_admin or (user.id == resource.owner_id and resource.is_public):`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'can_user_delete_post(user, post)' that checks if a user can delete a post. Write the condition as 'if user.is_admin or user.id == post.author_id and post.is_draft:' without parentheses, causing incorrect precedence where admins are allowed AND (regular users can delete only their own drafts).",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post deletion authorization",
+        "body": "Implemented authorization logic for post deletion with admin override capabilities."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-005",
+    "issue_name": "Mutable Default Argument",
+    "category": "Correctness & Logic Errors",
+    "description": "Using mutable objects as default arguments causes shared state between function calls, leading to unexpected behavior.",
+    "difficulty": "Medium",
+    "flawed_snippet": "def add_tag(post_id: int, tag: str, tags: list = []):\n    tags.append(tag)\n    db.update_post_tags(post_id, tags)\n    return tags",
+    "suggested_fix": "Use None as default and create new list inside function: `def add_tag(post_id: int, tag: str, tags: list = None):\n    if tags is None:\n        tags = []\n    tags.append(tag)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'add_tags(self, post_id: int, new_tag: str, existing_tags: list = [])' that appends new_tag to existing_tags and updates the post. Use a mutable list as default argument, causing tags to persist across function calls.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add tag management for posts",
+        "body": "Implemented tag addition functionality to support post categorization."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-006",
+    "issue_name": "Time Zone Naive Datetime Comparison",
+    "category": "Correctness & Logic Errors",
+    "description": "Comparing timezone-aware and naive datetime objects causes TypeErrors or incorrect results in time-based logic.",
+    "difficulty": "Medium",
+    "flawed_snippet": "from datetime import datetime\n\ndef is_expired(expiry_date: datetime) -> bool:\n    return datetime.now() > expiry_date",
+    "suggested_fix": "Always use timezone-aware datetimes: `from datetime import timezone\ndef is_expired(expiry_date: datetime) -> bool:\n    return datetime.now(timezone.utc) > expiry_date`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'is_post_expired(self, post_id: int) -> bool' that checks if a post's expiry_date has passed. Use 'datetime.now()' (naive) to compare against the post's created_at field (which may be timezone-aware), causing potential TypeError or incorrect comparisons.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post expiration check",
+        "body": "Added functionality to check if posts have expired based on their creation date."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-007",
+    "issue_name": "Incorrect Exception Handling Order",
+    "category": "Correctness & Logic Errors",
+    "description": "Catching broad exceptions before specific ones prevents proper error handling and makes debugging difficult.",
+    "difficulty": "Medium",
+    "flawed_snippet": "try:\n    result = process_payment(amount)\nexcept Exception as e:\n    log_error(e)\nexcept PaymentDeclinedError:\n    notify_user('Payment declined')",
+    "suggested_fix": "Order exception handlers from most specific to most general: place `except PaymentDeclinedError:` before `except Exception:`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "In the create_post method, wrap the database operations in a try-except block. Catch 'Exception' first to log errors, then add 'except ValueError' to handle validation errors specifically. This incorrect order means ValueError will never be caught.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add error handling to post creation",
+        "body": "Improved error handling and logging in post creation workflow."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-008",
+    "issue_name": "Float Comparison with Equality",
+    "category": "Correctness & Logic Errors",
+    "description": "Directly comparing floating-point numbers with == operator fails due to precision issues, causing logical errors.",
+    "difficulty": "Hard",
+    "flawed_snippet": "def validate_total(items: list) -> bool:\n    calculated = sum(item.price for item in items)\n    stored_total = get_stored_total()\n    return calculated == stored_total",
+    "suggested_fix": "Use epsilon comparison or Decimal: `from math import isclose\nreturn isclose(calculated, stored_total, rel_tol=1e-9)` or use `decimal.Decimal` for exact arithmetic.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'calculate_average_length(self) -> float' that calculates average post content length and a method 'is_average_length(self, expected: float) -> bool' that compares the calculated average with an expected value using '==' operator instead of approximate comparison.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post length analytics",
+        "body": "Implemented average post length calculation for content analytics dashboard."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-009",
+    "issue_name": "Incorrect Loop Variable Scope",
+    "category": "Correctness & Logic Errors",
+    "description": "Closure capturing loop variables leads to all callbacks referencing the same final value instead of their intended values.",
+    "difficulty": "Hard",
+    "flawed_snippet": "handlers = []\nfor i in range(5):\n    handlers.append(lambda x: x + i)\nresult = [h(10) for h in handlers]",
+    "suggested_fix": "Use default argument to capture current value: `handlers.append(lambda x, i=i: x + i)` or use list comprehension: `handlers = [lambda x, i=i: x + i for i in range(5)]`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'create_validators(self)' that creates a list of validation functions in a loop. For each validation type in ['length', 'content', 'title'], append a lambda that captures the loop variable without using default arguments, causing all lambdas to reference the last value.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add dynamic post validators",
+        "body": "Implemented configurable validation functions for post creation."
+      }
+    }
+  },
+  {
+    "issue_id": "LOGIC-010",
+    "issue_name": "Incorrect Dictionary Key Update",
+    "category": "Correctness & Logic Errors",
+    "description": "Modifying dictionary keys during iteration causes RuntimeError, and using unhashable types as keys causes TypeError.",
+    "difficulty": "Medium",
+    "flawed_snippet": "def update_user_scores(scores: dict):\n    for user_id in scores:\n        if scores[user_id] < 0:\n            del scores[user_id]\n    return scores",
+    "suggested_fix": "Create a list of keys to delete first: `to_delete = [k for k, v in scores.items() if v < 0]\nfor k in to_delete:\n    del scores[k]`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a method 'cleanup_empty_posts(self, post_stats: dict)' that iterates over post_stats dictionary and deletes entries where the value is 0 or None. Modify the dictionary during iteration: 'for post_id in post_stats: if not post_stats[post_id]: del post_stats[post_id]', causing RuntimeError.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post stats cleanup",
+        "body": "Implemented cleanup utility to remove empty entries from post statistics."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-001",
+    "issue_name": "SQL Injection Vulnerability",
+    "category": "Security Vulnerabilities",
+    "description": "Constructing SQL queries with string concatenation allows attackers to inject malicious SQL code, potentially exposing or modifying data.",
+    "difficulty": "Easy",
+    "flawed_snippet": "@app.get('/users/{username}')\ndef get_user(username: str):\n    query = f\"SELECT * FROM users WHERE username = '{username}'\"\n    return db.execute(query).fetchone()",
+    "suggested_fix": "Use parameterized queries or ORM: `db.query(User).filter(User.username == username).first()` or with raw SQL: `db.execute('SELECT * FROM users WHERE username = ?', (username,))`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add a new endpoint GET '/posts/search' with query parameter 'title' that searches posts by title using raw SQL. Use f-string formatting: 'query = f\"SELECT * FROM posts WHERE title LIKE '%{title}%'\"' and execute with db.execute(query), introducing SQL injection vulnerability.",
+          "context_files": ["benchmark/models.py", "benchmark/database.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post search by title",
+        "body": "Implemented search endpoint to find posts by title using pattern matching for better user experience."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-002",
+    "issue_name": "Missing Authentication Check",
+    "category": "Security Vulnerabilities",
+    "description": "Endpoints that should require authentication are publicly accessible, allowing unauthorized access to sensitive operations or data.",
+    "difficulty": "Easy",
+    "flawed_snippet": "@app.delete('/posts/{post_id}')\ndef delete_post(post_id: int):\n    db.delete(Post, post_id)\n    return {'status': 'deleted'}",
+    "suggested_fix": "Add authentication dependency: `from fastapi import Depends\n@app.delete('/posts/{post_id}')\ndef delete_post(post_id: int, user: User = Depends(get_current_user)):`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add a new endpoint DELETE '/posts/{post_id}' that deletes a post. Do NOT add any authentication check (no Depends(get_current_user)), making the endpoint publicly accessible for a sensitive operation.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post deletion endpoint",
+        "body": "Implemented endpoint to allow post deletion for content management."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-003",
+    "issue_name": "Hardcoded Credentials",
+    "category": "Security Vulnerabilities",
+    "description": "Storing passwords, API keys, or secrets directly in source code exposes them to anyone with code access and version control history.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def connect_to_database():\n    conn = psycopg2.connect(\n        host='localhost',\n        database='mydb',\n        user='admin',\n        password='admin123'\n    )\n    return conn",
+    "suggested_fix": "Use environment variables: `import os\npassword = os.getenv('DB_PASSWORD')\nconn = psycopg2.connect(host=os.getenv('DB_HOST'), user=os.getenv('DB_USER'), password=password)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/config.py",
+          "operation": "modify",
+          "instruction": "Add a hardcoded API key for an external service directly in the Settings class: 'EXTERNAL_API_KEY = \"sk-1234567890abcdef\"' instead of loading it from environment variables.",
+          "context_files": []
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add external API integration",
+        "body": "Configured API key for new third-party service integration."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-004",
+    "issue_name": "Insufficient Authorization Check",
+    "category": "Security Vulnerabilities",
+    "description": "Authenticated users can access or modify resources they shouldn't own, leading to unauthorized data access or modification.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.put('/posts/{post_id}')\ndef update_post(post_id: int, data: dict, user: User = Depends(get_current_user)):\n    post = db.query(Post).filter(Post.id == post_id).first()\n    post.update(data)\n    return post",
+    "suggested_fix": "Check ownership before allowing update: `if post.author_id != user.id and not user.is_admin:\n    raise HTTPException(403, 'Not authorized')\npost.update(data)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Modify the update_post endpoint (PUT '/posts/{post_id}') to accept authenticated user via Depends(get_current_user) but do NOT check if the user is the post owner. Allow any authenticated user to update any post without ownership verification.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post update endpoint",
+        "body": "Implemented endpoint for authenticated users to update posts."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-005",
+    "issue_name": "Mass Assignment Vulnerability",
+    "category": "Security Vulnerabilities",
+    "description": "Accepting all user input fields without validation allows attackers to modify unintended fields like admin status or permissions.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.put('/users/{user_id}')\ndef update_user(user_id: int, data: dict):\n    user = db.query(User).filter(User.id == user_id).first()\n    for key, value in data.items():\n        setattr(user, key, value)\n    db.commit()\n    return user",
+    "suggested_fix": "Use Pydantic models with explicit allowed fields: `class UserUpdate(BaseModel):\n    name: str\n    email: str\n    # Only allowed fields\ndef update_user(user_id: int, data: UserUpdate):`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add an endpoint PATCH '/posts/{post_id}' that accepts a raw dict parameter instead of a Pydantic model. Loop through all dict keys and use setattr to update post attributes without validation, allowing mass assignment vulnerability.",
+          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add flexible post update",
+        "body": "Added PATCH endpoint for flexible post updates accepting any fields."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-006",
+    "issue_name": "Insecure Password Storage",
+    "category": "Security Vulnerabilities",
+    "description": "Storing passwords in plain text or using weak hashing algorithms makes user accounts vulnerable if the database is compromised.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def create_user(username: str, password: str):\n    user = User(username=username, password=password)\n    db.add(user)\n    db.commit()\n    return user",
+    "suggested_fix": "Use bcrypt or similar: `from passlib.context import CryptContext\npwd_context = CryptContext(schemes=['bcrypt'])\nhashed_password = pwd_context.hash(password)\nuser = User(username=username, password_hash=hashed_password)`",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/models.py",
+          "operation": "modify",
+          "instruction": "Add a 'password' field to the Post model (simulating a protected post feature). Use Column(String) without any encryption or hashing.",
+          "context_files": []
+        },
+        {
+          "step": 2,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint POST '/posts/protected' that accepts title, content, and password fields. Store the password directly in plain text in the database without hashing.",
+          "depends_on": [1],
+          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add password-protected posts",
+        "body": "Implemented password protection for private posts."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-007",
+    "issue_name": "Cross-Site Scripting (XSS)",
+    "category": "Security Vulnerabilities",
+    "description": "Rendering user-supplied content without escaping allows attackers to inject malicious scripts that execute in other users' browsers.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.get('/search')\ndef search(query: str):\n    results = db.search(query)\n    html = f'<h1>Results for: {query}</h1>'\n    return HTMLResponse(content=html)",
+    "suggested_fix": "Use proper templating with auto-escaping: `from fastapi.templating import Jinja2Templates\ntemplates = Jinja2Templates(directory='templates')\nreturn templates.TemplateResponse('search.html', {'query': query})` or use `html.escape(query)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint GET '/posts/preview' with query parameter 'content' that returns HTML preview. Use HTMLResponse with f-string to embed user content directly: 'return HTMLResponse(f\"<div>{content}</div>\")' without escaping, allowing XSS.",
+          "context_files": []
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post preview endpoint",
+        "body": "Added preview functionality to see how post content will be rendered."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-008",
+    "issue_name": "Insecure Direct Object Reference",
+    "category": "Security Vulnerabilities",
+    "description": "Using predictable IDs without authorization allows attackers to access other users' resources by guessing or incrementing IDs.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.get('/invoices/{invoice_id}')\ndef get_invoice(invoice_id: int, user: User = Depends(get_current_user)):\n    invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()\n    return invoice",
+    "suggested_fix": "Add ownership check: `invoice = db.query(Invoice).filter(Invoice.id == invoice_id, Invoice.user_id == user.id).first()\nif not invoice:\n    raise HTTPException(404)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint GET '/posts/{post_id}/private' that requires authentication but fetches any post by ID without checking if the authenticated user owns it. Return the full post details including potentially private fields.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add private post access",
+        "body": "Added endpoint for authenticated users to access detailed post information."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-009",
+    "issue_name": "Missing Rate Limiting",
+    "category": "Security Vulnerabilities",
+    "description": "Endpoints without rate limiting are vulnerable to brute force attacks, DoS attacks, and abuse of expensive operations.",
+    "difficulty": "Hard",
+    "flawed_snippet": "@app.post('/login')\ndef login(username: str, password: str):\n    user = authenticate(username, password)\n    if user:\n        return create_token(user)\n    raise HTTPException(401, 'Invalid credentials')",
+    "suggested_fix": "Implement rate limiting: `from slowapi import Limiter\nlimiter = Limiter(key_func=get_remote_address)\n@app.post('/login')\n@limiter.limit('5/minute')\ndef login(request: Request, username: str, password: str):`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint POST '/posts/validate' that performs expensive validation operations (like external API calls or complex regex matching) without any rate limiting, making it vulnerable to DoS attacks.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post validation endpoint",
+        "body": "Implemented comprehensive post validation with external checks."
+      }
+    }
+  },
+  {
+    "issue_id": "SEC-010",
+    "issue_name": "Sensitive Data Exposure in Logs",
+    "category": "Security Vulnerabilities",
+    "description": "Logging sensitive information like passwords, tokens, or PII creates security risks and compliance violations if logs are compromised.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.post('/login')\ndef login(username: str, password: str):\n    logger.info(f'Login attempt: username={username}, password={password}')\n    user = authenticate(username, password)\n    return create_token(user)",
+    "suggested_fix": "Never log sensitive data: `logger.info(f'Login attempt: username={username}')` and use structured logging with field filtering to prevent accidental sensitive data logging.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "In the create_post endpoint, add logging that includes the full request data including author_email and content: 'logger.info(f\"Creating post: {post_data}\")' which exposes PII in logs.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add detailed logging for post creation",
+        "body": "Enhanced logging to track post creation with full details for debugging."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-001",
+    "issue_name": "N+1 Query Problem",
+    "category": "Performance Issues",
+    "description": "Loading related data in a loop executes N additional queries instead of a single optimized query, causing severe performance degradation.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.get('/posts')\ndef get_posts():\n    posts = db.query(Post).all()\n    return [{'title': p.title, 'author': p.author.name} for p in posts]",
+    "suggested_fix": "Use eager loading: `from sqlalchemy.orm import joinedload\nposts = db.query(Post).options(joinedload(Post.author)).all()` to fetch all data in one query.",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "In the get_all_posts method, remove any eager loading optimizations. Just use 'db.query(Post).all()' without joinedload or selectinload.",
+          "context_files": ["benchmark/models.py"]
+        },
+        {
+          "step": 2,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Modify the get_posts endpoint response to include author_email for each post by accessing 'post.author.email' in a list comprehension, triggering N+1 queries.",
+          "depends_on": [1],
+          "context_files": ["benchmark/services/post_service.py", "benchmark/schemas.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add author email to posts list",
+        "body": "Enhanced posts endpoint to include author email for better client-side display."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-002",
+    "issue_name": "Missing Database Index",
+    "category": "Performance Issues",
+    "description": "Querying or sorting on unindexed columns causes full table scans, dramatically slowing down as data grows.",
+    "difficulty": "Easy",
+    "flawed_snippet": "class User(Base):\n    __tablename__ = 'users'\n    id = Column(Integer, primary_key=True)\n    email = Column(String(255))\n\ndef find_user(email: str):\n    return db.query(User).filter(User.email == email).first()",
+    "suggested_fix": "Add index to frequently queried columns: `email = Column(String(255), index=True)` or create explicit index: `Index('idx_user_email', User.email)`",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/models.py",
+          "operation": "modify",
+          "instruction": "Add a new column 'author_email = Column(String)' to the Post model WITHOUT adding index=True, even though it will be frequently queried.",
+          "context_files": []
+        },
+        {
+          "step": 2,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint GET '/posts/by-author' with query parameter 'email' that filters posts by author_email using db.query(Post).filter(Post.author_email == email), which will cause full table scan.",
+          "depends_on": [1],
+          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add search by author email",
+        "body": "Implemented endpoint to find posts by author email address."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-003",
+    "issue_name": "Loading Entire Table into Memory",
+    "category": "Performance Issues",
+    "description": "Using .all() on large tables loads all records into memory, causing excessive memory usage and potential crashes.",
+    "difficulty": "Easy",
+    "flawed_snippet": "@app.get('/export/users')\ndef export_users():\n    users = db.query(User).all()\n    return [{'id': u.id, 'name': u.name} for u in users]",
+    "suggested_fix": "Use pagination or streaming: `users = db.query(User).yield_per(1000)\nfor user in users:\n    yield user.to_dict()` or implement cursor-based pagination.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint GET '/posts/export' that fetches ALL posts using .all() without pagination or streaming: 'posts = db.query(Post).all()' and returns them all in a single response.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post export endpoint",
+        "body": "Implemented endpoint to export all posts for backup purposes."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-004",
+    "issue_name": "Inefficient String Concatenation",
+    "category": "Performance Issues",
+    "description": "Building strings in loops with + operator creates new string objects each iteration, causing O(n²) time complexity.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def generate_report(items: list) -> str:\n    report = ''\n    for item in items:\n        report += f'{item.name}: {item.value}\\n'\n    return report",
+    "suggested_fix": "Use join with list comprehension: `report = '\\n'.join(f'{item.name}: {item.value}' for item in items)` or use StringIO for large data.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'generate_summary_report(self) -> str' that builds a report string using += operator in a loop over all posts: 'report = \"\" followed by 'for post in posts: report += f\"{post.title}: {post.content}\\n\"'.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post summary report generator",
+        "body": "Implemented report generation for post summaries."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-005",
+    "issue_name": "Unnecessary Data Transfer",
+    "category": "Performance Issues",
+    "description": "Fetching all columns when only specific fields are needed wastes bandwidth and memory, especially with large blob/text fields.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.get('/users/names')\ndef get_user_names():\n    users = db.query(User).all()\n    return [{'name': u.name} for u in users]",
+    "suggested_fix": "Use column-specific queries: `users = db.query(User.id, User.name).all()` or with ORM: `db.query(User).with_entities(User.id, User.name).all()`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint GET '/posts/titles' that fetches full Post objects using .all() but only returns titles. Query: 'posts = db.query(Post).all()' then return '[{\"title\": p.title} for p in posts]', transferring unnecessary data.",
+          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post titles endpoint",
+        "body": "Implemented endpoint to list all post titles for navigation."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-006",
+    "issue_name": "Synchronous I/O in Async Context",
+    "category": "Performance Issues",
+    "description": "Using blocking I/O operations in async functions blocks the event loop, preventing concurrent request handling.",
+    "difficulty": "Hard",
+    "flawed_snippet": "@app.get('/data')\nasync def get_data():\n    response = requests.get('https://api.example.com/data')\n    return response.json()",
+    "suggested_fix": "Use async libraries: `import httpx\n@app.get('/data')\nasync def get_data():\n    async with httpx.AsyncClient() as client:\n        response = await client.get('https://api.example.com/data')\n        return response.json()`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add async endpoint GET '/posts/external' that uses synchronous requests library inside async function: 'import requests' then 'response = requests.get(\"https://api.example.com/posts\")' without await, blocking the event loop.",
+          "context_files": []
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add external posts integration",
+        "body": "Integrated external API to fetch additional posts from partner service."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-007",
+    "issue_name": "Unoptimized Regular Expression",
+    "category": "Performance Issues",
+    "description": "Complex regex patterns with backtracking can cause catastrophic performance degradation on certain inputs.",
+    "difficulty": "Hard",
+    "flawed_snippet": "import re\n\ndef validate_input(text: str) -> bool:\n    pattern = r'^(a+)+b$'\n    return bool(re.match(pattern, text))",
+    "suggested_fix": "Simplify regex to avoid backtracking: `pattern = r'^a+b$'` or use possessive quantifiers if available, and always set timeout for user-provided regex patterns.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'validate_content_pattern(self, content: str) -> bool' that uses catastrophic backtracking regex: 'pattern = r\"^(a+)+$\"' with re.match to validate content.",
+          "context_files": []
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add content pattern validation",
+        "body": "Implemented regex-based content validation for post submissions."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-008",
+    "issue_name": "Inefficient Loop with Function Calls",
+    "category": "Performance Issues",
+    "description": "Calling expensive functions repeatedly inside loops when the result doesn't change wastes CPU cycles.",
+    "difficulty": "Medium",
+    "flawed_snippet": "def process_items(items: list, config: dict):\n    results = []\n    for item in items:\n        if item.value > get_threshold(config):\n            results.append(item)\n    return results",
+    "suggested_fix": "Cache invariant computations outside loop: `threshold = get_threshold(config)\nresults = [item for item in items if item.value > threshold]`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'filter_by_length(self, posts: list, config: dict)' that loops through posts and calls 'get_max_length(config)' inside the loop for each post instead of caching the value: 'for post in posts: if len(post.content) > get_max_length(config):'.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add configurable post length filtering",
+        "body": "Implemented post filtering based on configurable length thresholds."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-009",
+    "issue_name": "Missing Response Caching",
+    "category": "Performance Issues",
+    "description": "Repeatedly computing expensive operations for identical requests wastes resources when results could be cached.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.get('/statistics')\ndef get_statistics():\n    total = db.query(func.count(Order.id)).scalar()\n    revenue = db.query(func.sum(Order.amount)).scalar()\n    return {'total_orders': total, 'revenue': revenue}",
+    "suggested_fix": "Add caching: `from functools import lru_cache\nfrom fastapi_cache.decorator import cache\n@app.get('/statistics')\n@cache(expire=300)\nasync def get_statistics():`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint GET '/posts/stats' that performs expensive aggregate queries (COUNT, AVG) without any caching, recalculating on every request: 'total = db.query(func.count(Post.id)).scalar()' and 'avg_length = db.query(func.avg(func.length(Post.content))).scalar()'.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add posts statistics endpoint",
+        "body": "Implemented real-time statistics calculation for posts analytics."
+      }
+    }
+  },
+  {
+    "issue_id": "PERF-010",
+    "issue_name": "Inefficient Data Structure Choice",
+    "category": "Performance Issues",
+    "description": "Using lists for membership testing instead of sets results in O(n) lookups instead of O(1), causing performance issues with large datasets.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def filter_active_users(users: list, active_ids: list):\n    return [u for u in users if u.id in active_ids]",
+    "suggested_fix": "Use set for O(1) lookups: `active_ids_set = set(active_ids)\nreturn [u for u in users if u.id in active_ids_set]`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'filter_published_posts(self, all_posts: list, published_ids: list)' that filters posts using list membership testing: 'return [p for p in all_posts if p.id in published_ids]' instead of converting published_ids to a set first.",
+          "context_files": ["benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add published posts filter",
+        "body": "Implemented filtering to show only published posts from a list."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-001",
+    "issue_name": "Race Condition on Shared State",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Multiple async tasks modifying shared state without synchronization causes data corruption and inconsistent results.",
+    "difficulty": "Hard",
+    "flawed_snippet": "counter = 0\n\nasync def increment():\n    global counter\n    current = counter\n    await asyncio.sleep(0.001)\n    counter = current + 1\n\nasync def main():\n    await asyncio.gather(*[increment() for _ in range(100)])",
+    "suggested_fix": "Use asyncio.Lock: `lock = asyncio.Lock()\nasync def increment():\n    async with lock:\n        global counter\n        counter += 1` or use atomic operations or a proper state management solution.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add class variable 'view_count = 0' and async method 'async def increment_view_count(self)' that reads view_count into a local variable, awaits asyncio.sleep(0.001), then increments the local variable and assigns it back to view_count without using a lock.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add view count tracking",
+        "body": "Implemented view counter for post statistics."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-002",
+    "issue_name": "Missing Await Keyword",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Forgetting await on async functions returns a coroutine object instead of the actual result, causing silent failures.",
+    "difficulty": "Medium",
+    "flawed_snippet": "async def get_user(user_id: int):\n    return db.query(User).filter(User.id == user_id).first()\n\nasync def process_user(user_id: int):\n    user = get_user(user_id)\n    return user.name",
+    "suggested_fix": "Add await keyword: `user = await get_user(user_id)` or use proper type hints to catch this at development time with static analysis tools.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.get(\"/posts/{post_id}/title\")' that calls 'post_service.get_post(post_id)' without await keyword, then tries to access '.title' attribute on the returned coroutine object.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add get post title endpoint",
+        "body": "Quick endpoint to fetch just the title of a post."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-003",
+    "issue_name": "Blocking Operation in Event Loop",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "CPU-intensive or blocking operations in async functions freeze the event loop, preventing other tasks from running.",
+    "difficulty": "Medium",
+    "flawed_snippet": "async def process_image(image_data: bytes):\n    # CPU-intensive operation\n    processed = apply_complex_filter(image_data)\n    return processed",
+    "suggested_fix": "Use run_in_executor for blocking operations: `loop = asyncio.get_event_loop()\nprocessed = await loop.run_in_executor(None, apply_complex_filter, image_data)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.get(\"/posts/process-content\")' that performs CPU-intensive operation 'time.sleep(2)' followed by complex regex operations directly in the async function without using run_in_executor.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add content processing endpoint",
+        "body": "Added endpoint for processing post content with filters."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-004",
+    "issue_name": "Improper Task Cancellation Handling",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Not handling CancelledError properly leads to resource leaks and incomplete cleanup when tasks are cancelled.",
+    "difficulty": "Hard",
+    "flawed_snippet": "async def long_running_task():\n    connection = await get_connection()\n    try:\n        while True:\n            await process_data(connection)\n    finally:\n        pass",
+    "suggested_fix": "Handle cancellation properly: `try:\n    while True:\n        await process_data(connection)\nexcept asyncio.CancelledError:\n    await connection.close()\n    raise`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add async method 'async def stream_posts(self)' with a try/finally block that opens a resource (like a file handle simulation) in the try block, has a while loop that yields posts, but has an empty finally block that doesn't close the resource or handle CancelledError.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post streaming functionality",
+        "body": "Implemented streaming API for posts to handle large datasets."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-005",
+    "issue_name": "Deadlock with Asyncio Locks",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Acquiring locks in different orders across coroutines or holding locks across await points can cause deadlocks.",
+    "difficulty": "Hard",
+    "flawed_snippet": "lock_a = asyncio.Lock()\nlock_b = asyncio.Lock()\n\nasync def task1():\n    async with lock_a:\n        await asyncio.sleep(0.1)\n        async with lock_b:\n            pass\n\nasync def task2():\n    async with lock_b:\n        await asyncio.sleep(0.1)\n        async with lock_a:\n            pass",
+    "suggested_fix": "Always acquire locks in the same order: ensure both tasks acquire lock_a before lock_b, or use a single lock for the critical section, or use timeout with `asyncio.wait_for()`.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add two asyncio.Lock instances 'post_lock = asyncio.Lock()' and 'user_lock = asyncio.Lock()' as class variables. Add methods 'async def update_post_and_user(self)' that acquires post_lock then user_lock, and 'async def update_user_and_post(self)' that acquires them in reverse order (user_lock then post_lock).",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add synchronized update methods",
+        "body": "Added methods to safely update posts and user data concurrently."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-006",
+    "issue_name": "Fire-and-Forget Task Without Error Handling",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Creating tasks without awaiting or storing references causes exceptions to be silently ignored and prevents proper cleanup.",
+    "difficulty": "Medium",
+    "flawed_snippet": "async def send_notification(user_id: int):\n    # might raise exception\n    await external_api.notify(user_id)\n\n@app.post('/users')\nasync def create_user(user_data: dict):\n    user = await db.create_user(user_data)\n    asyncio.create_task(send_notification(user.id))\n    return user",
+    "suggested_fix": "Store task reference and add error handling: `task = asyncio.create_task(send_notification(user.id))\ntask.add_done_callback(lambda t: t.exception() and logger.error(f'Notification failed: {t.exception()}'))`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/posts/{post_id}/publish\")' that creates a background task 'asyncio.create_task(post_service.notify_subscribers(post_id))' without storing the task reference or adding error handling callbacks.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add publish with notifications",
+        "body": "Posts now trigger subscriber notifications when published."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-007",
+    "issue_name": "Mixing Sync and Async Database Calls",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Using synchronous database drivers in async code blocks the event loop, negating the benefits of async programming.",
+    "difficulty": "Medium",
+    "flawed_snippet": "from sqlalchemy import create_engine\n\n@app.get('/users')\nasync def get_users():\n    # Using sync engine in async context\n    users = db.query(User).all()\n    return users",
+    "suggested_fix": "Use async database driver: `from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession\n@app.get('/users')\nasync def get_users(db: AsyncSession = Depends(get_db)):\n    result = await db.execute(select(User))\n    return result.scalars().all()`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.get(\"/posts/sync-query\")' that uses synchronous database query 'db.query(Post).all()' directly in the async function instead of using async database operations.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add quick post query endpoint",
+        "body": "Added lightweight endpoint for fetching posts."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-008",
+    "issue_name": "Incorrect Use of asyncio.gather",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Not handling exceptions properly in asyncio.gather causes one failure to hide or cancel other tasks unexpectedly.",
+    "difficulty": "Medium",
+    "flawed_snippet": "async def fetch_all_data():\n    results = await asyncio.gather(\n        fetch_users(),\n        fetch_posts(),\n        fetch_comments()\n    )\n    return results",
+    "suggested_fix": "Use return_exceptions parameter: `results = await asyncio.gather(\n    fetch_users(),\n    fetch_posts(),\n    fetch_comments(),\n    return_exceptions=True\n)\n# Check each result for exceptions`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.get(\"/posts/aggregated\")' that uses 'asyncio.gather()' to fetch multiple resources (posts, comments, stats) without the return_exceptions=True parameter, so if one fails all fail.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add aggregated data endpoint",
+        "body": "Fetch posts with related data in a single request."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-009",
+    "issue_name": "Context Variable Not Propagating",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Creating tasks without copying context causes request-specific data like user info to be lost in spawned tasks.",
+    "difficulty": "Hard",
+    "flawed_snippet": "from contextvars import ContextVar\n\nrequest_id = ContextVar('request_id')\n\nasync def background_task():\n    # request_id is not set here\n    logger.info(f'Processing: {request_id.get()}')\n\n@app.post('/process')\nasync def process(request: Request):\n    request_id.set(request.headers.get('X-Request-ID'))\n    asyncio.create_task(background_task())",
+    "suggested_fix": "Copy context when creating tasks: `ctx = contextvars.copy_context()\nasyncio.create_task(ctx.run(background_task))` or use `asyncio.create_task()` which automatically copies context in Python 3.11+.",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/config.py",
+          "operation": "modify",
+          "instruction": "Add 'from contextvars import ContextVar' and create context variable 'current_user: ContextVar[str] = ContextVar(\"current_user\")' at module level.",
+          "context_files": []
+        },
+        {
+          "step": 2,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Import current_user from config. Add endpoint that sets current_user context var from headers, then spawns background task with asyncio.create_task without copying context.",
+          "context_files": ["benchmark/config.py", "benchmark/services/post_service.py"],
+          "depends_on": [1]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add user context tracking",
+        "body": "Implemented user tracking across async operations."
+      }
+    }
+  },
+  {
+    "issue_id": "ASYNC-010",
+    "issue_name": "Semaphore Misuse Leading to Resource Exhaustion",
+    "category": "Concurrency & Asynchronous Code Issues",
+    "description": "Not limiting concurrent operations with semaphores can exhaust system resources like database connections or memory.",
+    "difficulty": "Medium",
+    "flawed_snippet": "async def process_all_items(items: list):\n    tasks = [process_item(item) for item in items]\n    return await asyncio.gather(*tasks)",
+    "suggested_fix": "Use semaphore to limit concurrency: `sem = asyncio.Semaphore(10)\nasync def limited_process(item):\n    async with sem:\n        return await process_item(item)\ntasks = [limited_process(item) for item in items]`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/posts/batch-process\")' that accepts a list of post IDs and creates unlimited concurrent tasks using 'asyncio.gather(*[post_service.process_post(id) for id in post_ids])' without a semaphore to limit concurrency.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add batch processing endpoint",
+        "body": "Process multiple posts concurrently for better performance."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-001",
+    "issue_name": "Tight Coupling Between Layers",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Direct dependencies between presentation, business logic, and data layers make code hard to test and modify.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.post('/orders')\ndef create_order(order_data: dict):\n    # Controller directly accessing database\n    order = Order(**order_data)\n    db.session.add(order)\n    db.session.commit()\n    send_email(order.user.email, 'Order confirmed')\n    return order",
+    "suggested_fix": "Use service layer: `@app.post('/orders')\ndef create_order(order_data: OrderCreate, service: OrderService = Depends()):\n    return service.create_order(order_data)` and move business logic to service class.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/posts/quick-create\")' that directly accesses database models, performs validation, and commits to database all within the router function instead of using the service layer.",
+          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add quick post creation",
+        "body": "Streamlined post creation with direct database access for performance."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-002",
+    "issue_name": "God Object Anti-Pattern",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Single class with too many responsibilities violates Single Responsibility Principle, making code hard to maintain and test.",
+    "difficulty": "Medium",
+    "flawed_snippet": "class UserManager:\n    def create_user(self): pass\n    def send_email(self): pass\n    def process_payment(self): pass\n    def generate_report(self): pass\n    def validate_input(self): pass\n    def log_activity(self): pass",
+    "suggested_fix": "Split into focused classes: `UserService`, `EmailService`, `PaymentService`, `ReportGenerator`, `Validator`, `AuditLogger` each with single responsibility.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add multiple unrelated methods to PostService: send_email(), validate_user_credentials(), generate_analytics_report(), process_payment(), log_audit_trail(), cache_data() - making it a god object with too many responsibilities.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Extend post service functionality",
+        "body": "Added comprehensive features to post service for better integration."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-003",
+    "issue_name": "Missing Dependency Injection",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Hard-coded dependencies make code difficult to test and tightly couples implementation details.",
+    "difficulty": "Easy",
+    "flawed_snippet": "class OrderService:\n    def __init__(self):\n        self.db = DatabaseConnection()\n        self.email = EmailService()\n    \n    def create_order(self, data):\n        order = self.db.save(data)\n        self.email.send(order)",
+    "suggested_fix": "Inject dependencies: `class OrderService:\n    def __init__(self, db: Database, email: EmailService):\n        self.db = db\n        self.email = email` or use FastAPI's Depends for automatic injection.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add a new class 'NotificationManager' with __init__ that creates hard-coded instances: 'self.email_client = EmailClient(\"smtp.gmail.com\", 587)' and 'self.sms_client = SMSClient(\"api_key_123\")' instead of accepting them as parameters.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add notification manager",
+        "body": "Implemented notification system for post updates."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-004",
+    "issue_name": "Circular Dependencies",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Modules importing each other creates circular dependencies causing import errors and tight coupling.",
+    "difficulty": "Hard",
+    "flawed_snippet": "# users.py\nfrom .orders import get_user_orders\n\nclass User:\n    def get_orders(self):\n        return get_user_orders(self.id)\n\n# orders.py\nfrom .users import User\n\ndef get_user_orders(user_id):\n    user = User.query.get(user_id)",
+    "suggested_fix": "Introduce abstraction layer or move shared code to separate module: create `interfaces.py` with protocols, or restructure to have `users` depend on `orders` but not vice versa.",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add import 'from benchmark.services.post_service import get_post_author' at the top of the file and use it in a function.",
+          "context_files": ["benchmark/services/post_service.py"]
+        },
+        {
+          "step": 2,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add import 'from benchmark.routers.posts import format_post_response' at the top and add function 'def get_post_author(post_id): post = format_post_response(post_id)' creating a circular import.",
+          "context_files": ["benchmark/routers/posts.py"],
+          "depends_on": [1]
+        }
+      ],
+      "pr_info": {
+        "title": "refactor: Share utilities between router and service",
+        "body": "Improved code reuse by sharing helper functions."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-005",
+    "issue_name": "Anemic Domain Model",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Domain objects with only data and no behavior push all logic to service layer, missing OOP benefits.",
+    "difficulty": "Medium",
+    "flawed_snippet": "class Order:\n    def __init__(self, items, user_id):\n        self.items = items\n        self.user_id = user_id\n        self.total = 0\n\nclass OrderService:\n    def calculate_total(self, order):\n        return sum(item.price for item in order.items)",
+    "suggested_fix": "Move behavior to domain model: `class Order:\n    def calculate_total(self) -> Decimal:\n        return sum(item.price * item.quantity for item in self.items)\n    \n    def apply_discount(self, discount: Decimal):\n        self.total = self.calculate_total() * (1 - discount)`",
+    "generation_strategy": {
+      "type": "multi-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/models.py",
+          "operation": "modify",
+          "instruction": "Create Post model with only data attributes (id, title, content, created_at) with no methods for business logic like validation or formatting.",
+          "context_files": []
+        },
+        {
+          "step": 2,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add methods that operate on Post: validate_post_content(post), format_post_title(post), calculate_reading_time(post) - logic that should be in the Post model itself.",
+          "context_files": ["benchmark/models.py"],
+          "depends_on": [1]
+        }
+      ],
+      "pr_info": {
+        "title": "refactor: Extract post logic to service",
+        "body": "Centralized post-related operations in service layer."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-006",
+    "issue_name": "Missing Abstraction Layer",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Direct use of external libraries throughout codebase makes it hard to swap implementations or mock for testing.",
+    "difficulty": "Medium",
+    "flawed_snippet": "import boto3\n\nclass FileUploader:\n    def upload(self, file, key):\n        s3 = boto3.client('s3')\n        s3.upload_fileobj(file, 'bucket', key)\n\nclass ImageProcessor:\n    def save_image(self, image, key):\n        s3 = boto3.client('s3')\n        s3.upload_fileobj(image, 'bucket', key)",
+    "suggested_fix": "Create abstraction: `from abc import ABC, abstractmethod\nclass StorageService(ABC):\n    @abstractmethod\n    def upload(self, file, key): pass\n\nclass S3Storage(StorageService):\n    def upload(self, file, key):\n        # S3 implementation`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add methods that directly use external library like 'import redis' and create redis client directly in methods: 'def cache_post(self, post): r = redis.Redis(host=\"localhost\"); r.set(post.id, post)' without abstraction layer.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add Redis caching",
+        "body": "Integrated Redis for post caching to improve performance."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-007",
+    "issue_name": "Violation of Interface Segregation",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Large interfaces force implementations to provide methods they don't need, creating unnecessary coupling.",
+    "difficulty": "Medium",
+    "flawed_snippet": "class DataStore(ABC):\n    @abstractmethod\n    def read(self): pass\n    @abstractmethod\n    def write(self): pass\n    @abstractmethod\n    def delete(self): pass\n\nclass ReadOnlyCache(DataStore):\n    def read(self): return self.data\n    def write(self): raise NotImplementedError\n    def delete(self): raise NotImplementedError",
+    "suggested_fix": "Split into focused interfaces: `class Readable(ABC):\n    @abstractmethod\n    def read(self): pass\n\nclass Writable(ABC):\n    @abstractmethod\n    def write(self): pass\n\nclass ReadOnlyCache(Readable):`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add abstract base class 'PostRepository(ABC)' with methods create(), read(), update(), delete(), search(), export(), import(), validate(). Then create 'ReadOnlyPostRepository(PostRepository)' that only implements read() and raises NotImplementedError for all other methods.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "refactor: Add repository pattern",
+        "body": "Introduced repository abstraction for better data access."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-008",
+    "issue_name": "Missing Factory Pattern",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Complex object creation logic scattered throughout code makes it hard to modify instantiation behavior.",
+    "difficulty": "Medium",
+    "flawed_snippet": "@app.post('/notifications')\ndef send_notification(type: str, data: dict):\n    if type == 'email':\n        notifier = EmailNotifier(smtp_host, smtp_port)\n    elif type == 'sms':\n        notifier = SMSNotifier(api_key, sender_id)\n    else:\n        notifier = PushNotifier(fcm_key)\n    notifier.send(data)",
+    "suggested_fix": "Use factory pattern: `class NotifierFactory:\n    @staticmethod\n    def create(type: str) -> Notifier:\n        return {\n            'email': EmailNotifier,\n            'sms': SMSNotifier,\n            'push': PushNotifier\n        }[type]()\n\nnotifier = NotifierFactory.create(type)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/posts/export\")' with complex if-elif chain for format parameter: if format == 'json' create JsonExporter(config1), elif format == 'csv' create CsvExporter(config2), elif format == 'xml' create XmlExporter(config3) - scattered instantiation logic.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post export functionality",
+        "body": "Support multiple export formats for posts."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-009",
+    "issue_name": "Lack of Event-Driven Architecture",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Synchronous coupling between unrelated operations makes code inflexible and hard to scale.",
+    "difficulty": "Hard",
+    "flawed_snippet": "def create_user(user_data: dict):\n    user = db.save(user_data)\n    send_welcome_email(user)\n    create_audit_log(user)\n    update_analytics(user)\n    sync_to_crm(user)\n    return user",
+    "suggested_fix": "Use event system: `from events import EventBus\n\ndef create_user(user_data: dict):\n    user = db.save(user_data)\n    EventBus.publish('user.created', user)\n    return user\n\n# Separate handlers\n@EventBus.subscribe('user.created')\ndef on_user_created(user): ...`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.post(\"/posts/publish\")' that sequentially calls multiple unrelated operations: save_post(), send_notifications(), update_search_index(), generate_sitemap(), update_analytics(), sync_to_cdn() - all synchronously coupled.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add comprehensive post publishing",
+        "body": "Publishing now handles all related operations automatically."
+      }
+    }
+  },
+  {
+    "issue_id": "ARCH-010",
+    "issue_name": "Configuration in Code",
+    "category": "Code Architecture & Design Patterns",
+    "description": "Hard-coding configuration values in application code requires code changes and redeployment for configuration updates.",
+    "difficulty": "Easy",
+    "flawed_snippet": "class AppConfig:\n    DATABASE_URL = 'postgresql://localhost/mydb'\n    REDIS_HOST = 'localhost'\n    REDIS_PORT = 6379\n    MAX_UPLOAD_SIZE = 5242880\n    ALLOWED_ORIGINS = ['http://localhost:3000']",
+    "suggested_fix": "Use environment-based configuration: `from pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    database_url: str\n    redis_host: str\n    redis_port: int\n    \n    class Config:\n        env_file = '.env'`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/config.py",
+          "operation": "modify",
+          "instruction": "Add hard-coded configuration constants: MAX_POST_LENGTH = 5000, CACHE_TTL = 3600, API_RATE_LIMIT = 100, ADMIN_EMAIL = 'admin@example.com', SECRET_KEY = 'hardcoded_secret_123' directly in code instead of environment variables.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add application configuration",
+        "body": "Configured application settings and limits."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-001",
+    "issue_name": "Not Using Context Managers",
+    "category": "Python Best Practices & Idioms",
+    "description": "Manually managing resources like files or connections risks resource leaks if exceptions occur before cleanup.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def read_config():\n    file = open('config.json', 'r')\n    data = json.load(file)\n    file.close()\n    return data",
+    "suggested_fix": "Use context manager: `def read_config():\n    with open('config.json', 'r') as file:\n        return json.load(file)` which ensures file is closed even if exception occurs.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def read_posts_from_file(self, filename)' that opens a file with 'f = open(filename, \"r\")', reads content, calls 'f.close()', and returns data - without using context manager.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add file-based post import",
+        "body": "Import posts from JSON files."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-002",
+    "issue_name": "Using Bare Except",
+    "category": "Python Best Practices & Idioms",
+    "description": "Catching all exceptions including system exits and keyboard interrupts makes debugging difficult and can hide critical errors.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def process_data(data):\n    try:\n        result = complex_operation(data)\n        return result\n    except:\n        return None",
+    "suggested_fix": "Catch specific exceptions: `try:\n    result = complex_operation(data)\n    return result\nexcept (ValueError, TypeError) as e:\n    logger.error(f'Processing error: {e}')\n    return None`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add endpoint '@router.get(\"/posts/{post_id}/safe\")' with try-except block using bare 'except:' that catches all exceptions and returns None or generic error message.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add safe post retrieval",
+        "body": "Added error-tolerant post fetching endpoint."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-003",
+    "issue_name": "Not Using List Comprehensions",
+    "category": "Python Best Practices & Idioms",
+    "description": "Using explicit loops instead of comprehensions results in more verbose, less Pythonic, and potentially slower code.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def get_active_users(users):\n    active = []\n    for user in users:\n        if user.is_active:\n            active.append(user.name)\n    return active",
+    "suggested_fix": "Use list comprehension: `def get_active_users(users):\n    return [user.name for user in users if user.is_active]`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def get_published_titles(self, posts)' that creates empty list, uses for loop to iterate posts, checks if post.is_published, appends post.title to list, and returns list - instead of using list comprehension.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add published titles helper",
+        "body": "Extract published post titles for display."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-004",
+    "issue_name": "Missing Type Hints",
+    "category": "Python Best Practices & Idioms",
+    "description": "Lack of type hints makes code harder to understand and prevents static type checkers from catching errors.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def calculate_discount(price, percentage):\n    return price * (1 - percentage / 100)",
+    "suggested_fix": "Add type hints: `from decimal import Decimal\n\ndef calculate_discount(price: Decimal, percentage: float) -> Decimal:\n    return price * (1 - Decimal(percentage) / 100)`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add methods 'def calculate_reading_time(content)', 'def format_post_summary(post, max_length)', 'def merge_posts(post1, post2)' without any type hints for parameters or return values.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post utility functions",
+        "body": "Helper methods for post processing and formatting."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-005",
+    "issue_name": "Using os.path Instead of pathlib",
+    "category": "Python Best Practices & Idioms",
+    "description": "Using os.path for file path operations is less readable and more error-prone than pathlib's object-oriented approach.",
+    "difficulty": "Easy",
+    "flawed_snippet": "import os\n\ndef get_config_path():\n    base = os.path.dirname(__file__)\n    return os.path.join(base, 'config', 'settings.json')",
+    "suggested_fix": "Use pathlib: `from pathlib import Path\n\ndef get_config_path() -> Path:\n    return Path(__file__).parent / 'config' / 'settings.json'`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def get_upload_path(self, filename)' that uses 'import os', 'base_dir = os.path.dirname(__file__)', and 'return os.path.join(base_dir, \"uploads\", filename)' instead of pathlib.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add file upload path helper",
+        "body": "Helper to construct upload file paths."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-006",
+    "issue_name": "Not Using Dataclasses",
+    "category": "Python Best Practices & Idioms",
+    "description": "Manually writing __init__, __repr__, and __eq__ methods for data containers is verbose when dataclasses provide this automatically.",
+    "difficulty": "Medium",
+    "flawed_snippet": "class User:\n    def __init__(self, id, name, email):\n        self.id = id\n        self.name = name\n        self.email = email\n    \n    def __repr__(self):\n        return f'User(id={self.id}, name={self.name})'",
+    "suggested_fix": "Use dataclass: `from dataclasses import dataclass\n\n@dataclass\nclass User:\n    id: int\n    name: str\n    email: str` which auto-generates __init__, __repr__, __eq__, etc.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add class 'PostMetadata' with manual __init__(self, author, tags, views), __repr__, and __eq__ methods instead of using @dataclass decorator.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post metadata class",
+        "body": "Track additional metadata for posts."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-007",
+    "issue_name": "Using * Imports",
+    "category": "Python Best Practices & Idioms",
+    "description": "Wildcard imports pollute namespace, make it unclear where names come from, and can cause name conflicts.",
+    "difficulty": "Easy",
+    "flawed_snippet": "from sqlalchemy import *\nfrom fastapi import *\n\ndef create_table():\n    # Unclear which module 'Table' comes from\n    table = Table('users')",
+    "suggested_fix": "Use explicit imports: `from sqlalchemy import Table, Column, Integer\nfrom fastapi import FastAPI, Depends` to make dependencies clear and avoid conflicts.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/routers/posts.py",
+          "operation": "modify",
+          "instruction": "Add wildcard imports at the top: 'from typing import *' and 'from fastapi import *' instead of explicit imports.",
+          "context_files": ["benchmark/services/post_service.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "refactor: Simplify imports",
+        "body": "Streamlined import statements for cleaner code."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-008",
+    "issue_name": "Not Using Enumerate",
+    "category": "Python Best Practices & Idioms",
+    "description": "Manually tracking index in loops is error-prone and less Pythonic than using enumerate built-in.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def process_items(items):\n    index = 0\n    for item in items:\n        print(f'{index}: {item}')\n        index += 1",
+    "suggested_fix": "Use enumerate: `def process_items(items):\n    for index, item in enumerate(items):\n        print(f'{index}: {item}')`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def add_line_numbers(self, posts)' that initializes 'index = 0', iterates 'for post in posts:', uses index, then increments 'index += 1' manually instead of using enumerate.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add line numbering for posts",
+        "body": "Number posts in listing for better readability."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-009",
+    "issue_name": "Using isinstance for Type Checking Multiple Times",
+    "category": "Python Best Practices & Idioms",
+    "description": "Repeated isinstance checks for the same object is inefficient compared to single check with tuple of types.",
+    "difficulty": "Easy",
+    "flawed_snippet": "def process(value):\n    if isinstance(value, int) or isinstance(value, float):\n        return value * 2\n    return value",
+    "suggested_fix": "Use tuple in isinstance: `def process(value):\n    if isinstance(value, (int, float)):\n        return value * 2\n    return value`",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add method 'def validate_id(self, value)' with condition 'if isinstance(value, int) or isinstance(value, str) or isinstance(value, float):' instead of using tuple 'isinstance(value, (int, str, float))'.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add flexible ID validation",
+        "body": "Support multiple ID formats for compatibility."
+      }
+    }
+  },
+  {
+    "issue_id": "PY-010",
+    "issue_name": "Not Using __slots__",
+    "category": "Python Best Practices & Idioms",
+    "description": "For classes with many instances, not using __slots__ wastes memory by maintaining a __dict__ for each instance.",
+    "difficulty": "Medium",
+    "flawed_snippet": "class Point:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n# Creating millions of points wastes memory",
+    "suggested_fix": "Use __slots__: `class Point:\n    __slots__ = ['x', 'y']\n    \n    def __init__(self, x, y):\n        self.x = x\n        self.y = y` to reduce memory footprint when creating many instances.",
+    "generation_strategy": {
+      "type": "single-file",
+      "changes": [
+        {
+          "step": 1,
+          "file": "benchmark/services/post_service.py",
+          "operation": "modify",
+          "instruction": "Add lightweight class 'class PostCache' with __init__(self, id, title, timestamp) that will be instantiated many times but does not define __slots__, wasting memory.",
+          "context_files": ["benchmark/routers/posts.py"]
+        }
+      ],
+      "pr_info": {
+        "title": "feat: Add post caching structure",
+        "body": "Lightweight cache objects for frequently accessed posts."
+      }
+    }
+  }
+]
