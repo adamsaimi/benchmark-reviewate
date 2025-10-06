@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -106,6 +107,15 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/export", response_model=List[Post])
+def export_posts(db: Session = Depends(get_db)) -> List[Post]:
+    """
+    Export all posts for backup purposes.
+    """
+    posts = db.query(PostModel).all()
+    return [Post.model_validate(post) for post in posts]
 
 
 # ============================================================================
