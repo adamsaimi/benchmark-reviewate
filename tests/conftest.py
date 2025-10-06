@@ -45,17 +45,8 @@ def client(db_session):
     
     app.dependency_overrides[get_db] = override_get_db
     
-    with TestClient(app) as test_client:
-        yield test_client
-    
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture
-def sample_post_data():
-    """Sample post data for testing."""
-    return {
-        "title": "Test Post",
-        "content": "This is a test post content.",
-        "author_email": "test@example.com"
-    }
+    try:
+        with TestClient(app) as test_client:
+            yield test_client
+    finally:
+        app.dependency_overrides.clear()

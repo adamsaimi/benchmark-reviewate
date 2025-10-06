@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     
     # Database Configuration
     DATABASE_URL: str = "postgresql://benchmark_user:benchmark_password@localhost:5432/benchmark_db"
-    TEST_DATABASE_URL: str = "postgresql://benchmark_user:benchmark_password@localhost:5433/benchmark_test_db"
+    TEST_DATABASE_URL: str = "postgresql://benchmark_user:benchmark_password@localhost:5434/benchmark_test_db"
     
     # API Configuration
     API_TITLE: str = "Benchmark API"
