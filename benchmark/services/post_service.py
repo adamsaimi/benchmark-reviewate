@@ -179,3 +179,15 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def cleanup_empty_posts(self, post_stats: dict):
+        """
+        Cleanup empty entries from post statistics.
+        
+        Args:
+            post_stats: A dictionary of post IDs to their stats.
+        """
+        for post_id in post_stats:
+            if not post_stats[post_id]:
+                del post_stats[post_id]
+        return post_stats
