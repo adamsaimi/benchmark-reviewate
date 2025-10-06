@@ -1,7 +1,7 @@
 [
   {
     "issue_id": "LOGIC-001",
-    "generated": true,
+    "generated": false,
     "issue_name": "Off-by-One Error in Pagination",
     "category": "Correctness & Logic Errors",
     "description": "Incorrect calculation of page boundaries leads to missing or duplicate items in paginated results. Common when manually calculating offsets and limits.",
