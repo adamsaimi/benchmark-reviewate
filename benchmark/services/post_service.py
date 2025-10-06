@@ -140,6 +140,21 @@ class PostService:
         
         return Post.model_validate(db_post)
 
+    def can_user_delete_post(self, user: UserModel, post: PostModel) -> bool:
+        """
+        Checks if a user has permission to delete a post.
+
+        Args:
+            user: The user attempting the action.
+            post: The post to be deleted.
+
+        Returns:
+            True if the user can delete the post, False otherwise.
+        """
+        if user.is_admin or user.id == post.author_id and post.is_draft:
+            return True
+        return False
+
     def get_all_posts(self) -> List[Post]:
         """
         Retrieve all posts from the database.
