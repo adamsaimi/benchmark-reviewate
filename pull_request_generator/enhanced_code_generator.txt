@@ -36,7 +36,11 @@ Your goal is to generate a JSON object with two keys: `modified_files` and `grou
           * **Crucially, you must preserve the entire original file's structure, formatting, comments, and imports.** Only the lines targeted by the strategy should be altered.
           * Create a JSON object with `filename` (the target file path) and `content` (the complete, rewritten source code as a single string).
           * Append this object to the `modified_files` array in your final output.
-
+          * Surgical Precision: Your changes must be minimal and targeted. Preserve all original code, formatting, imports, and comments that are not directly affected by the generation_strategy.
+          * Single Flaw Focus: You must introduce only the single, specific flaw described in the taxonomy. The rest of the code must remain functionally correct and should not contain any other accidental bugs or logical errors.
+          * No Code Noise: Do not add any extra comments (e.g., # TODO), print() statements, pass statements, or any placeholder logic. The final code should appear clean and production-ready, aside from the one intended flaw.
+          * If you need to modify or add a function to an other file than the generated strategy suggests, do it so that you do not create any noise.
+      
       * **B. Generate the Code Review Object(s):**
 
           * After generating the modified code for the current file, switch to your senior code reviewer persona.

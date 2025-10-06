@@ -7,7 +7,16 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from jinja2 import Template
 
-from prompter import Prompter 
+from prompter import Prompter
+
+# --- 0. Configuration ---
+# These four files will always be included in the prompt to provide core context to the LLM.
+CORE_CONTEXT_FILES = [
+    "benchmark/config.py",
+    "benchmark/models.py",
+    "benchmark/routers/posts.py",
+    "benchmark/services/post_service.py"
+]
 
 # --- 1. Pydantic Models for Enhanced Generator Response ---
 
@@ -59,7 +68,7 @@ def create_merge_request(issue_id: str, pr_info: dict):
     print("\n--- Creating Pull Request ---")
     title = pr_info.get("title", f"feat: {issue_id}")
     body = pr_info.get("body", f"Implements {issue_id}")
-    
+
     try:
         run_command(["gh", "pr", "create", "--title", title, "--body", body, "--base", "main"])
         print(f"✅ Pull request created: {title}")
@@ -73,15 +82,14 @@ def create_merge_request(issue_id: str, pr_info: dict):
 
 # --- 3. Load Project Files ---
 
-def load_project_files(base_path: str = "benchmark") -> Dict[str, str]:
+def load_project_files() -> Dict[str, str]:
     """
-    Recursively loads all Python files from the project.
+    Loads all necessary Python files from the project.
     Returns a dict mapping relative file paths to their content.
     """
     project_files = {}
-    base_path = Path(base_path)
     
-    # Define files to load
+    # Define all files to load
     files_to_load = [
         "benchmark/__init__.py",
         "benchmark/config.py",
@@ -95,18 +103,18 @@ def load_project_files(base_path: str = "benchmark") -> Dict[str, str]:
         "benchmark/services/post_service.py",
     ]
     
-    for file_path in files_to_load:
-        full_path = Path(file_path)
+    for file_path_str in files_to_load:
+        full_path = Path(file_path_str)
         if full_path.exists():
             try:
                 with open(full_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                project_files[file_path] = content
-                print(f"✓ Loaded: {file_path}")
+                project_files[file_path_str] = content
+                print(f"✓ Loaded: {file_path_str}")
             except Exception as e:
-                print(f"✗ Failed to load {file_path}: {e}")
+                print(f"✗ Failed to load {file_path_str}: {e}")
         else:
-            print(f"⚠ File not found: {file_path}")
+            print(f"⚠ File not found: {file_path_str}")
     
     return project_files
 
@@ -140,13 +148,13 @@ def load_prompt_template(prompt_file: str) -> Template:
     
     return Template(prompt_content)
 
-def format_enhanced_prompt(taxonomy_entry: dict, project_files: Dict[str, str], template: Template) -> str:
+def format_enhanced_prompt(taxonomy_entry: dict, context_files: Dict[str, str], template: Template) -> str:
     """
-    Formats the enhanced prompt with taxonomy entry and project files using Jinja2.
+    Formats the enhanced prompt with taxonomy entry and curated context files using Jinja2.
     """
     return template.render(
         taxonomy_entry=taxonomy_entry,
-        project_files=project_files
+        project_files=context_files
     )
 
 def main():
@@ -174,15 +182,16 @@ def main():
     taxonomy = prompter.get_taxonomy()
     print(f"Loaded {len(taxonomy)} issues from taxonomy")
     
-    # STEP 3: Load all project files once
-    print("\n--- Loading Project Files ---")
-    project_files = load_project_files()
-    print(f"Loaded {len(project_files)} project files")
+    # STEP 3: Load all project files once into memory
+    print("\n--- Loading All Project Files ---")
+    all_project_files = load_project_files()
+    print(f"Loaded {len(all_project_files)} project files")
 
     # STEP 4: For each issue in the taxonomy...
     for i, taxonomy_entry in enumerate(taxonomy):
         if i > 0:
             break  # TEMPORARY: Process only the first issue for testing
+        
         # Skip if already generated
         if taxonomy_entry.get("generated", False):
             print(f"\n⏭  Skipping [{taxonomy_entry['issue_id']}] - Already generated.")
@@ -199,10 +208,24 @@ def main():
             # STEP 4.1: Create branch and checkout
             create_and_checkout_branch(branch_name)
 
-            # STEP 4.2: Format prompt and call Gemini
-            print("\n--- Preparing enhanced prompt ---")
-            prompt = format_enhanced_prompt(taxonomy_entry, project_files, prompt_template)
-            
+            # STEP 4.2: Prepare curated context and format prompt
+            print("\n--- Preparing curated prompt context ---")
+            prompt_context_files = {}
+            # Add core context files first
+            for core_file in CORE_CONTEXT_FILES:
+                if core_file in all_project_files:
+                    prompt_context_files[core_file] = all_project_files[core_file]
+            print(f"Added {len(prompt_context_files)} core files to context.")
+
+            # Add the specific target file for the issue (if not already included)
+            target_file = taxonomy_entry.get("file_target")
+            if target_file and target_file not in prompt_context_files and target_file in all_project_files:
+                 prompt_context_files[target_file] = all_project_files[target_file]
+                 print(f"Added target file to context: {target_file}")
+
+            prompt = format_enhanced_prompt(taxonomy_entry, prompt_context_files, prompt_template)
+            with open(f"{issue_id}_enhanced_prompt.txt", 'w', encoding='utf-8') as f:
+                f.write(prompt)
             print(f"Prompt size: ~{len(prompt)} characters")
             print("Calling Gemini API...")
             
@@ -237,8 +260,8 @@ def main():
                 "issue_name": taxonomy_entry["issue_name"],
                 "category": taxonomy_entry["category"],
                 "reviews": [review.model_dump() for review in generated_data.ground_truth_reviews],
-                "title": taxonomy_entry["generation_strategy"].get("pr_info", {}).get("title", ""),
-                "body": taxonomy_entry["generation_strategy"].get("pr_info", {}).get("body", ""),
+                "title": taxonomy_entry.get("generation_strategy", {}).get("pr_info", {}).get("title", ""),
+                "body": taxonomy_entry.get("generation_strategy", {}).get("pr_info", {}).get("body", ""),
             }
             
             with open(ground_truth_path, 'w', encoding='utf-8') as f:

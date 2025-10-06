@@ -24,7 +24,7 @@ class Prompter:
         return prompt
 
     def get_taxonomy(self):
-        with open("workflow/taxonomy.json", 'r', encoding='utf-8') as taxonomy_file:
+        with open("taxonomy.json", 'r', encoding='utf-8') as taxonomy_file:
             taxonomy = json.load(taxonomy_file)
         return taxonomy
 

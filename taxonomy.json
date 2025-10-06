@@ -16,14 +16,18 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add pagination to the get_posts endpoint with query parameters 'page' (default 1) and 'per_page' (default 10). Calculate offset as 'page * per_page' instead of '(page - 1) * per_page', introducing an off-by-one error where page 1 skips the first 10 items.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/schemas.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/schemas.py"
+          ]
         }
       ],
       "pr_info": {
         "title": "feat: Add pagination to posts endpoint",
         "body": "Added pagination support to the posts listing endpoint to improve performance with large datasets. Users can now specify page number and items per page."
       }
-    }
+    },
+    "error": "[Errno 2] No such file or directory: 'debug_prompts/LOGIC-001_enhanced_prompt.txt'"
   },
   {
     "issue_id": "LOGIC-002",
@@ -42,7 +46,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'calculate_discount(price: int, discount_percent: int) -> int' that calculates discounts. Use integer types and division, causing precision loss when the result should include decimals. Return 'price - (price * discount_percent / 100)' without using Decimal type.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -68,7 +74,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add a new endpoint GET '/posts/{post_id}/author-email' that fetches a post and returns the author's email in lowercase. Access 'post.author.email.lower()' directly without checking if post or post.author is None, causing potential AttributeError.",
-          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/models.py",
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -94,7 +103,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'can_user_delete_post(user, post)' that checks if a user can delete a post. Write the condition as 'if user.is_admin or user.id == post.author_id and post.is_draft:' without parentheses, causing incorrect precedence where admins are allowed AND (regular users can delete only their own drafts).",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -120,7 +131,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'add_tags(self, post_id: int, new_tag: str, existing_tags: list = [])' that appends new_tag to existing_tags and updates the post. Use a mutable list as default argument, causing tags to persist across function calls.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -146,7 +159,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'is_post_expired(self, post_id: int) -> bool' that checks if a post's expiry_date has passed. Use 'datetime.now()' (naive) to compare against the post's created_at field (which may be timezone-aware), causing potential TypeError or incorrect comparisons.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -172,7 +187,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "In the create_post method, wrap the database operations in a try-except block. Catch 'Exception' first to log errors, then add 'except ValueError' to handle validation errors specifically. This incorrect order means ValueError will never be caught.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -198,7 +215,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'calculate_average_length(self) -> float' that calculates average post content length and a method 'is_average_length(self, expected: float) -> bool' that compares the calculated average with an expected value using '==' operator instead of approximate comparison.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -224,7 +243,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'create_validators(self)' that creates a list of validation functions in a loop. For each validation type in ['length', 'content', 'title'], append a lambda that captures the loop variable without using default arguments, causing all lambdas to reference the last value.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -250,7 +271,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a method 'cleanup_empty_posts(self, post_stats: dict)' that iterates over post_stats dictionary and deletes entries where the value is 0 or None. Modify the dictionary during iteration: 'for post_id in post_stats: if not post_stats[post_id]: del post_stats[post_id]', causing RuntimeError.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -276,7 +299,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add a new endpoint GET '/posts/search' with query parameter 'title' that searches posts by title using raw SQL. Use f-string formatting: 'query = f\"SELECT * FROM posts WHERE title LIKE '%{title}%'\"' and execute with db.execute(query), introducing SQL injection vulnerability.",
-          "context_files": ["benchmark/models.py", "benchmark/database.py"]
+          "context_files": [
+            "benchmark/models.py",
+            "benchmark/database.py"
+          ]
         }
       ],
       "pr_info": {
@@ -302,7 +328,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add a new endpoint DELETE '/posts/{post_id}' that deletes a post. Do NOT add any authentication check (no Depends(get_current_user)), making the endpoint publicly accessible for a sensitive operation.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -354,7 +382,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Modify the update_post endpoint (POST '/posts/{post_id}') to accept authenticated user via Depends(get_current_user) but do NOT check if the user is the post owner. Allow any authenticated user to update any post without ownership verification.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -380,7 +411,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add an endpoint PATCH '/posts/{post_id}' that accepts a raw dict parameter instead of a Pydantic model. Loop through all dict keys and use setattr to update post attributes without validation, allowing mass assignment vulnerability.",
-          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/models.py",
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -413,8 +447,13 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint POST '/posts/protected' that accepts title, content, and password fields. Store the password directly in plain text in the database without hashing.",
-          "depends_on": [1],
-          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+          "depends_on": [
+            1
+          ],
+          "context_files": [
+            "benchmark/models.py",
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -466,7 +505,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint GET '/posts/{post_id}/private' that requires authentication but fetches any post by ID without checking if the authenticated user owns it. Return the full post details including potentially private fields.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -492,7 +534,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint POST '/posts/validate' that performs expensive validation operations (like external API calls or complex regex matching) without any rate limiting, making it vulnerable to DoS attacks.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -518,7 +562,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "In the create_post endpoint, add logging that includes the full request data including author_email and content: 'logger.info(f\"Creating post: {post_data}\")' which exposes PII in logs.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -544,15 +590,22 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "In the get_all_posts method, remove any eager loading optimizations. Just use 'db.query(Post).all()' without joinedload or selectinload.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         },
         {
           "step": 2,
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Modify the get_posts endpoint response to include author_email for each post by accessing 'post.author.email' in a list comprehension, triggering N+1 queries.",
-          "depends_on": [1],
-          "context_files": ["benchmark/services/post_service.py", "benchmark/schemas.py"]
+          "depends_on": [
+            1
+          ],
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/schemas.py"
+          ]
         }
       ],
       "pr_info": {
@@ -585,8 +638,13 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint GET '/posts/by-author' with query parameter 'email' that filters posts by author_email using db.query(Post).filter(Post.author_email == email), which will cause full table scan.",
-          "depends_on": [1],
-          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+          "depends_on": [
+            1
+          ],
+          "context_files": [
+            "benchmark/models.py",
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -612,7 +670,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint GET '/posts/export' that fetches ALL posts using .all() without pagination or streaming: 'posts = db.query(Post).all()' and returns them all in a single response.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -626,7 +687,7 @@
     "generated": false,
     "issue_name": "Inefficient String Concatenation",
     "category": "Performance Issues",
-    "description": "Building strings in loops with + operator creates new string objects each iteration, causing O(n²) time complexity.",
+    "description": "Building strings in loops with + operator creates new string objects each iteration, causing O(n\u00b2) time complexity.",
     "difficulty": "Easy",
     "flawed_snippet": "def generate_report(items: list) -> str:\n    report = ''\n    for item in items:\n        report += f'{item.name}: {item.value}\\n'\n    return report",
     "suggested_fix": "Use join with list comprehension: `report = '\\n'.join(f'{item.name}: {item.value}' for item in items)` or use StringIO for large data.",
@@ -638,7 +699,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'generate_summary_report(self) -> str' that builds a report string using += operator in a loop over all posts: 'report = \"\" followed by 'for post in posts: report += f\"{post.title}: {post.content}\\n\"'.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -664,7 +727,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint GET '/posts/titles' that fetches full Post objects using .all() but only returns titles. Query: 'posts = db.query(Post).all()' then return '[{\"title\": p.title} for p in posts]', transferring unnecessary data.",
-          "context_files": ["benchmark/models.py", "benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/models.py",
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -742,7 +808,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'filter_by_length(self, posts: list, config: dict)' that loops through posts and calls 'get_max_length(config)' inside the loop for each post instead of caching the value: 'for post in posts: if len(post.content) > get_max_length(config):'.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -768,7 +836,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint GET '/posts/stats' that performs expensive aggregate queries (COUNT, AVG) without any caching, recalculating on every request: 'total = db.query(func.count(Post.id)).scalar()' and 'avg_length = db.query(func.avg(func.length(Post.content))).scalar()'.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -794,7 +864,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'filter_published_posts(self, all_posts: list, published_ids: list)' that filters posts using list membership testing: 'return [p for p in all_posts if p.id in published_ids]' instead of converting published_ids to a set first.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -820,7 +892,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add class variable 'view_count = 0' and async method 'async def increment_view_count(self)' that reads view_count into a local variable, awaits asyncio.sleep(0.001), then increments the local variable and assigns it back to view_count without using a lock.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -846,7 +920,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.get(\"/posts/{post_id}/title\")' that calls 'post_service.get_post(post_id)' without await keyword, then tries to access '.title' attribute on the returned coroutine object.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -872,7 +948,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.get(\"/posts/process-content\")' that performs CPU-intensive operation 'time.sleep(2)' followed by complex regex operations directly in the async function without using run_in_executor.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -898,7 +976,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add async method 'async def stream_posts(self)' with a try/finally block that opens a resource (like a file handle simulation) in the try block, has a while loop that yields posts, but has an empty finally block that doesn't close the resource or handle CancelledError.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -924,7 +1004,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add two asyncio.Lock instances 'post_lock = asyncio.Lock()' and 'user_lock = asyncio.Lock()' as class variables. Add methods 'async def update_post_and_user(self)' that acquires post_lock then user_lock, and 'async def update_user_and_post(self)' that acquires them in reverse order (user_lock then post_lock).",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -950,7 +1032,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/posts/{post_id}/publish\")' that creates a background task 'asyncio.create_task(post_service.notify_subscribers(post_id))' without storing the task reference or adding error handling callbacks.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -976,7 +1060,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.get(\"/posts/sync-query\")' that uses synchronous database query 'db.query(Post).all()' directly in the async function instead of using async database operations.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1002,7 +1089,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.get(\"/posts/aggregated\")' that uses 'asyncio.gather()' to fetch multiple resources (posts, comments, stats) without the return_exceptions=True parameter, so if one fails all fail.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1035,8 +1124,13 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Import current_user from config. Add endpoint that sets current_user context var from headers, then spawns background task with asyncio.create_task without copying context.",
-          "context_files": ["benchmark/config.py", "benchmark/services/post_service.py"],
-          "depends_on": [1]
+          "context_files": [
+            "benchmark/config.py",
+            "benchmark/services/post_service.py"
+          ],
+          "depends_on": [
+            1
+          ]
         }
       ],
       "pr_info": {
@@ -1062,7 +1156,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/posts/batch-process\")' that accepts a list of post IDs and creates unlimited concurrent tasks using 'asyncio.gather(*[post_service.process_post(id) for id in post_ids])' without a semaphore to limit concurrency.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1088,7 +1184,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/posts/quick-create\")' that directly accesses database models, performs validation, and commits to database all within the router function instead of using the service layer.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1114,7 +1213,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add multiple unrelated methods to PostService: send_email(), validate_user_credentials(), generate_analytics_report(), process_payment(), log_audit_trail(), cache_data() - making it a god object with too many responsibilities.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1140,7 +1241,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add a new class 'NotificationManager' with __init__ that creates hard-coded instances: 'self.email_client = EmailClient(\"smtp.gmail.com\", 587)' and 'self.sms_client = SMSClient(\"api_key_123\")' instead of accepting them as parameters.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1166,15 +1269,21 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add import 'from benchmark.services.post_service import get_post_author' at the top of the file and use it in a function.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         },
         {
           "step": 2,
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add import 'from benchmark.routers.posts import format_post_response' at the top and add function 'def get_post_author(post_id): post = format_post_response(post_id)' creating a circular import.",
-          "context_files": ["benchmark/routers/posts.py"],
-          "depends_on": [1]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ],
+          "depends_on": [
+            1
+          ]
         }
       ],
       "pr_info": {
@@ -1207,8 +1316,12 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add methods that operate on Post: validate_post_content(post), format_post_title(post), calculate_reading_time(post) - logic that should be in the Post model itself.",
-          "context_files": ["benchmark/models.py"],
-          "depends_on": [1]
+          "context_files": [
+            "benchmark/models.py"
+          ],
+          "depends_on": [
+            1
+          ]
         }
       ],
       "pr_info": {
@@ -1234,7 +1347,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add methods that directly use external library like 'import redis' and create redis client directly in methods: 'def cache_post(self, post): r = redis.Redis(host=\"localhost\"); r.set(post.id, post)' without abstraction layer.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1260,7 +1375,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add abstract base class 'PostRepository(ABC)' with methods create(), read(), update(), delete(), search(), export(), import(), validate(). Then create 'ReadOnlyPostRepository(PostRepository)' that only implements read() and raises NotImplementedError for all other methods.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1286,7 +1403,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/posts/export\")' with complex if-elif chain for format parameter: if format == 'json' create JsonExporter(config1), elif format == 'csv' create CsvExporter(config2), elif format == 'xml' create XmlExporter(config3) - scattered instantiation logic.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1312,7 +1431,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/posts/publish\")' that sequentially calls multiple unrelated operations: save_post(), send_notifications(), update_search_index(), generate_sitemap(), update_analytics(), sync_to_cdn() - all synchronously coupled.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1338,7 +1459,9 @@
           "file": "benchmark/config.py",
           "operation": "modify",
           "instruction": "Add hard-coded configuration constants: MAX_POST_LENGTH = 5000, CACHE_TTL = 3600, API_RATE_LIMIT = 100, ADMIN_EMAIL = 'admin@example.com', SECRET_KEY = 'hardcoded_secret_123' directly in code instead of environment variables.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1364,7 +1487,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def read_posts_from_file(self, filename)' that opens a file with 'f = open(filename, \"r\")', reads content, calls 'f.close()', and returns data - without using context manager.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1390,7 +1515,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.get(\"/posts/{post_id}/safe\")' with try-except block using bare 'except:' that catches all exceptions and returns None or generic error message.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1416,7 +1543,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def get_published_titles(self, posts)' that creates empty list, uses for loop to iterate posts, checks if post.is_published, appends post.title to list, and returns list - instead of using list comprehension.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1442,7 +1571,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add methods 'def calculate_reading_time(content)', 'def format_post_summary(post, max_length)', 'def merge_posts(post1, post2)' without any type hints for parameters or return values.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1468,7 +1599,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def get_upload_path(self, filename)' that uses 'import os', 'base_dir = os.path.dirname(__file__)', and 'return os.path.join(base_dir, \"uploads\", filename)' instead of pathlib.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1494,7 +1627,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add class 'PostMetadata' with manual __init__(self, author, tags, views), __repr__, and __eq__ methods instead of using @dataclass decorator.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1520,7 +1655,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add wildcard imports at the top: 'from typing import *' and 'from fastapi import *' instead of explicit imports.",
-          "context_files": ["benchmark/services/post_service.py"]
+          "context_files": [
+            "benchmark/services/post_service.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1546,7 +1683,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def add_line_numbers(self, posts)' that initializes 'index = 0', iterates 'for post in posts:', uses index, then increments 'index += 1' manually instead of using enumerate.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1572,7 +1711,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def validate_id(self, value)' with condition 'if isinstance(value, int) or isinstance(value, str) or isinstance(value, float):' instead of using tuple 'isinstance(value, (int, str, float))'.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1598,7 +1739,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add lightweight class 'class PostCache' with __init__(self, id, title, timestamp) that will be instantiated many times but does not define __slots__, wasting memory.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1632,8 +1775,12 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.get(\"/revenue/monthly\")' that queries all orders for a given month and year using extract() for date filtering, but does NOT filter by status - includes all orders (pending, cancelled, delivered) in revenue calculation.",
-          "context_files": ["benchmark/models.py"],
-          "depends_on": [1]
+          "context_files": [
+            "benchmark/models.py"
+          ],
+          "depends_on": [
+            1
+          ]
         }
       ],
       "pr_info": {
@@ -1660,7 +1807,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def calculate_order_revenue(self, order)' that returns 'order.total_amount' without checking or subtracting 'order.refund_amount' even though refund_amount field exists on the order model.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1687,7 +1836,10 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/checkout/process\")' that processes payment first, then decrements inventory only after payment succeeds - no inventory reservation during checkout, allowing race conditions and overselling.",
-          "context_files": ["benchmark/services/post_service.py", "benchmark/models.py"]
+          "context_files": [
+            "benchmark/services/post_service.py",
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1714,7 +1866,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def apply_discounts(self, order, promo_codes: list)' that iterates through all promo_codes in a loop and applies each discount to order.total without validating stacking rules, count limits, or maximum discount caps.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1741,7 +1895,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def renew_subscription(self, subscription_id)' that updates subscription.renew_date and calls charge_customer() without first validating the payment method is still valid or checking for expired cards.",
-          "context_files": ["benchmark/routers/posts.py"]
+          "context_files": [
+            "benchmark/routers/posts.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1768,7 +1924,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def calculate_customer_lifetime_value(self, customer_id)' that only sums order.total from all customer orders without subtracting refunds, returns costs, or acquisition costs.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1802,8 +1960,12 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint that creates orders using OrderItem without snapshotting the price - relies on dynamic product.current_price lookup.",
-          "context_files": ["benchmark/models.py"],
-          "depends_on": [1]
+          "context_files": [
+            "benchmark/models.py"
+          ],
+          "depends_on": [
+            1
+          ]
         }
       ],
       "pr_info": {
@@ -1830,7 +1992,9 @@
           "file": "benchmark/routers/posts.py",
           "operation": "modify",
           "instruction": "Add endpoint '@router.post(\"/trial/create\")' that creates trial accounts without checking if the email or payment method already had a trial - no validation for existing trials, no trial_expires_at field set.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1857,7 +2021,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def calculate_shipping(self, order)' that returns a hardcoded 'Decimal(\"9.99\")' without checking order total for free shipping threshold, weight, destination zone, or shipping speed.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
@@ -1884,7 +2050,9 @@
           "file": "benchmark/services/post_service.py",
           "operation": "modify",
           "instruction": "Add method 'def calculate_tax(self, order)' that uses hardcoded 'TAX_RATE = Decimal(\"0.08\")' and returns 'order.subtotal * TAX_RATE' without checking shipping address jurisdiction, tax-exempt products, or tax exemption certificates.",
-          "context_files": ["benchmark/models.py"]
+          "context_files": [
+            "benchmark/models.py"
+          ]
         }
       ],
       "pr_info": {
