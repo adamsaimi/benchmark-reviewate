@@ -140,6 +140,29 @@ class PostService:
         
         return Post.model_validate(db_post)
 
+    def delete_post(self, post_id: int) -> None:
+        """
+        Delete a post by its unique identifier.
+
+        Args:
+            post_id: The ID of the post to delete.
+
+        Raises:
+            PostNotFoundException: If no post exists with the given ID.
+            SQLAlchemyError: If a database error occurs.
+        """
+        db_post = self.db.query(PostModel).filter(PostModel.id == post_id).first()
+        
+        if db_post is None:
+            raise PostNotFoundException(f"Post with ID {post_id} not found")
+        
+        try:
+            self.db.delete(db_post)
+            self.db.commit()
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
+
     def get_all_posts(self) -> List[Post]:
         """
         Retrieve all posts from the database.
