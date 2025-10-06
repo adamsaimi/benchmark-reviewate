@@ -6,6 +6,7 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
+import logging
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
@@ -20,6 +21,7 @@ from benchmark.database import get_db
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
+logger = logging.getLogger(__name__)
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
     """
@@ -56,6 +58,7 @@ def create_post(
     Returns:
         The newly created post with all metadata
     """
+    logger.info(f"Creating post: {post_create}")
     return post_service.create_post(post_create)
 
 
