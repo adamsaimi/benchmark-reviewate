@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -76,6 +77,15 @@ def get_all_posts(
         A list of all posts
     """
     return post_service.get_all_posts()
+
+
+@router.get("/titles")
+def get_post_titles(db: Session = Depends(get_db)):
+    """
+    Retrieve all post titles.
+    """
+    posts = db.query(PostModel).all()
+    return [{"title": p.title} for p in posts]
 
 
 @router.get("/{post_id}", response_model=Post)
