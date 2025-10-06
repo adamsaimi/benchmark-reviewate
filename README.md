@@ -10,22 +10,20 @@ This benchmark evaluates AI code review agents by:
 3. Comparing them against ground truth reviews
 4. Calculating precision, recall, and F1 scores
 
+**Quick Navigation:**
+- 📖 [How to Run the Benchmark](#-running-the-benchmark)
+- 📊 [Scoring Methodology](#-scoring-methodology)
+- 🗂️ [Issue Taxonomy](#%EF%B8%8F-taxonomy)
+- 🏗️ [Architecture](#%EF%B8%8F-architecture)
+
 ### 🚀 Key Features
 
-**Application:**
-- **FastAPI Framework**: Modern, high-performance web framework
-- **PostgreSQL Database**: Robust relational database with SQLAlchemy ORM
-- **Alembic Migrations**: Database schema version control
-- **Clean Architecture**: Dependency injection and proper layering
-- **Comprehensive Testing**: Unit and integration tests with pytest
-- **Docker Support**: Containerized infrastructure
-
-**Benchmarking:**
-- **Automated PR Generation**: Creates PRs with known flaws
+- **Automated PR Generation**: Creates PRs with known flaws across multiple categories
 - **Ground Truth Reviews**: Pre-defined correct reviews for each flaw
 - **LLM-Based Validation**: Semantic matching of review comments
 - **Detailed Scoring**: Precision, recall, F1-score with stratified analysis
-- **Taxonomy-Based**: Covers security, performance, business logic, and more
+- **Comprehensive Taxonomy**: Covers security, performance, business logic, async, testing, and more
+- **Production-Ready Baseline**: Clean FastAPI application with PostgreSQL and proper architecture
 
 ## Project Structure
 
@@ -53,177 +51,24 @@ benchmark/
 └── README.md           # This file
 ```
 
-## Benchmarking Framework
-
-The benchmarking framework is explained in detail in the `BENCHMARK.md` file. It provides instructions on how to set up the environment, create pull requests with AI-generated and ground truth reviews, and run the benchmark to evaluate performance using precision, recall, and F1 score metrics.
-
 ## 📋 Prerequisites
 
 - Python 3.9+
-- Docker and Docker Compose
 - GitHub account (for benchmarking)
 - Gemini API key (for scoring)
 - GitHub token (for PR creation)
 
-## 🛠️ Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd benchmark
-   ```
-
-2. **Create and activate virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-## 🐘 Database Setup
-
-1. **Start PostgreSQL with Docker**
-   ```bash
-   docker-compose up -d postgres
-   ```
-
-2. **Run database migrations**
-   ```bash
-   alembic upgrade head
-   ```
-
-   Or use the migration script:
-   ```bash
-   chmod +x migrate.sh
-   ./migrate.sh
-   ```
-
-## 🎯 Running the Application
-
-### Option 1: Using the startup script (Recommended)
-```bash
-chmod +x start_server.sh
-./start_server.sh
-```
-
-### Option 2: Manual start
-```bash
-# Start PostgreSQL
-docker-compose up -d postgres
-
-# Run migrations
-alembic upgrade head
-
-# Start the API
-uvicorn benchmark.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-The API will be available at `http://localhost:8000`
-
-## 📚 API Documentation
-
-When the server is running, you can access:
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
-
-## 🧪 Testing
-
-### Run all tests
-```bash
-chmod +x run_tests.sh
-./run_tests.sh
-```
-
-### Run tests manually
-```bash
-# Start test database
-docker-compose up -d postgres_test
-
-# Run pytest
-pytest tests/ -v
-
-# Stop test database
-docker-compose stop postgres_test
-```
-
-## Validation Rules
-
-- **Title**: 3-100 characters
-- **Content**: Maximum 10,000 characters  
-- **Author Email**: Valid email format (validated by Pydantic)
-
-## 🔧 Configuration
-
-Key environment variables in `.env`:
-
-```bash
-# Database
-DATABASE_URL=postgresql://benchmark_user:benchmark_password@localhost:5432/benchmark_db
-TEST_DATABASE_URL=postgresql://benchmark_user:benchmark_password@localhost:5433/benchmark_test_db
-
-# API
-API_TITLE=Benchmark API
-API_DESCRIPTION=A pristine FastAPI application for managing blog posts
-API_VERSION=1.0.0
-
-# Server
-HOST=0.0.0.0
-PORT=8000
-```
-
-## 🔄 Database Migrations
-
-### Create a new migration
-```bash
-alembic revision --autogenerate -m "Description of changes"
-```
-
-### Apply migrations
-```bash
-alembic upgrade head
-```
-
-### Rollback migration
-```bash
-alembic downgrade -1
-```
-
-## 📝 API Endpoints
-
-### Posts
-
-- `POST /posts/` - Create a new post
-- `GET /posts/` - Get all posts
-- `GET /posts/{post_id}` - Get a specific post by ID
-- `GET /` - Health check endpoint
-
 ## 🏗️ Architecture
 
-The application follows clean architecture principles:
+The baseline application is a production-ready FastAPI project with:
 
-### Layered Architecture
-1. **API Layer** (`routers/`): Handles HTTP requests/responses
-2. **Service Layer** (`services/`): Contains business logic
-3. **Data Layer** (`models.py`): Database models with SQLAlchemy
-4. **Schema Layer** (`schemas.py`): Data validation with Pydantic
+- **Clean Architecture**: Layered design (API → Service → Data)
+- **PostgreSQL Database**: SQLAlchemy ORM with Alembic migrations
+- **Dependency Injection**: Proper DI pattern throughout
+- **Type Safety**: Full type hints and Pydantic validation
+- **Comprehensive Tests**: Isolated database fixtures
 
-### Key Principles
-- **Separation of Concerns**: Clear distinction between layers
-- **Dependency Injection**: Database sessions injected via FastAPI dependencies
-- **Strong Typing**: Comprehensive type hints throughout
-- **Error Handling**: Custom exceptions with proper HTTP status codes
-- **Testability**: Complete test coverage with isolated database per test
+This provides a pristine codebase against which PRs with flaws are compared.
 
 ---
 
@@ -395,25 +240,6 @@ By Difficulty:
 
 ---
 
-## 🔧 Development
-
-### Code Quality Standards
-
-- Type hints throughout the codebase
-- Comprehensive docstrings (Google style)
-- Separation of concerns
-- Dependency injection pattern
-- Clean, maintainable code structure
-
-### Adding New Test Cases
-
-1. Create flaw in appropriate category folder
-2. Add ground truth review in `ground_truth_reviews/`
-3. Update taxonomy in `pull_request_generator/taxonomy.json`
-4. Run `create_pull_requests.py` to generate PRs
-
----
-
-## 📄 License
+##  License
 
 This project is part of a benchmark suite for evaluating AI code review agents.
