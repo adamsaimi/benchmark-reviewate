@@ -7,21 +7,36 @@ translating between HTTP requests/responses and service layer operations.
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
 from benchmark.schemas import Post, PostCreate
 from benchmark.services.post_service import PostService, PostNotFoundException
+from benchmark.database import get_db
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
-# Service instance - in production, this would use dependency injection
-post_service = PostService()
+
+def get_post_service(db: Session = Depends(get_db)) -> PostService:
+    """
+    Dependency function to get PostService instance.
+    
+    Args:
+        db: Database session injected by FastAPI
+        
+    Returns:
+        PostService instance with the database session
+    """
+    return PostService(db)
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
-def create_post(post_create: PostCreate) -> Post:
+def create_post(
+    post_create: PostCreate,
+    post_service: PostService = Depends(get_post_service)
+) -> Post:
     """
     Create a new post.
     
@@ -30,6 +45,7 @@ def create_post(post_create: PostCreate) -> Post:
     
     Args:
         post_create: The post data to create
+        post_service: Injected post service instance
         
     Returns:
         The newly created post with all metadata
@@ -38,12 +54,17 @@ def create_post(post_create: PostCreate) -> Post:
 
 
 @router.get("/", response_model=List[Post])
-def get_all_posts() -> List[Post]:
+def get_all_posts(
+    post_service: PostService = Depends(get_post_service)
+) -> List[Post]:
     """
     Retrieve all posts.
     
     Returns a list of all posts currently stored in the system,
-    ordered by creation time.
+    ordered by creation time (newest first).
+    
+    Args:
+        post_service: Injected post service instance
     
     Returns:
         A list of all posts
@@ -52,7 +73,10 @@ def get_all_posts() -> List[Post]:
 
 
 @router.get("/{post_id}", response_model=Post)
-def get_post(post_id: int) -> Post:
+def get_post(
+    post_id: int,
+    post_service: PostService = Depends(get_post_service)
+) -> Post:
     """
     Retrieve a specific post by ID.
     
@@ -60,6 +84,7 @@ def get_post(post_id: int) -> Post:
     
     Args:
         post_id: The unique identifier of the post to retrieve
+        post_service: Injected post service instance
         
     Returns:
         The requested post

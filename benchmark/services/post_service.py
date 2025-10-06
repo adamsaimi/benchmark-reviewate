@@ -6,9 +6,11 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import List
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate
 
 
@@ -22,11 +24,6 @@ class PostNotFoundException(Exception):
     pass
 
 
-# In-memory database simulation
-_posts_db: List[Dict[str, Any]] = []
-_next_id: int = 1
-
-
 class PostService:
     """
     Service class encapsulating all post-related business operations.
@@ -34,6 +31,15 @@ class PostService:
     This class handles post creation, retrieval, and management,
     maintaining separation of concerns from the API layer.
     """
+
+    def __init__(self, db: Session):
+        """
+        Initialize the PostService with a database session.
+        
+        Args:
+            db: SQLAlchemy database session for database operations
+        """
+        self.db = db
 
     def create_post(self, post_create: PostCreate) -> Post:
         """
@@ -44,21 +50,25 @@ class PostService:
             
         Returns:
             The newly created post with system-generated fields
+            
+        Raises:
+            SQLAlchemyError: If there's a database error during creation
         """
-        global _next_id
-        
-        post_dict: Dict[str, Any] = {
-            "id": _next_id,
-            "title": post_create.title,
-            "content": post_create.content,
-            "author_email": str(post_create.author_email),
-            "created_at": datetime.now(timezone.utc),
-        }
-        
-        _posts_db.append(post_dict)
-        _next_id += 1
-        
-        return Post(**post_dict)
+        try:
+            db_post = PostModel(
+                title=post_create.title,
+                content=post_create.content,
+                author_email=str(post_create.author_email)
+            )
+            
+            self.db.add(db_post)
+            self.db.commit()
+            self.db.refresh(db_post)
+            
+            return Post.model_validate(db_post)
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
 
     def get_post_by_id(self, post_id: int) -> Post:
         """
@@ -73,17 +83,19 @@ class PostService:
         Raises:
             PostNotFoundException: If no post exists with the given ID
         """
-        for post_dict in _posts_db:
-            if post_dict["id"] == post_id:
-                return Post(**post_dict)
+        db_post = self.db.query(PostModel).filter(PostModel.id == post_id).first()
         
-        raise PostNotFoundException(f"Post with ID {post_id} not found")
+        if db_post is None:
+            raise PostNotFoundException(f"Post with ID {post_id} not found")
+        
+        return Post.model_validate(db_post)
 
     def get_all_posts(self) -> List[Post]:
         """
         Retrieve all posts from the database.
         
         Returns:
-            A list of all posts in the system
+            A list of all posts in the system, ordered by creation date (newest first)
         """
-        return [Post(**post_dict) for post_dict in _posts_db]
+        db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
+        return [Post.model_validate(post) for post in db_posts]

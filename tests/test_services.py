@@ -9,9 +9,9 @@ from benchmark.services.post_service import PostService, PostNotFoundException
 from benchmark.schemas import PostCreate
 
 
-def test_create_post():
+def test_create_post(db_session):
     """Test creating a post through the service."""
-    service = PostService()
+    service = PostService(db_session)
     post_data = PostCreate(
         title="Service Test Post",
         content="Test content from service",
@@ -27,9 +27,9 @@ def test_create_post():
     assert isinstance(result.created_at, datetime)
 
 
-def test_get_post_by_id():
+def test_get_post_by_id(db_session):
     """Test retrieving a post by ID."""
-    service = PostService()
+    service = PostService(db_session)
     
     # Create a post first
     post_data = PostCreate(
@@ -48,17 +48,17 @@ def test_get_post_by_id():
     assert retrieved_post.author_email == created_post.author_email
 
 
-def test_get_post_by_id_not_found():
+def test_get_post_by_id_not_found(db_session):
     """Test retrieving a non-existent post raises exception."""
-    service = PostService()
+    service = PostService(db_session)
     
     with pytest.raises(PostNotFoundException):
         service.get_post_by_id(99999)
 
 
-def test_get_all_posts():
+def test_get_all_posts(db_session):
     """Test retrieving all posts."""
-    service = PostService()
+    service = PostService(db_session)
     
     # Create multiple posts
     post1_data = PostCreate(

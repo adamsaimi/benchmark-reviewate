@@ -2,21 +2,17 @@
 Unit tests for the API endpoints.
 """
 
-from fastapi.testclient import TestClient
-
-from benchmark.main import app
-
-client = TestClient(app)
+import pytest
 
 
-def test_health_check():
+def test_health_check(client):
     """Test the root health check endpoint."""
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
 
-def test_create_post():
+def test_create_post(client):
     """Test creating a new post."""
     post_data = {
         "title": "Test Post",
@@ -35,7 +31,7 @@ def test_create_post():
     assert "created_at" in data
 
 
-def test_get_all_posts():
+def test_get_all_posts(client):
     """Test getting all posts."""
     # First create a post
     post_data = {
@@ -54,7 +50,7 @@ def test_get_all_posts():
     assert len(data) > 0
 
 
-def test_get_post_by_id():
+def test_get_post_by_id(client):
     """Test getting a specific post by ID."""
     # First create a post
     post_data = {
@@ -75,7 +71,7 @@ def test_get_post_by_id():
     assert data["title"] == post_data["title"]
 
 
-def test_get_nonexistent_post():
+def test_get_nonexistent_post(client):
     """Test getting a non-existent post returns 404."""
     response = client.get("/posts/99999")
     assert response.status_code == 404
@@ -85,7 +81,7 @@ def test_get_nonexistent_post():
     assert data["detail"] == "Post not found"
 
 
-def test_create_post_invalid_email():
+def test_create_post_invalid_email(client):
     """Test creating a post with invalid email."""
     post_data = {
         "title": "Test Post",
@@ -97,7 +93,7 @@ def test_create_post_invalid_email():
     assert response.status_code == 422  # Validation error
 
 
-def test_create_post_title_too_short():
+def test_create_post_title_too_short(client):
     """Test creating a post with title too short."""
     post_data = {
         "title": "Hi",  # Too short (min 3 chars)
@@ -109,7 +105,7 @@ def test_create_post_title_too_short():
     assert response.status_code == 422
 
 
-def test_create_post_title_too_long():
+def test_create_post_title_too_long(client):
     """Test creating a post with title too long."""
     post_data = {
         "title": "x" * 101,  # Too long (max 100 chars)

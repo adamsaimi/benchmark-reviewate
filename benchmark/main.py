@@ -9,14 +9,14 @@ from typing import Dict
 
 from fastapi import FastAPI
 
-from benchmark.config import API_DESCRIPTION, API_TITLE, API_VERSION, HEALTH_CHECK_MESSAGE
+from benchmark.config import settings, HEALTH_CHECK_MESSAGE
 from benchmark.routers import posts
 
 # Initialize the main FastAPI application
 app = FastAPI(
-    title=API_TITLE,
-    description=API_DESCRIPTION,
-    version=API_VERSION
+    title=settings.API_TITLE,
+    description=settings.API_DESCRIPTION,
+    version=settings.API_VERSION
 )
 
 # Include the posts router for all post-related endpoints

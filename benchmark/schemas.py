@@ -7,7 +7,7 @@ for API requests and responses, ensuring type safety and validation.
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
 from benchmark.config import MAX_CONTENT_LENGTH, MAX_TITLE_LENGTH, MIN_TITLE_LENGTH
 
@@ -24,12 +24,12 @@ class PostBase(BaseModel):
         min_length=MIN_TITLE_LENGTH,
         max_length=MAX_TITLE_LENGTH,
         description="The title of the post",
-        example="My First Blog Post"
+        examples=["My First Blog Post"]
     )
     content: str = Field(
         max_length=MAX_CONTENT_LENGTH,
         description="The main content of the post",
-        example="This is the content of my blog post. It contains valuable information."
+        examples=["This is the content of my blog post. It contains valuable information."]
     )
 
 
@@ -51,6 +51,8 @@ class Post(PostBase):
     Represents a full post with all system-generated fields
     including ID, author email, and creation timestamp.
     """
+    
+    model_config = ConfigDict(from_attributes=True)
     
     id: int = Field(description="Unique identifier for the post")
     author_email: EmailStr = Field(description="Email address of the post author")

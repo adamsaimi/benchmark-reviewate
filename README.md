@@ -1,76 +1,143 @@
 # Benchmark API
 
-A pristine, exemplary FastAPI application for managing blog posts. This project serves as a "golden copy" baseline with clean architecture, strong typing, and modern best practices.
+A production-ready FastAPI application for managing blog posts with PostgreSQL database, Alembic migrations, and comprehensive testing.
+
+## 🚀 Features
+
+- **FastAPI Framework**: Modern, fast (high-performance) web framework
+- **PostgreSQL Database**: Robust relational database with SQLAlchemy ORM
+- **Alembic Migrations**: Database schema version control
+- **Dependency Injection**: Clean architecture with proper DI pattern
+- **Comprehensive Testing**: Unit and integration tests with pytest
+- **Docker Support**: Containerized PostgreSQL for development and testing
+- **Type Safety**: Full type hints and Pydantic validation
 
 ## Project Structure
 
 ```
 benchmark/
-├── benchmark/                    # Main application package
-│   ├── __init__.py
-│   ├── main.py                  # FastAPI application instance
-│   ├── config.py               # Configuration constants
-│   ├── schemas.py              # Pydantic models
-│   ├── routers/                # API endpoints
-│   │   ├── __init__.py
-│   │   └── posts.py           # Post-related routes
-│   └── services/              # Business logic
-│       ├── __init__.py
-│       └── post_service.py    # Post service implementation
-├── tests/                     # Test suite
-│   ├── __init__.py
-│   ├── conftest.py           # Test configuration and fixtures
-│   ├── test_api.py           # API integration tests
-│   └── test_services.py      # Service unit tests
-├── app.py                    # Application entry point
-├── requirements.txt          # Dependencies
-├── pyproject.toml           # Project configuration
-├── create_pull_requests.py  # Script to create the pull requests
-├── SCORE.md                 # Scoring methodology document
-├── BENCHMARK.md             # Benchmarking framework document
-└── README.md                # This file
+├── alembic/                  # Database migrations
+│   ├── versions/            # Migration files
+│   └── env.py               # Alembic environment
+├── benchmark/               # Main application package
+│   ├── routers/            # API route handlers
+│   ├── services/           # Business logic layer
+│   ├── config.py           # Configuration settings
+│   ├── database.py         # Database connection
+│   ├── main.py            # FastAPI app initialization
+│   ├── models.py          # SQLAlchemy models
+│   └── schemas.py         # Pydantic schemas
+├── tests/                  # Test suite
+│   ├── conftest.py        # Test fixtures
+│   ├── test_api.py        # API endpoint tests
+│   └── test_services.py   # Service layer tests
+├── docker-compose.yml     # Docker services
+├── alembic.ini           # Alembic configuration
+├── requirements.txt      # Python dependencies
+├── .env.example         # Environment variables template
+└── README.md           # This file
 ```
 
 ## Benchmarking Framework
 
 The benchmarking framework is explained in detail in the `BENCHMARK.md` file. It provides instructions on how to set up the environment, create pull requests with AI-generated and ground truth reviews, and run the benchmark to evaluate performance using precision, recall, and F1 score metrics.
 
-## Features
+## 📋 Prerequisites
 
-- **REST API** for managing posts with full CRUD operations
-- **Strong typing** throughout with Pydantic models
-- **Clean architecture** with separation of concerns (router vs service)
-- **Robust error handling** with custom exceptions
-- **Email validation** using Pydantic's EmailStr
-- **Comprehensive field validation** with length constraints
-- **Automatic API documentation** via FastAPI's OpenAPI integration
-- **Complete test suite** with pytest
+- Python 3.9+
+- Docker and Docker Compose
+- pip (Python package manager)
 
-## Technology Stack
+## 🛠️ Installation
 
-- **Python 3.12+** (compatible with 3.11+)
-- **FastAPI 0.117.1** - Modern, fast web framework
-- **Pydantic 2.11.9** - Data validation using Python type annotations
-- **Uvicorn 0.37.0** - ASGI server implementation
-- **Pytest 8.3.3** - Testing framework
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd benchmark
+   ```
 
-## Quick Start
+2. **Create and activate virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-### 2. Manual Setup
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+## 🐘 Database Setup
+
+1. **Start PostgreSQL with Docker**
+   ```bash
+   docker-compose up -d postgres
+   ```
+
+2. **Run database migrations**
+   ```bash
+   alembic upgrade head
+   ```
+
+   Or use the migration script:
+   ```bash
+   chmod +x migrate.sh
+   ./migrate.sh
+   ```
+
+## 🎯 Running the Application
+
+### Option 1: Using the startup script (Recommended)
 ```bash
-# Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+chmod +x start_server.sh
+./start_server.sh
+```
 
-# Install dependencies
-pip install -r requirements.txt
+### Option 2: Manual start
+```bash
+# Start PostgreSQL
+docker-compose up -d postgres
 
-# Run tests
-pytest tests/
+# Run migrations
+alembic upgrade head
 
-# Start the server
-uvicorn app:app --reload --port 8000
+# Start the API
+uvicorn benchmark.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+The API will be available at `http://localhost:8000`
+
+## 📚 API Documentation
+
+When the server is running, you can access:
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI JSON**: http://localhost:8000/openapi.json
+
+## 🧪 Testing
+
+### Run all tests
+```bash
+chmod +x run_tests.sh
+./run_tests.sh
+```
+
+### Run tests manually
+```bash
+# Start test database
+docker-compose up -d postgres_test
+
+# Run pytest
+pytest tests/ -v
+
+# Stop test database
+docker-compose stop postgres_test
 ```
 
 ## Validation Rules
@@ -79,43 +146,86 @@ uvicorn app:app --reload --port 8000
 - **Content**: Maximum 10,000 characters  
 - **Author Email**: Valid email format (validated by Pydantic)
 
-## Testing
+## 🔧 Configuration
 
-The project includes comprehensive tests:
+Key environment variables in `.env`:
 
 ```bash
-# Run all tests
-pytest
+# Database
+DATABASE_URL=postgresql://benchmark_user:benchmark_password@localhost:5432/benchmark_db
+TEST_DATABASE_URL=postgresql://benchmark_user:benchmark_password@localhost:5433/benchmark_test_db
 
-# Run with verbose output
-pytest -v
+# API
+API_TITLE=Benchmark API
+API_DESCRIPTION=A pristine FastAPI application for managing blog posts
+API_VERSION=1.0.0
 
-# Run specific test file
-pytest tests/test_api.py
-
-# Run with coverage (after installing pytest-cov)
-pytest --cov=benchmark
+# Server
+HOST=0.0.0.0
+PORT=8000
 ```
 
-## API Documentation
+## 🔄 Database Migrations
 
-When the server is running, you can access:
-- **Interactive API docs**: http://127.0.0.1:8000/docs
-- **ReDoc documentation**: http://127.0.0.1:8000/redoc
-- **OpenAPI JSON**: http://127.0.0.1:8000/openapi.json
+### Create a new migration
+```bash
+alembic revision --autogenerate -m "Description of changes"
+```
 
-## Architecture Principles
+### Apply migrations
+```bash
+alembic upgrade head
+```
+
+### Rollback migration
+```bash
+alembic downgrade -1
+```
+
+## 📝 API Endpoints
+
+### Posts
+
+- `POST /posts/` - Create a new post
+- `GET /posts/` - Get all posts
+- `GET /posts/{post_id}` - Get a specific post by ID
+- `GET /` - Health check endpoint
+
+## 🏗️ Architecture Principles
+
+The application follows clean architecture principles:
 
 1. **Separation of Concerns**: Clear distinction between HTTP layer (routers) and business logic (services)
-2. **Strong Typing**: Comprehensive type hints throughout the codebase
-3. **Explicit Contracts**: Pydantic schemas define clear data contracts
-4. **Error Handling**: Custom exceptions with proper HTTP status code mapping
-5. **Clean Code**: Google-style docstrings, descriptive naming, and Black formatting standards
-6. **Testability**: Complete test coverage with unit and integration tests
+2. **API Layer** (`routers/`): Handles HTTP requests/responses
+3. **Service Layer** (`services/`): Contains business logic
+4. **Data Layer** (`models.py`): Database models with SQLAlchemy
+5. **Schema Layer** (`schemas.py`): Data validation with Pydantic
+6. **Strong Typing**: Comprehensive type hints throughout the codebase
+7. **Explicit Contracts**: Pydantic schemas define clear data contracts
+8. **Error Handling**: Custom exceptions with proper HTTP status code mapping
+9. **Clean Code**: Google-style docstrings, descriptive naming
+10. **Testability**: Complete test coverage with unit and integration tests
+
+## 🛡️ Error Handling
+
+- Proper exception handling with custom exceptions
+- Pydantic validation for request data
+- SQLAlchemy error handling with rollback
+- HTTP status codes following REST conventions
+
+## 🧹 Code Quality
+
+- Type hints throughout the codebase
+- Comprehensive docstrings
+- Separation of concerns
+- Dependency injection pattern
+- Clean, maintainable code structure
 
 ## Development Notes
 
-- This application uses an in-memory database for simplicity
-- In production, integrate with a real database using SQLAlchemy or similar ORM
 - The code is designed to be exemplary and serve as a baseline for introducing controlled flaws for testing purposes
 - All dependencies are pinned to specific versions for reproducibility
+
+## 📄 License
+
+This project is part of a benchmark suite for review agents.

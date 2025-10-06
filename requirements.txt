@@ -1,8 +1,11 @@
 fastapi==0.117.1
 uvicorn[standard]==0.37.0
 pydantic[email]==2.11.9
-pytest==8.3.3
-httpx==0.28.1
+pydantic-settings==2.11.0
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.0
+python-dotenv==1.0.1
 pytest==8.3.3
 httpx==0.28.1
 pytest-asyncio==1.2.0
