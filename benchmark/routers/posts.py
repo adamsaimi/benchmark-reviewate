@@ -3,6 +3,7 @@ HTTP routing and endpoint definitions for post-related operations.
 
 This module defines the REST API endpoints and handles HTTP-level logic,
 translating between HTTP requests/responses and service layer operations.
+Includes user endpoints for simplicity.
 """
 
 from typing import List
@@ -11,12 +12,13 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
-from benchmark.schemas import Post, PostCreate
-from benchmark.services.post_service import PostService, PostNotFoundException
+from benchmark.schemas import Post, PostCreate, User
+from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
+user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -31,6 +33,10 @@ def get_post_service(db: Session = Depends(get_db)) -> PostService:
     """
     return PostService(db)
 
+
+# ============================================================================
+# Post Endpoints
+# ============================================================================
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
 def create_post(
@@ -99,4 +105,55 @@ def get_post(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
+        )
+
+
+# ============================================================================
+# User Endpoints
+# ============================================================================
+
+@user_router.get("/", response_model=List[User])
+def get_all_users(
+    post_service: PostService = Depends(get_post_service)
+) -> List[User]:
+    """
+    Retrieve all users.
+    
+    Returns a list of all users currently in the system.
+    
+    Args:
+        post_service: Injected post service instance
+    
+    Returns:
+        A list of all users
+    """
+    return post_service.get_all_users()
+
+
+@user_router.get("/{email}", response_model=User)
+def get_user_by_email(
+    email: str = Path(..., description="The email address of the user"),
+    post_service: PostService = Depends(get_post_service)
+) -> User:
+    """
+    Retrieve a specific user by email.
+    
+    Fetches a single user using their email address.
+    
+    Args:
+        email: The email address of the user to retrieve
+        post_service: Injected post service instance
+        
+    Returns:
+        The requested user
+        
+    Raises:
+        HTTPException: 404 if the user is not found
+    """
+    try:
+        return post_service.get_user_by_email(email)
+    except UserNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
         )

@@ -22,6 +22,9 @@ app = FastAPI(
 # Include the posts router for all post-related endpoints
 app.include_router(posts.router)
 
+# Include the users router for all user-related endpoints
+app.include_router(posts.user_router)
+
 
 @app.get("/")
 def read_root() -> Dict[str, str]:

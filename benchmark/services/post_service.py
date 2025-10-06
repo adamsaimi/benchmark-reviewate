@@ -10,8 +10,8 @@ from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from benchmark.models import Post as PostModel
-from benchmark.schemas import Post, PostCreate
+from benchmark.models import Post as PostModel, User as UserModel
+from benchmark.schemas import Post, PostCreate, User
 
 
 class PostNotFoundException(Exception):
@@ -24,12 +24,20 @@ class PostNotFoundException(Exception):
     pass
 
 
+class UserNotFoundException(Exception):
+    """
+    Exception raised when a requested user cannot be found.
+    """
+    pass
+
+
 class PostService:
     """
     Service class encapsulating all post-related business operations.
     
     This class handles post creation, retrieval, and management,
     maintaining separation of concerns from the API layer.
+    It also handles user operations to simplify the architecture.
     """
 
     def __init__(self, db: Session):
@@ -40,6 +48,41 @@ class PostService:
             db: SQLAlchemy database session for database operations
         """
         self.db = db
+
+    def get_or_create_user(self, email: str, name: str = None) -> UserModel:
+        """
+        Get an existing user by email or create a new one.
+        
+        Args:
+            email: The email address of the user
+            name: The name of the user (required if creating new user)
+            
+        Returns:
+            The existing or newly created user
+            
+        Raises:
+            ValueError: If name is not provided for a new user
+            SQLAlchemyError: If there's a database error during creation
+        """
+        # Try to find existing user
+        user = self.db.query(UserModel).filter(UserModel.email == email).first()
+        
+        if user:
+            return user
+        
+        # Create new user
+        if not name:
+            raise ValueError("Name is required when creating a new user")
+        
+        try:
+            user = UserModel(email=email, name=name)
+            self.db.add(user)
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
 
     def create_post(self, post_create: PostCreate) -> Post:
         """
@@ -55,10 +98,17 @@ class PostService:
             SQLAlchemyError: If there's a database error during creation
         """
         try:
+            # Get or create user
+            user = self.get_or_create_user(
+                email=str(post_create.author_email),
+                name=post_create.author_name or str(post_create.author_email).split('@')[0]
+            )
+            
+            # Create post
             db_post = PostModel(
                 title=post_create.title,
                 content=post_create.content,
-                author_email=str(post_create.author_email)
+                author_id=user.id
             )
             
             self.db.add(db_post)
@@ -99,3 +149,33 @@ class PostService:
         """
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
+    
+    def get_user_by_email(self, email: str) -> User:
+        """
+        Retrieve a user by email address.
+        
+        Args:
+            email: The email address of the user
+            
+        Returns:
+            The requested user
+            
+        Raises:
+            UserNotFoundException: If no user exists with the given email
+        """
+        user = self.db.query(UserModel).filter(UserModel.email == email).first()
+        
+        if user is None:
+            raise UserNotFoundException(f"User with email {email} not found")
+        
+        return User.model_validate(user)
+    
+    def get_all_users(self) -> List[User]:
+        """
+        Retrieve all users from the database.
+        
+        Returns:
+            A list of all users in the system
+        """
+        users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
+        return [User.model_validate(user) for user in users]
