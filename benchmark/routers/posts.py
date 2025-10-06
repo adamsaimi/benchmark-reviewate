@@ -7,7 +7,7 @@ translating between HTTP requests/responses and service layer operations.
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
@@ -74,7 +74,7 @@ def get_all_posts(
 
 @router.get("/{post_id}", response_model=Post)
 def get_post(
-    post_id: int,
+    post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
     post_service: PostService = Depends(get_post_service)
 ) -> Post:
     """
@@ -83,7 +83,7 @@ def get_post(
     Fetches a single post using its unique identifier.
     
     Args:
-        post_id: The unique identifier of the post to retrieve
+        post_id: The unique identifier of the post to retrieve (must be > 0)
         post_service: Injected post service instance
         
     Returns:
@@ -91,6 +91,7 @@ def get_post(
         
     Raises:
         HTTPException: 404 if the post is not found
+        HTTPException: 422 if the post_id is not a positive integer
     """
     try:
         return post_service.get_post_by_id(post_id)

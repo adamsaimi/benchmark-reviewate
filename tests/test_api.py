@@ -115,3 +115,14 @@ def test_create_post_title_too_long(client):
     
     response = client.post("/posts/", json=post_data)
     assert response.status_code == 422
+
+
+def test_get_post_invalid_id(client):
+    """Test getting a post with invalid ID (negative or zero)."""
+    # Test with negative ID
+    response = client.get("/posts/-1")
+    assert response.status_code == 422
+    
+    # Test with zero
+    response = client.get("/posts/0")
+    assert response.status_code == 422

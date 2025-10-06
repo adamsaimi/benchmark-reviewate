@@ -28,7 +28,8 @@ def get_db() -> Generator[Session, None, None]:
     Dependency function to get database session.
     
     This function is used as a FastAPI dependency to inject
-    database sessions into route handlers.
+    database sessions into route handlers. The session is automatically
+    closed after use, regardless of success or failure.
     
     Yields:
         Database session that is automatically closed after use
@@ -36,5 +37,9 @@ def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db
+    except Exception:
+        # Rollback is handled in service layer, but we ensure cleanup here
+        db.rollback()
+        raise
     finally:
         db.close()
