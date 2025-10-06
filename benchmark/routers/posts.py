@@ -8,7 +8,7 @@ Includes user endpoints for simplicity.
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi import APIRouter, HTTPException, status, Depends, Path, Query
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
@@ -19,7 +19,6 @@ from benchmark.database import get_db
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
-
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
     """
@@ -61,21 +60,25 @@ def create_post(
 
 @router.get("/", response_model=List[Post])
 def get_all_posts(
-    post_service: PostService = Depends(get_post_service)
+    post_service: PostService = Depends(get_post_service),
+    page: int = Query(1, gt=0, description="Page number, starting from 1"),
+    per_page: int = Query(10, gt=0, le=100, description="Number of posts per page")
 ) -> List[Post]:
     """
-    Retrieve all posts.
+    Retrieve all posts with pagination.
     
     Returns a list of all posts currently stored in the system,
     ordered by creation time (newest first).
     
     Args:
         post_service: Injected post service instance
+        page: The page number to retrieve
+        per_page: The number of posts to retrieve per page
     
     Returns:
-        A list of all posts
+        A list of posts for the requested page
     """
-    return post_service.get_all_posts()
+    return post_service.get_all_posts(page=page, per_page=per_page)
 
 
 @router.get("/{post_id}", response_model=Post)

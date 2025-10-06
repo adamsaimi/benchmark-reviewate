@@ -140,14 +140,19 @@ class PostService:
         
         return Post.model_validate(db_post)
 
-    def get_all_posts(self) -> List[Post]:
+    def get_all_posts(self, page: int, per_page: int) -> List[Post]:
         """
-        Retrieve all posts from the database.
-        
+        Retrieve all posts from the database with pagination.
+
+        Args:
+            page: The page number to retrieve
+            per_page: The number of posts to retrieve per page
+
         Returns:
-            A list of all posts in the system, ordered by creation date (newest first)
+            A paginated list of posts in the system, ordered by creation date (newest first)
         """
-        db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
+        offset = page * per_page
+        db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).offset(offset).limit(per_page).all()
         return [Post.model_validate(post) for post in db_posts]
     
     def get_user_by_email(self, email: str) -> User:
