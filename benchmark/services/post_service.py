@@ -150,6 +150,32 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def calculate_average_length(self) -> float:
+        """
+        Calculates the average content length of all posts.
+        
+        Returns:
+            The average length as a float, or 0.0 if no posts exist.
+        """
+        posts = self.db.query(PostModel).all()
+        if not posts:
+            return 0.0
+        
+        total_length = sum(len(post.content) for post in posts)
+        return total_length / len(posts)
+
+    def is_average_length(self, expected: float) -> bool:
+        """
+        Checks if the average post length matches an expected value.
+        
+        Args:
+            expected: The expected average length to compare against.
+            
+        Returns:
+            True if the calculated average equals the expected value, False otherwise.
+        """
+        return self.calculate_average_length() == expected
+    
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
