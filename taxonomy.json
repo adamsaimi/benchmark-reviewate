@@ -88,7 +88,7 @@
   },
   {
     "issue_id": "LOGIC-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Incorrect Boolean Logic in Conditions",
     "category": "Correctness & Logic Errors",
     "description": "Using wrong logical operators (and/or) or incorrect condition ordering leads to unintended code execution paths.",
@@ -116,7 +116,7 @@
   },
   {
     "issue_id": "LOGIC-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Mutable Default Argument",
     "category": "Correctness & Logic Errors",
     "description": "Using mutable objects as default arguments causes shared state between function calls, leading to unexpected behavior.",
@@ -144,7 +144,7 @@
   },
   {
     "issue_id": "LOGIC-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Time Zone Naive Datetime Comparison",
     "category": "Correctness & Logic Errors",
     "description": "Comparing timezone-aware and naive datetime objects causes TypeErrors or incorrect results in time-based logic.",
@@ -172,7 +172,7 @@
   },
   {
     "issue_id": "LOGIC-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Incorrect Exception Handling Order",
     "category": "Correctness & Logic Errors",
     "description": "Catching broad exceptions before specific ones prevents proper error handling and makes debugging difficult.",
@@ -200,7 +200,7 @@
   },
   {
     "issue_id": "LOGIC-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Float Comparison with Equality",
     "category": "Correctness & Logic Errors",
     "description": "Directly comparing floating-point numbers with == operator fails due to precision issues, causing logical errors.",
@@ -228,7 +228,7 @@
   },
   {
     "issue_id": "LOGIC-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Incorrect Loop Variable Scope",
     "category": "Correctness & Logic Errors",
     "description": "Closure capturing loop variables leads to all callbacks referencing the same final value instead of their intended values.",
@@ -256,7 +256,7 @@
   },
   {
     "issue_id": "LOGIC-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Incorrect Dictionary Key Update",
     "category": "Correctness & Logic Errors",
     "description": "Modifying dictionary keys during iteration causes RuntimeError, and using unhashable types as keys causes TypeError.",
@@ -284,7 +284,7 @@
   },
   {
     "issue_id": "SEC-001",
-    "generated": false,
+    "generated": true,
     "issue_name": "SQL Injection Vulnerability",
     "category": "Security Vulnerabilities",
     "description": "Constructing SQL queries with string concatenation allows attackers to inject malicious SQL code, potentially exposing or modifying data.",
@@ -313,7 +313,7 @@
   },
   {
     "issue_id": "SEC-002",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Authentication Check",
     "category": "Security Vulnerabilities",
     "description": "Endpoints that should require authentication are publicly accessible, allowing unauthorized access to sensitive operations or data.",
@@ -341,7 +341,7 @@
   },
   {
     "issue_id": "SEC-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Hardcoded Credentials",
     "category": "Security Vulnerabilities",
     "description": "Storing passwords, API keys, or secrets directly in source code exposes them to anyone with code access and version control history.",
@@ -367,7 +367,7 @@
   },
   {
     "issue_id": "SEC-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Insufficient Authorization Check",
     "category": "Security Vulnerabilities",
     "description": "Authenticated users can access or modify resources they shouldn't own, leading to unauthorized data access or modification.",
@@ -396,7 +396,7 @@
   },
   {
     "issue_id": "SEC-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Mass Assignment Vulnerability",
     "category": "Security Vulnerabilities",
     "description": "Accepting all user input fields without validation allows attackers to modify unintended fields like admin status or permissions.",
@@ -425,7 +425,7 @@
   },
   {
     "issue_id": "SEC-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Insecure Password Storage",
     "category": "Security Vulnerabilities",
     "description": "Storing passwords in plain text or using weak hashing algorithms makes user accounts vulnerable if the database is compromised.",
@@ -464,7 +464,7 @@
   },
   {
     "issue_id": "SEC-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Cross-Site Scripting (XSS)",
     "category": "Security Vulnerabilities",
     "description": "Rendering user-supplied content without escaping allows attackers to inject malicious scripts that execute in other users' browsers.",
@@ -490,7 +490,7 @@
   },
   {
     "issue_id": "SEC-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Insecure Direct Object Reference",
     "category": "Security Vulnerabilities",
     "description": "Using predictable IDs without authorization allows attackers to access other users' resources by guessing or incrementing IDs.",
@@ -519,7 +519,7 @@
   },
   {
     "issue_id": "SEC-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Rate Limiting",
     "category": "Security Vulnerabilities",
     "description": "Endpoints without rate limiting are vulnerable to brute force attacks, DoS attacks, and abuse of expensive operations.",
@@ -547,7 +547,7 @@
   },
   {
     "issue_id": "SEC-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Sensitive Data Exposure in Logs",
     "category": "Security Vulnerabilities",
     "description": "Logging sensitive information like passwords, tokens, or PII creates security risks and compliance violations if logs are compromised.",
@@ -575,7 +575,7 @@
   },
   {
     "issue_id": "PERF-001",
-    "generated": false,
+    "generated": true,
     "issue_name": "N+1 Query Problem",
     "category": "Performance Issues",
     "description": "Loading related data in a loop executes N additional queries instead of a single optimized query, causing severe performance degradation.",
@@ -616,7 +616,7 @@
   },
   {
     "issue_id": "PERF-002",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Database Index",
     "category": "Performance Issues",
     "description": "Querying or sorting on unindexed columns causes full table scans, dramatically slowing down as data grows.",
@@ -655,7 +655,7 @@
   },
   {
     "issue_id": "PERF-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Loading Entire Table into Memory",
     "category": "Performance Issues",
     "description": "Using .all() on large tables loads all records into memory, causing excessive memory usage and potential crashes.",
@@ -684,7 +684,7 @@
   },
   {
     "issue_id": "PERF-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Inefficient String Concatenation",
     "category": "Performance Issues",
     "description": "Building strings in loops with + operator creates new string objects each iteration, causing O(n\u00b2) time complexity.",
@@ -712,7 +712,7 @@
   },
   {
     "issue_id": "PERF-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Unnecessary Data Transfer",
     "category": "Performance Issues",
     "description": "Fetching all columns when only specific fields are needed wastes bandwidth and memory, especially with large blob/text fields.",
@@ -741,7 +741,7 @@
   },
   {
     "issue_id": "PERF-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Synchronous I/O in Async Context",
     "category": "Performance Issues",
     "description": "Using blocking I/O operations in async functions blocks the event loop, preventing concurrent request handling.",
@@ -767,7 +767,7 @@
   },
   {
     "issue_id": "PERF-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Unoptimized Regular Expression",
     "category": "Performance Issues",
     "description": "Complex regex patterns with backtracking can cause catastrophic performance degradation on certain inputs.",
@@ -793,7 +793,7 @@
   },
   {
     "issue_id": "PERF-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Inefficient Loop with Function Calls",
     "category": "Performance Issues",
     "description": "Calling expensive functions repeatedly inside loops when the result doesn't change wastes CPU cycles.",
@@ -821,7 +821,7 @@
   },
   {
     "issue_id": "PERF-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Response Caching",
     "category": "Performance Issues",
     "description": "Repeatedly computing expensive operations for identical requests wastes resources when results could be cached.",
@@ -849,7 +849,7 @@
   },
   {
     "issue_id": "PERF-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Inefficient Data Structure Choice",
     "category": "Performance Issues",
     "description": "Using lists for membership testing instead of sets results in O(n) lookups instead of O(1), causing performance issues with large datasets.",
@@ -877,7 +877,7 @@
   },
   {
     "issue_id": "ASYNC-001",
-    "generated": false,
+    "generated": true,
     "issue_name": "Race Condition on Shared State",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Multiple async tasks modifying shared state without synchronization causes data corruption and inconsistent results.",
@@ -929,11 +929,12 @@
         "title": "feat: Add get post title endpoint",
         "body": "Quick endpoint to fetch just the title of a post."
       }
-    }
+    },
+    "error": "Command '['git', 'commit', '-m', 'feat: Add get post title endpoint']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ASYNC-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Blocking Operation in Event Loop",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "CPU-intensive or blocking operations in async functions freeze the event loop, preventing other tasks from running.",
@@ -961,7 +962,7 @@
   },
   {
     "issue_id": "ASYNC-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Improper Task Cancellation Handling",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Not handling CancelledError properly leads to resource leaks and incomplete cleanup when tasks are cancelled.",
@@ -989,7 +990,7 @@
   },
   {
     "issue_id": "ASYNC-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Deadlock with Asyncio Locks",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Acquiring locks in different orders across coroutines or holding locks across await points can cause deadlocks.",
@@ -1017,7 +1018,7 @@
   },
   {
     "issue_id": "ASYNC-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Fire-and-Forget Task Without Error Handling",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Creating tasks without awaiting or storing references causes exceptions to be silently ignored and prevents proper cleanup.",
@@ -1045,7 +1046,7 @@
   },
   {
     "issue_id": "ASYNC-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Mixing Sync and Async Database Calls",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Using synchronous database drivers in async code blocks the event loop, negating the benefits of async programming.",
@@ -1074,7 +1075,7 @@
   },
   {
     "issue_id": "ASYNC-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Incorrect Use of asyncio.gather",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Not handling exceptions properly in asyncio.gather causes one failure to hide or cancel other tasks unexpectedly.",
@@ -1102,7 +1103,7 @@
   },
   {
     "issue_id": "ASYNC-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Context Variable Not Propagating",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Creating tasks without copying context causes request-specific data like user info to be lost in spawned tasks.",
@@ -1141,7 +1142,7 @@
   },
   {
     "issue_id": "ASYNC-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Semaphore Misuse Leading to Resource Exhaustion",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Not limiting concurrent operations with semaphores can exhaust system resources like database connections or memory.",
@@ -1169,7 +1170,7 @@
   },
   {
     "issue_id": "ARCH-001",
-    "generated": false,
+    "generated": true,
     "issue_name": "Tight Coupling Between Layers",
     "category": "Code Architecture & Design Patterns",
     "description": "Direct dependencies between presentation, business logic, and data layers make code hard to test and modify.",
@@ -1198,7 +1199,7 @@
   },
   {
     "issue_id": "ARCH-002",
-    "generated": false,
+    "generated": true,
     "issue_name": "God Object Anti-Pattern",
     "category": "Code Architecture & Design Patterns",
     "description": "Single class with too many responsibilities violates Single Responsibility Principle, making code hard to maintain and test.",
@@ -1250,7 +1251,8 @@
         "title": "feat: Add notification manager",
         "body": "Implemented notification system for post updates."
       }
-    }
+    },
+    "error": "Command '['git', 'push', '-f', '-u', 'origin', 'feat/benchmark-ARCH-003']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-004",
@@ -1290,7 +1292,8 @@
         "title": "refactor: Share utilities between router and service",
         "body": "Improved code reuse by sharing helper functions."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-005",
@@ -1328,7 +1331,8 @@
         "title": "refactor: Extract post logic to service",
         "body": "Centralized post-related operations in service layer."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-006",
@@ -1356,7 +1360,8 @@
         "title": "feat: Add Redis caching",
         "body": "Integrated Redis for post caching to improve performance."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-007",
@@ -1384,7 +1389,8 @@
         "title": "refactor: Add repository pattern",
         "body": "Introduced repository abstraction for better data access."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-008",
@@ -1412,7 +1418,8 @@
         "title": "feat: Add post export functionality",
         "body": "Support multiple export formats for posts."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-009",
@@ -1440,7 +1447,8 @@
         "title": "feat: Add comprehensive post publishing",
         "body": "Publishing now handles all related operations automatically."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "ARCH-010",
@@ -1468,7 +1476,8 @@
         "title": "feat: Add application configuration",
         "body": "Configured application settings and limits."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-001",
@@ -1496,7 +1505,8 @@
         "title": "feat: Add file-based post import",
         "body": "Import posts from JSON files."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-002",
@@ -1524,7 +1534,8 @@
         "title": "feat: Add safe post retrieval",
         "body": "Added error-tolerant post fetching endpoint."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-003",
@@ -1552,7 +1563,8 @@
         "title": "feat: Add published titles helper",
         "body": "Extract published post titles for display."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-004",
@@ -1580,7 +1592,8 @@
         "title": "feat: Add post utility functions",
         "body": "Helper methods for post processing and formatting."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-005",
@@ -1608,7 +1621,8 @@
         "title": "feat: Add file upload path helper",
         "body": "Helper to construct upload file paths."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-006",
@@ -1636,7 +1650,8 @@
         "title": "feat: Add post metadata class",
         "body": "Track additional metadata for posts."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-007",
@@ -1664,7 +1679,8 @@
         "title": "refactor: Simplify imports",
         "body": "Streamlined import statements for cleaner code."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-008",
@@ -1692,7 +1708,8 @@
         "title": "feat: Add line numbering for posts",
         "body": "Number posts in listing for better readability."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-009",
@@ -1720,7 +1737,8 @@
         "title": "feat: Add flexible ID validation",
         "body": "Support multiple ID formats for compatibility."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "PY-010",
@@ -1748,7 +1766,8 @@
         "title": "feat: Add post caching structure",
         "body": "Lightweight cache objects for frequently accessed posts."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-001",
@@ -1787,7 +1806,8 @@
         "title": "feat: Add monthly revenue reporting",
         "body": "Implemented monthly revenue calculation endpoint for business analytics."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-002",
@@ -1816,7 +1836,8 @@
         "title": "feat: Add order revenue calculation",
         "body": "Helper method to calculate revenue from orders."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-003",
@@ -1846,7 +1867,8 @@
         "title": "feat: Add checkout processing",
         "body": "Implemented payment processing and inventory management."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-004",
@@ -1875,7 +1897,8 @@
         "title": "feat: Add promotional code support",
         "body": "Customers can now apply promo codes to orders."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-005",
@@ -1904,7 +1927,8 @@
         "title": "feat: Add subscription auto-renewal",
         "body": "Automatic subscription renewal for seamless service."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-006",
@@ -1933,7 +1957,8 @@
         "title": "feat: Add CLV calculation",
         "body": "Customer lifetime value metrics for analytics dashboard."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-007",
@@ -1972,7 +1997,8 @@
         "title": "feat: Add order item tracking",
         "body": "Track individual items in orders with quantities."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-008",
@@ -2001,7 +2027,8 @@
         "title": "feat: Add free trial signup",
         "body": "Allow users to start free trial accounts."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-009",
@@ -2030,7 +2057,8 @@
         "title": "feat: Add shipping cost calculation",
         "body": "Calculate shipping costs for orders."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-010",
@@ -2059,6 +2087,7 @@
         "title": "feat: Add tax calculation",
         "body": "Calculate sales tax for orders."
       }
-    }
+    },
+    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
   }
 ]
