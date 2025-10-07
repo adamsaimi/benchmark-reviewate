@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -57,6 +58,52 @@ def create_post(
         The newly created post with all metadata
     """
     return post_service.create_post(post_create)
+
+
+@router.post("/quick-create", status_code=status.HTTP_201_CREATED, response_model=Post)
+def quick_create_post(
+    post_create: PostCreate,
+    db: Session = Depends(get_db)
+) -> Post:
+    """
+    Quickly create a new post by directly accessing the database.
+
+    This endpoint bypasses the service layer, handling user and post creation directly.
+
+    Args:
+        post_create: The post data to create
+        db: Injected database session
+
+    Returns:
+        The newly created post
+    """
+    try:
+        # Look for user
+        user = db.query(UserModel).filter(UserModel.email == str(post_create.author_email)).first()
+
+        # If user doesn't exist, create it but don't commit yet
+        if not user:
+            user_name = post_create.author_name or str(post_create.author_email).split('@')[0]
+            user = UserModel(email=str(post_create.author_email), name=user_name)
+            db.add(user)
+
+        # Create post and associate with the (potentially new) user
+        db_post = PostModel(
+            title=post_create.title,
+            content=post_create.content,
+            author=user
+        )
+        db.add(db_post)
+
+        db.commit()
+        db.refresh(db_post)
+        return Post.model_validate(db_post)
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create post"
+        )
 
 
 @router.get("/", response_model=List[Post])
