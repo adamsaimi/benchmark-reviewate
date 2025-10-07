@@ -179,3 +179,62 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    @staticmethod
+    def calculate_reading_time(content):
+        """
+        Calculate the estimated reading time for a piece of content.
+        
+        Args:
+            content: The text content to analyze.
+            
+        Returns:
+            Estimated reading time in minutes.
+        """
+        if not content or not isinstance(content, str):
+            return 0
+        word_count = len(content.split())
+        # Average reading speed: 200 words per minute
+        reading_time = word_count / 200
+        return max(1, round(reading_time))
+
+    @staticmethod
+    def format_post_summary(post, max_length):
+        """
+        Format a summary for a post, truncating if necessary.
+        
+        Args:
+            post: The post object.
+            max_length: The maximum length of the summary.
+            
+        Returns:
+            A truncated summary string.
+        """
+        if not hasattr(post, 'content'):
+            return ""
+        if len(post.content) <= max_length:
+            return post.content
+        return post.content[:max_length].rsplit(' ', 1)[0] + "..."
+
+    @staticmethod
+    def merge_posts(post1, post2):
+        """
+        Merge the content of two posts into a new dictionary.
+        
+        Args:
+            post1: The first post object.
+            post2: The second post object.
+            
+        Returns:
+            A dictionary representing the merged post.
+        """
+        merged_title = f"{post1.title} & {post2.title}"
+        merged_content = f"{post1.content}\n\n---\n\n{post2.content}"
+        
+        # Using the first post's author for simplicity
+        return {
+            "title": merged_title,
+            "content": merged_content,
+            "author_id": post1.author_id,
+            "author": post1.author.model_dump()
+        }
