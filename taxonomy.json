@@ -1655,7 +1655,7 @@
   },
   {
     "issue_id": "PY-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Using * Imports",
     "category": "Python Best Practices & Idioms",
     "description": "Wildcard imports pollute namespace, make it unclear where names come from, and can cause name conflicts.",
@@ -1771,7 +1771,7 @@
   },
   {
     "issue_id": "BIZ-001",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Revenue Status Validation",
     "category": "Business Logic & Domain Rules",
     "description": "Revenue calculations include orders in all statuses instead of only completed transactions, leading to inflated and inaccurate financial reporting.",
@@ -1872,7 +1872,7 @@
   },
   {
     "issue_id": "BIZ-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Promotional Discount Stacking Not Controlled",
     "category": "Business Logic & Domain Rules",
     "description": "Multiple promotional codes can be applied to a single order without business rule validation, leading to revenue loss and pricing abuse.",
@@ -1932,7 +1932,7 @@
   },
   {
     "issue_id": "BIZ-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Customer Lifetime Value Calculation Incomplete",
     "category": "Business Logic & Domain Rules",
     "description": "CLV calculation excludes returns, refunds, and acquisition costs, providing misleading customer profitability metrics for business decisions.",
@@ -1962,7 +1962,7 @@
   },
   {
     "issue_id": "BIZ-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Price Change Applied to Existing Orders",
     "category": "Business Logic & Domain Rules",
     "description": "Product price updates retroactively affect pending orders that were placed at the old price, causing customer billing disputes.",
