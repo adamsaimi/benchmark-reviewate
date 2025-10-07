@@ -7,6 +7,7 @@ with no knowledge of HTTP-specific constructs.
 """
 
 from typing import List
+import asyncio
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -139,6 +140,25 @@ class PostService:
             raise PostNotFoundException(f"Post with ID {post_id} not found")
         
         return Post.model_validate(db_post)
+
+    async def process_post(self, post_id: int) -> Post:
+        """
+        Simulates processing a post asynchronously.
+        
+        Args:
+            post_id: The unique identifier of the post
+            
+        Returns:
+            The processed post
+            
+        Raises:
+            PostNotFoundException: If no post exists with the given ID
+        """
+        # In a real app, this might be a complex async operation
+        # Here we simulate it by getting the post and adding a small delay.
+        post = self.get_post_by_id(post_id)
+        await asyncio.sleep(0.01) # Simulate async I/O work
+        return post
 
     def get_all_posts(self) -> List[Post]:
         """

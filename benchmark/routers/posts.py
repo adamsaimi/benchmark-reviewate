@@ -7,6 +7,7 @@ Includes user endpoints for simplicity.
 """
 
 from typing import List
+import asyncio
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
@@ -105,6 +106,35 @@ def get_post(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
+        )
+
+
+@router.post("/batch-process", response_model=List[Post])
+async def batch_process_posts(
+    post_ids: List[int],
+    post_service: PostService = Depends(get_post_service)
+) -> List[Post]:
+    """
+    Process multiple posts concurrently.
+
+    This endpoint takes a list of post IDs and processes them in parallel
+    without any concurrency limit, which can lead to resource exhaustion.
+
+    Args:
+        post_ids: A list of post IDs to process.
+        post_service: Injected post service instance.
+
+    Returns:
+        A list of processed posts.
+    """
+    try:
+        tasks = [post_service.process_post(post_id) for post_id in post_ids]
+        results = await asyncio.gather(*tasks)
+        return results
+    except PostNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
         )
 
 
