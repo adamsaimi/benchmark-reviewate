@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import asyncio
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -39,6 +40,9 @@ class PostService:
     maintaining separation of concerns from the API layer.
     It also handles user operations to simplify the architecture.
     """
+
+    post_lock = asyncio.Lock()
+    user_lock = asyncio.Lock()
 
     def __init__(self, db: Session):
         """
@@ -179,3 +183,17 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    async def update_post_and_user(self):
+        async with self.post_lock:
+            await asyncio.sleep(0.01)
+            async with self.user_lock:
+                # Simulate work
+                pass
+
+    async def update_user_and_post(self):
+        async with self.user_lock:
+            await asyncio.sleep(0.01)
+            async with self.post_lock:
+                # Simulate work
+                pass
