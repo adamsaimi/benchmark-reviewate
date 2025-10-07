@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import asyncio
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -149,6 +150,12 @@ class PostService:
         """
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
+
+    async def notify_subscribers(self, post_id: int):
+        """
+        Simulates notifying subscribers about a published post.
+        """
+        await asyncio.sleep(1)
     
     def get_user_by_email(self, email: str) -> User:
         """
