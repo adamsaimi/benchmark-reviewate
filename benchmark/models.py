@@ -28,9 +28,6 @@ class User(Base):
     
     # Relationship to posts
     posts = relationship("Post", back_populates="author", cascade="all, delete-orphan")
-    
-    def __repr__(self) -> str:
-        return f"<User(id={self.id}, email='{self.email}', name='{self.name}')>"
 
 
 class Post(Base):
@@ -50,6 +47,3 @@ class Post(Base):
     
     # Relationship to user
     author = relationship("User", back_populates="posts")
-    
-    def __repr__(self) -> str:
-        return f"<Post(id={self.id}, title='{self.title}', author_id={self.author_id})>"
