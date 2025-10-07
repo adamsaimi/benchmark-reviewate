@@ -21,7 +21,7 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
 
-def get_post_service(db: Session = Depends(get_db)) -> PostService:
+def get_post_service(db: Session = Depends(get_db)) - PostService:
     """
     Dependency function to get PostService instance.
     
@@ -42,7 +42,7 @@ def get_post_service(db: Session = Depends(get_db)) -> PostService:
 def create_post(
     post_create: PostCreate,
     post_service: PostService = Depends(get_post_service)
-) -> Post:
+) - Post:
     """
     Create a new post.
     
@@ -62,7 +62,7 @@ def create_post(
 @router.get("/", response_model=List[Post])
 def get_all_posts(
     post_service: PostService = Depends(get_post_service)
-) -> List[Post]:
+) - List[Post]:
     """
     Retrieve all posts.
     
@@ -79,10 +79,10 @@ def get_all_posts(
 
 
 @router.get("/{post_id}", response_model=Post)
-def get_post(
+async def get_post(
     post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
     post_service: PostService = Depends(get_post_service)
-) -> Post:
+) - Post:
     """
     Retrieve a specific post by ID.
     
@@ -100,6 +100,7 @@ def get_post(
         HTTPException: 422 if the post_id is not a positive integer
     """
     try:
+        await post_service.increment_view_count()
         return post_service.get_post_by_id(post_id)
     except PostNotFoundException:
         raise HTTPException(
@@ -115,7 +116,7 @@ def get_post(
 @user_router.get("/", response_model=List[User])
 def get_all_users(
     post_service: PostService = Depends(get_post_service)
-) -> List[User]:
+) - List[User]:
     """
     Retrieve all users.
     
@@ -134,7 +135,7 @@ def get_all_users(
 def get_user_by_email(
     email: str = Path(..., description="The email address of the user"),
     post_service: PostService = Depends(get_post_service)
-) -> User:
+) - User:
     """
     Retrieve a specific user by email.
     

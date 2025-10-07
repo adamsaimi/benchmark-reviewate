@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import asyncio
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -40,6 +41,8 @@ class PostService:
     It also handles user operations to simplify the architecture.
     """
 
+    view_count = 0
+
     def __init__(self, db: Session):
         """
         Initialize the PostService with a database session.
@@ -49,7 +52,12 @@ class PostService:
         """
         self.db = db
 
-    def get_or_create_user(self, email: str, name: str = None) -> UserModel:
+    async def increment_view_count(self):
+        current = self.view_count
+        await asyncio.sleep(0.001)
+        self.view_count = current + 1
+
+    def get_or_create_user(self, email: str, name: str = None) - UserModel:
         """
         Get an existing user by email or create a new one.
         
@@ -84,7 +92,7 @@ class PostService:
             self.db.rollback()
             raise e
 
-    def create_post(self, post_create: PostCreate) -> Post:
+    def create_post(self, post_create: PostCreate) - Post:
         """
         Create a new post with system-generated metadata.
         
@@ -120,7 +128,7 @@ class PostService:
             self.db.rollback()
             raise e
 
-    def get_post_by_id(self, post_id: int) -> Post:
+    def get_post_by_id(self, post_id: int) - Post:
         """
         Retrieve a specific post by its unique identifier.
         
@@ -140,7 +148,7 @@ class PostService:
         
         return Post.model_validate(db_post)
 
-    def get_all_posts(self) -> List[Post]:
+    def get_all_posts(self) - List[Post]:
         """
         Retrieve all posts from the database.
         
@@ -150,7 +158,7 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
-    def get_user_by_email(self, email: str) -> User:
+    def get_user_by_email(self, email: str) - User:
         """
         Retrieve a user by email address.
         
@@ -170,7 +178,7 @@ class PostService:
         
         return User.model_validate(user)
     
-    def get_all_users(self) -> List[User]:
+    def get_all_users(self) - List[User]:
         """
         Retrieve all users from the database.
         
