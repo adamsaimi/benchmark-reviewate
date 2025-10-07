@@ -13,6 +13,23 @@ from sqlalchemy.exc import SQLAlchemyError
 from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
 
+# Simple placeholder classes for discount logic
+class Order:
+    def __init__(self, total: float):
+        self.total = total
+
+class Discount:
+    def __init__(self, amount: float):
+        self.amount = amount
+
+def get_discount(code: str) -> Discount:
+    # In a real app, this would look up the code in a database.
+    # For this example, we'll return a fixed discount based on the code.
+    if "10" in code:
+        return Discount(amount=10.0)
+    if "50" in code:
+        return Discount(amount=50.0)
+    return Discount(amount=5.0)
 
 class PostNotFoundException(Exception):
     """
@@ -179,3 +196,9 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def apply_discounts(self, order: Order, promo_codes: List[str]):
+        # Applies all codes without validation
+        for code in promo_codes:
+            discount = get_discount(code)
+            order.total -= discount.amount
