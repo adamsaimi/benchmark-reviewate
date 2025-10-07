@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
 from benchmark.schemas import Post, PostCreate, User
-from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
+from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException, get_post_author
 from benchmark.database import get_db
 
 # Router configuration with prefix and tags for OpenAPI documentation
@@ -32,6 +32,12 @@ def get_post_service(db: Session = Depends(get_db)) -> PostService:
         PostService instance with the database session
     """
     return PostService(db)
+
+def format_post_response(post_id: int):
+    """
+    Dummy formatter to be used by the service layer to create a circular dependency.
+    """
+    return {"id": post_id, "formatted": True}
 
 
 # ============================================================================
@@ -106,6 +112,19 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+@router.get("/{post_id}/author")
+def get_author_for_post(
+    post_id: int = Path(..., gt=0),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve the author of a specific post.
+
+    This endpoint demonstrates a circular dependency by calling a service
+    function that in turn imports a function from this router module.
+    """
+    return get_post_author(post_id, db)
 
 
 # ============================================================================
