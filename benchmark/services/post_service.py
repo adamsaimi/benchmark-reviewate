@@ -120,7 +120,7 @@ class PostService:
             self.db.rollback()
             raise e
 
-    def get_post_by_id(self, post_id: int) -> Post:
+    async def get_post_by_id(self, post_id: int) -> Post:
         """
         Retrieve a specific post by its unique identifier.
         
