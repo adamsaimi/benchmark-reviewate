@@ -6,9 +6,8 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
-from typing import List
-
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from typing import *
+from fastapi import *
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
