@@ -183,7 +183,7 @@ class PostService:
 
 def get_post_author(post_id: int, db: Session):
     """
-    Get the author of a post, demonstrating a circular dependency.
+    Get the author of a post.
     """
     post_data = format_post_response(post_id)
     db_post = db.query(PostModel).filter(PostModel.id == post_data['id']).first()
