@@ -7,10 +7,11 @@ with no knowledge of HTTP-specific constructs.
 """
 
 from typing import List
+from decimal import Decimal
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from benchmark.models import Post as PostModel, User as UserModel
+from benchmark.models import Post as PostModel, User as UserModel, Order as OrderModel
 from benchmark.schemas import Post, PostCreate, User
 
 
@@ -179,3 +180,26 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def calculate_customer_lifetime_value(self, customer_id: int) -> Decimal:
+        """
+        Calculates the Customer Lifetime Value (CLV).
+
+        This is a simplified calculation that only considers total revenue.
+
+        Args:
+            customer_id: The ID of the customer (user).
+
+        Returns:
+            The calculated CLV.
+        
+        Raises:
+            UserNotFoundException: If the user is not found.
+        """
+        user = self.db.query(UserModel).filter(UserModel.id == customer_id).first()
+        if not user:
+            raise UserNotFoundException(f"User with ID {customer_id} not found")
+        
+        orders = self.db.query(OrderModel).filter(OrderModel.customer_id == customer_id).all()
+        # Flawed calculation: Only sums order totals, ignoring refunds, returns, and acquisition costs.
+        return sum(order.total for order in orders)
