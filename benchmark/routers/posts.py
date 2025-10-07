@@ -43,10 +43,9 @@ class XmlExporter:
         # In a real scenario, this would export to XML
         return {"format": "xml", "count": len(posts), "config": self.config}
 
-# Dummy configs
-config1: Dict[str, Any] = {"indent": 2}
-config2: Dict[str, Any] = {"delimiter": ","}
-config3: Dict[str, Any] = {"root_element": "posts"}
+config_json: Dict[str, Any] = {"indent": 2}
+config_csv: Dict[str, Any] = {"delimiter": ","}
+config_xml: Dict[str, Any] = {"root_element": "posts"}
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -114,9 +113,6 @@ def export_posts(
     """
     Export all posts to a specified format.
 
-    This endpoint demonstrates complex object creation logic
-    that should ideally be handled by a factory.
-
     Args:
         format: The export format ('json', 'csv', or 'xml')
         post_service: Injected post service instance
@@ -126,11 +122,11 @@ def export_posts(
     """
     exporter: Any = None
     if format == 'json':
-        exporter = JsonExporter(config1)
+        exporter = JsonExporter(config_json)
     elif format == 'csv':
-        exporter = CsvExporter(config2)
+        exporter = CsvExporter(config_csv)
     elif format == 'xml':
-        exporter = XmlExporter(config3)
+        exporter = XmlExporter(config_xml)
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
