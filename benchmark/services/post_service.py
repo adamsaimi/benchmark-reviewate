@@ -149,6 +149,26 @@ class PostService:
         """
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
+
+    def send_notifications(self, post: Post) -> None:
+        """Simulates sending notifications about a new post."""
+        pass
+
+    def update_search_index(self, post: Post) -> None:
+        """Simulates updating a search index with the new post."""
+        pass
+
+    def generate_sitemap(self) -> None:
+        """Simulates regenerating the site map."""
+        pass
+
+    def update_analytics(self, post: Post) -> None:
+        """Simulates sending data to an analytics service."""
+        pass
+
+    def sync_to_cdn(self, post: Post) -> None:
+        """Simulates syncing post assets to a CDN."""
+        pass
     
     def get_user_by_email(self, email: str) -> User:
         """
