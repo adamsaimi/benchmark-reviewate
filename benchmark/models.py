@@ -6,7 +6,7 @@ providing a clean abstraction over the database tables.
 """
 
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Float
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -53,3 +53,21 @@ class Post(Base):
     
     def __repr__(self) -> str:
         return f"<Post(id={self.id}, title='{self.title}', author_id={self.author_id})>"
+
+
+class Order(Base):
+    """
+    Order database model.
+
+    Represents an order in the system.
+    """
+
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    total = Column(Float, nullable=False)
+    status = Column(String(50), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    def __repr__(self) -> str:
+        return f"<Order(id={self.id}, total={self.total}, status='{self.status}')>"

@@ -9,9 +9,11 @@ Includes user endpoints for simplicity.
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from sqlalchemy import extract
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Order
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -106,6 +108,25 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/revenue/monthly")
+def get_monthly_revenue(
+    month: int,
+    year: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Calculate monthly revenue.
+
+    This endpoint retrieves all orders for a specific month and year and
+    sums their total amounts to calculate the revenue.
+    """
+    orders = db.query(Order).filter(
+        extract('month', Order.created_at) == month,
+        extract('year', Order.created_at) == year
+    ).all()
+    return {'revenue': sum(order.total for order in orders)}
 
 
 # ============================================================================
