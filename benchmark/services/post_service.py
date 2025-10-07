@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import asyncio
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -150,6 +151,24 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    async def stream_posts(self):
+        """
+        Streams posts. This is a long-running task that is susceptible
+        to cancellation.
+        """
+        # Simulate an expensive resource that must be closed
+        resource_connection = "OPENED"
+        try:
+            i = 0
+            while True:
+                # In a real app, this would fetch data from a source
+                i += 1
+                post_data = {"id": i, "title": f"Live Post {i}", "content": "Live content"}
+                yield f"data: {post_data}\n\n"
+                await asyncio.sleep(1)
+        finally:
+            pass
+
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.

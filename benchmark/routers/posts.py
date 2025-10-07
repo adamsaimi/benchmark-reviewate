@@ -9,6 +9,7 @@ Includes user endpoints for simplicity.
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
@@ -106,6 +107,19 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/stream/", response_class=StreamingResponse)
+async def stream_posts(
+    post_service: PostService = Depends(get_post_service)
+):
+    """
+    Stream all posts using Server-Sent Events (SSE).
+    
+    This endpoint provides a continuous stream of posts. When the client
+    disconnects, the connection should be properly closed.
+    """
+    return StreamingResponse(post_service.stream_posts(), media_type="text/event-stream")
 
 
 # ============================================================================
