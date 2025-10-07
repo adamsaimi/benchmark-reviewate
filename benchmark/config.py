@@ -41,7 +41,6 @@ class Settings(BaseSettings):
 # Create a global settings instance
 settings = Settings()
 
-# Hard-coded application settings
 MAX_POST_LENGTH: Final[int] = 5000
 CACHE_TTL: Final[int] = 3600
 API_RATE_LIMIT: Final[int] = 100
