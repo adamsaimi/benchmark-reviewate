@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import redis
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -139,6 +140,16 @@ class PostService:
             raise PostNotFoundException(f"Post with ID {post_id} not found")
         
         return Post.model_validate(db_post)
+
+    def cache_post(self, post: Post):
+        """
+        Cache a post using Redis.
+        
+        Args:
+            post: The post object to cache.
+        """
+        r = redis.Redis(host="localhost", port=6379, db=0)
+        r.set(f"post:{post.id}", post.model_dump_json())
 
     def get_all_posts(self) -> List[Post]:
         """
