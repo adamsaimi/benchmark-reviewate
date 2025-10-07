@@ -905,7 +905,7 @@
   },
   {
     "issue_id": "ASYNC-002",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Await Keyword",
     "category": "Concurrency & Asynchronous Code Issues",
     "description": "Forgetting await on async functions returns a coroutine object instead of the actual result, causing silent failures.",
@@ -1227,7 +1227,7 @@
   },
   {
     "issue_id": "ARCH-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Dependency Injection",
     "category": "Code Architecture & Design Patterns",
     "description": "Hard-coded dependencies make code difficult to test and tightly couples implementation details.",
@@ -1256,7 +1256,7 @@
   },
   {
     "issue_id": "ARCH-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Circular Dependencies",
     "category": "Code Architecture & Design Patterns",
     "description": "Modules importing each other creates circular dependencies causing import errors and tight coupling.",
@@ -1297,7 +1297,7 @@
   },
   {
     "issue_id": "ARCH-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Anemic Domain Model",
     "category": "Code Architecture & Design Patterns",
     "description": "Domain objects with only data and no behavior push all logic to service layer, missing OOP benefits.",
@@ -1336,7 +1336,7 @@
   },
   {
     "issue_id": "ARCH-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Abstraction Layer",
     "category": "Code Architecture & Design Patterns",
     "description": "Direct use of external libraries throughout codebase makes it hard to swap implementations or mock for testing.",
@@ -1365,7 +1365,7 @@
   },
   {
     "issue_id": "ARCH-007",
-    "generated": false,
+    "generated": true,
     "issue_name": "Violation of Interface Segregation",
     "category": "Code Architecture & Design Patterns",
     "description": "Large interfaces force implementations to provide methods they don't need, creating unnecessary coupling.",
@@ -1394,7 +1394,7 @@
   },
   {
     "issue_id": "ARCH-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Factory Pattern",
     "category": "Code Architecture & Design Patterns",
     "description": "Complex object creation logic scattered throughout code makes it hard to modify instantiation behavior.",
@@ -1423,7 +1423,7 @@
   },
   {
     "issue_id": "ARCH-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Lack of Event-Driven Architecture",
     "category": "Code Architecture & Design Patterns",
     "description": "Synchronous coupling between unrelated operations makes code inflexible and hard to scale.",
@@ -1452,7 +1452,7 @@
   },
   {
     "issue_id": "ARCH-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Configuration in Code",
     "category": "Code Architecture & Design Patterns",
     "description": "Hard-coding configuration values in application code requires code changes and redeployment for configuration updates.",
@@ -1481,7 +1481,7 @@
   },
   {
     "issue_id": "PY-001",
-    "generated": false,
+    "generated": true,
     "issue_name": "Not Using Context Managers",
     "category": "Python Best Practices & Idioms",
     "description": "Manually managing resources like files or connections risks resource leaks if exceptions occur before cleanup.",
@@ -1510,7 +1510,7 @@
   },
   {
     "issue_id": "PY-002",
-    "generated": false,
+    "generated": true,
     "issue_name": "Using Bare Except",
     "category": "Python Best Practices & Idioms",
     "description": "Catching all exceptions including system exits and keyboard interrupts makes debugging difficult and can hide critical errors.",
@@ -1539,7 +1539,7 @@
   },
   {
     "issue_id": "PY-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Not Using List Comprehensions",
     "category": "Python Best Practices & Idioms",
     "description": "Using explicit loops instead of comprehensions results in more verbose, less Pythonic, and potentially slower code.",
@@ -1568,7 +1568,7 @@
   },
   {
     "issue_id": "PY-004",
-    "generated": false,
+    "generated": true,
     "issue_name": "Missing Type Hints",
     "category": "Python Best Practices & Idioms",
     "description": "Lack of type hints makes code harder to understand and prevents static type checkers from catching errors.",
@@ -1597,7 +1597,7 @@
   },
   {
     "issue_id": "PY-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Using os.path Instead of pathlib",
     "category": "Python Best Practices & Idioms",
     "description": "Using os.path for file path operations is less readable and more error-prone than pathlib's object-oriented approach.",
@@ -1626,7 +1626,7 @@
   },
   {
     "issue_id": "PY-006",
-    "generated": false,
+    "generated": true,
     "issue_name": "Not Using Dataclasses",
     "category": "Python Best Practices & Idioms",
     "description": "Manually writing __init__, __repr__, and __eq__ methods for data containers is verbose when dataclasses provide this automatically.",
@@ -1680,11 +1680,11 @@
         "body": "Streamlined import statements for cleaner code."
       }
     },
-    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
+    "error": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}"
   },
   {
     "issue_id": "PY-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Not Using Enumerate",
     "category": "Python Best Practices & Idioms",
     "description": "Manually tracking index in loops is error-prone and less Pythonic than using enumerate built-in.",
@@ -1713,7 +1713,7 @@
   },
   {
     "issue_id": "PY-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Using isinstance for Type Checking Multiple Times",
     "category": "Python Best Practices & Idioms",
     "description": "Repeated isinstance checks for the same object is inefficient compared to single check with tuple of types.",
@@ -1742,7 +1742,7 @@
   },
   {
     "issue_id": "PY-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Not Using __slots__",
     "category": "Python Best Practices & Idioms",
     "description": "For classes with many instances, not using __slots__ wastes memory by maintaining a __dict__ for each instance.",
@@ -1807,11 +1807,11 @@
         "body": "Implemented monthly revenue calculation endpoint for business analytics."
       }
     },
-    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
+    "error": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}"
   },
   {
     "issue_id": "BIZ-002",
-    "generated": false,
+    "generated": true,
     "issue_name": "Refund Amount Not Deducted from Revenue",
     "category": "Business Logic & Domain Rules",
     "description": "Refunded amounts are not subtracted from revenue calculations, causing financial discrepancies and incorrect profit/loss statements.",
@@ -1841,7 +1841,7 @@
   },
   {
     "issue_id": "BIZ-003",
-    "generated": false,
+    "generated": true,
     "issue_name": "Inventory Not Reserved During Checkout",
     "category": "Business Logic & Domain Rules",
     "description": "Inventory is only decremented after payment, allowing overselling when multiple users checkout the same item simultaneously.",
@@ -1898,11 +1898,11 @@
         "body": "Customers can now apply promo codes to orders."
       }
     },
-    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
+    "error": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}"
   },
   {
     "issue_id": "BIZ-005",
-    "generated": false,
+    "generated": true,
     "issue_name": "Subscription Renewal Without Payment Validation",
     "category": "Business Logic & Domain Rules",
     "description": "Subscriptions auto-renew without validating payment method is still valid, causing service interruptions and customer complaints.",
@@ -1958,7 +1958,7 @@
         "body": "Customer lifetime value metrics for analytics dashboard."
       }
     },
-    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
+    "error": "Command '['git', 'commit', '-m', 'feat: Add CLV calculation']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-007",
@@ -1998,11 +1998,11 @@
         "body": "Track individual items in orders with quantities."
       }
     },
-    "error": "Command '['git', 'fetch', 'origin']' returned non-zero exit status 128."
+    "error": "Command '['git', 'commit', '-m', 'feat: Add order item tracking']' returned non-zero exit status 128."
   },
   {
     "issue_id": "BIZ-008",
-    "generated": false,
+    "generated": true,
     "issue_name": "Free Trial Conversion Not Tracked",
     "category": "Business Logic & Domain Rules",
     "description": "System doesn't track or enforce free trial to paid conversion, allowing users to create multiple trial accounts and never convert to paid.",
@@ -2032,7 +2032,7 @@
   },
   {
     "issue_id": "BIZ-009",
-    "generated": false,
+    "generated": true,
     "issue_name": "Shipping Cost Not Calculated Based on Business Rules",
     "category": "Business Logic & Domain Rules",
     "description": "Shipping costs are hardcoded instead of calculated based on weight, destination, and shipping method, causing revenue loss and customer dissatisfaction.",
@@ -2062,7 +2062,7 @@
   },
   {
     "issue_id": "BIZ-010",
-    "generated": false,
+    "generated": true,
     "issue_name": "Tax Calculation Missing Jurisdiction Rules",
     "category": "Business Logic & Domain Rules",
     "description": "Sales tax is calculated using a single rate instead of proper jurisdiction-based rates, causing tax compliance issues and audit risks.",
