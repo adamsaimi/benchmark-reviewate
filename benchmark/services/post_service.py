@@ -31,6 +31,22 @@ class UserNotFoundException(Exception):
     pass
 
 
+class EmailClient:
+    def __init__(self, smtp_server: str, port: int):
+        self.smtp_server = smtp_server
+        self.port = port
+
+class SMSClient:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+
+
+class NotificationManager:
+    def __init__(self):
+        self.email_client = EmailClient("smtp.gmail.com", 587)
+        self.sms_client = SMSClient("api_key_123")
+
+
 class PostService:
     """
     Service class encapsulating all post-related business operations.
