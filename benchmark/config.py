@@ -5,6 +5,7 @@ This module contains configuration constants and settings
 that can be easily modified without changing core business logic.
 """
 
+from contextvars import ContextVar
 from typing import Final
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -49,3 +50,6 @@ MAX_CONTENT_LENGTH: Final[int] = 10000
 # HTTP status messages
 POST_NOT_FOUND_MESSAGE: Final[str] = "Post not found"
 HEALTH_CHECK_MESSAGE: Final[str] = "ok"
+
+# Context variables for request-specific data
+current_user: ContextVar[str] = ContextVar("current_user")
