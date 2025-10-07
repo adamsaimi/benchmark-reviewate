@@ -9,9 +9,11 @@ Includes user endpoints for simplicity.
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -106,6 +108,25 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/stats/", response_model=dict)
+def get_post_stats(db: Session = Depends(get_db)):
+    """
+    Get statistics about all posts.
+
+    This endpoint calculates the total number of posts and the average
+    content length. These calculations are performed on every request.
+
+    Args:
+        db: Database session injected by FastAPI
+
+    Returns:
+        A dictionary with post statistics
+    """
+    total = db.query(func.count(PostModel.id)).scalar()
+    avg_length = db.query(func.avg(func.length(PostModel.content))).scalar()
+    return {"total_posts": total, "average_length": avg_length or 0}
 
 
 # ============================================================================
