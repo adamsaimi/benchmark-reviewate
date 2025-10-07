@@ -41,6 +41,13 @@ class Settings(BaseSettings):
 # Create a global settings instance
 settings = Settings()
 
+# Hard-coded application settings
+MAX_POST_LENGTH: Final[int] = 5000
+CACHE_TTL: Final[int] = 3600
+API_RATE_LIMIT: Final[int] = 100
+ADMIN_EMAIL: Final[str] = 'admin@example.com'
+SECRET_KEY: Final[str] = 'hardcoded_secret_123'
+
 # Post validation constraints
 MIN_TITLE_LENGTH: Final[int] = 3
 MAX_TITLE_LENGTH: Final[int] = 100
