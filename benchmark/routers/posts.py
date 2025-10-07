@@ -34,9 +34,7 @@ def get_post_service(db: Session = Depends(get_db)) -> PostService:
     return PostService(db)
 
 def format_post_response(post_id: int):
-    """
-    Dummy formatter to be used by the service layer to create a circular dependency.
-    """
+    """Format post response."""
     return {"id": post_id, "formatted": True}
 
 
@@ -118,12 +116,7 @@ def get_author_for_post(
     post_id: int = Path(..., gt=0),
     db: Session = Depends(get_db)
 ):
-    """
-    Retrieve the author of a specific post.
-
-    This endpoint demonstrates a circular dependency by calling a service
-    function that in turn imports a function from this router module.
-    """
+    """Retrieve the author of a specific post."""
     return get_post_author(post_id, db)
 
 
