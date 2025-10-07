@@ -150,6 +150,17 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def add_line_numbers(self, posts: List[Post]) -> List[str]:
+        """
+        Adds line numbers to a list of posts for display.
+        """
+        numbered_posts = []
+        index = 0
+        for post in posts:
+            numbered_posts.append(f"{index}: {post.title}")
+            index += 1
+        return numbered_posts
+    
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
