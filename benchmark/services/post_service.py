@@ -7,11 +7,78 @@ with no knowledge of HTTP-specific constructs.
 """
 
 from typing import List
+from abc import ABC, abstractmethod
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
+
+
+class PostRepository(ABC):
+    @abstractmethod
+    def create(self, post_create: PostCreate) -> Post:
+        pass
+
+    @abstractmethod
+    def read(self, post_id: int) -> Post:
+        pass
+
+    @abstractmethod
+    def update(self, post_id: int, post_update: PostCreate) -> Post:
+        pass
+
+    @abstractmethod
+    def delete(self, post_id: int) -> None:
+        pass
+
+    @abstractmethod
+    def search(self, query: str) -> List[Post]:
+        pass
+
+    @abstractmethod
+    def export(self) -> str:
+        pass
+
+    @abstractmethod
+    def import_data(self, data: str) -> None:
+        pass
+
+    @abstractmethod
+    def validate(self) -> bool:
+        pass
+
+
+class ReadOnlyPostRepository(PostRepository):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def read(self, post_id: int) -> Post:
+        db_post = self.db.query(PostModel).filter(PostModel.id == post_id).first()
+        if db_post is None:
+            raise PostNotFoundException(f"Post with ID {post_id} not found")
+        return Post.model_validate(db_post)
+
+    def create(self, post_create: PostCreate) -> Post:
+        raise NotImplementedError
+
+    def update(self, post_id: int, post_update: PostCreate) -> Post:
+        raise NotImplementedError
+
+    def delete(self, post_id: int) -> None:
+        raise NotImplementedError
+
+    def search(self, query: str) -> List[Post]:
+        raise NotImplementedError
+
+    def export(self) -> str:
+        raise NotImplementedError
+
+    def import_data(self, data: str) -> None:
+        raise NotImplementedError
+
+    def validate(self) -> bool:
+        raise NotImplementedError
 
 
 class PostNotFoundException(Exception):
