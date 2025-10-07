@@ -7,6 +7,7 @@ with no knowledge of HTTP-specific constructs.
 """
 
 from typing import List
+from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -29,6 +30,19 @@ class UserNotFoundException(Exception):
     Exception raised when a requested user cannot be found.
     """
     pass
+
+
+class PostCache:
+    """
+    A lightweight object to cache basic post information.
+    
+    Intended to be used in an in-memory cache where millions of
+    instances might be created.
+    """
+    def __init__(self, id: int, title: str, timestamp: datetime):
+        self.id = id
+        self.title = title
+        self.timestamp = timestamp
 
 
 class PostService:
