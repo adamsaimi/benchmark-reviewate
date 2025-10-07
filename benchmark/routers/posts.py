@@ -6,7 +6,7 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
@@ -75,8 +75,10 @@ def get_all_posts(
     Returns:
         A list of all posts
     """
-    return post_service.get_all_posts()
-
+    try:
+        return post_service.get_all_posts()
+    except Exception:
+        return []
 
 @router.get("/{post_id}", response_model=Post)
 def get_post(
