@@ -114,6 +114,8 @@ def export_posts(db: Session = Depends(get_db)) -> List[Post]:
     """
     Export all posts for backup purposes.
     """
+    # This querying will be moved into the service layer in a future pr. For now we directly do it the route
+    # Authentification will be added later aswell.
     posts = db.query(PostModel).all()
     return [Post.model_validate(post) for post in posts]
 
