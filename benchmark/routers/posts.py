@@ -165,9 +165,7 @@ async def background_user_activity_task():
     A background task that is supposed to use the request-specific context.
     """
     try:
-        # This will fail with a LookupError because the context is not propagated
         user = current_user.get()
-        # In a real app, this might write to a log or a different database.
         print(f"Background task running for user: {user}")
     except LookupError:
         print("Background task failed: current_user context variable not found.")
@@ -182,7 +180,6 @@ async def process_user_activity(user_email: str = Header(..., alias="X-User-Emai
     """
     current_user.set(user_email)
     
-    # The 'current_user' context variable will not be available in the background task.
     asyncio.create_task(background_user_activity_task())
     
     return {"message": "User activity processing started in the background."}
