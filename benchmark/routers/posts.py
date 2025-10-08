@@ -112,12 +112,10 @@ def get_post(
 @router.get("/process-content")
 async def process_content():
     """
-    Processes content with a simulated CPU-intensive operation.
-    This is intentionally blocking the event loop.
+    Processes content with a CPU-intensive operation.
     """
-    # Simulate a blocking, CPU-intensive operation
+    # wait for the content to load.
     time.sleep(2)
-    # Simulate complex regex operations
     text_to_search = "a" * 1000000 + "b"
     for _ in range(10):
         re.search(r'(a*)*b', text_to_search)
