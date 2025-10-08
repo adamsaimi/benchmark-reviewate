@@ -85,6 +85,7 @@ def get_post_titles(db: Session = Depends(get_db)):
     Retrieve all post titles.
     """
     # This querying will be moved into the service layer in a future pr. For now we directly do it the route
+    # Authentification will be added in a future pr aswell.
     posts = db.query(PostModel).all()
     return [{"title": p.title} for p in posts]
 
