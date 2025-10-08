@@ -153,15 +153,13 @@ class PostService:
     
     async def stream_posts(self):
         """
-        Streams posts. This is a long-running task that is susceptible
-        to cancellation.
+        Streams posts.
         """
-        # Simulate an expensive resource that must be closed
         resource_connection = "OPENED"
         try:
             i = 0
             while True:
-                # In a real app, this would fetch data from a source
+                # For now we simulate, this would fetch data from a source in a future pr
                 i += 1
                 post_data = {"id": i, "title": f"Live Post {i}", "content": "Live content"}
                 yield f"data: {post_data}\n\n"
