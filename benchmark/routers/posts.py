@@ -113,6 +113,8 @@ async def get_external_posts():
     """
     Retrieve external posts from a partner service.
     """
+    # Validation and moving this part on the service portion will be done in a future pr. For now we query an example url.
+    # This url is controlled by the project.
     response = requests.get("https://api.example.com/posts")
     return response.json()
 
