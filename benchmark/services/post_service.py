@@ -153,7 +153,7 @@ class PostService:
 
     async def notify_subscribers(self, post_id: int):
         """
-        Simulates notifying subscribers about a published post.
+        Simulates notifying subscribers about a published post. This notification will be done later in a futur pr
         """
         await asyncio.sleep(1)
     
