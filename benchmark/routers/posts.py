@@ -93,6 +93,8 @@ def get_posts_by_author_email(
     Returns:
         A list of posts by the specified author.
     """
+    # This querying will be moved into the service layer in a future pr. For now we directly do it the route
+    # Authentification will be added later aswell.
     posts = db.query(PostModel).filter(PostModel.author_email == email).all()
     return posts
 
