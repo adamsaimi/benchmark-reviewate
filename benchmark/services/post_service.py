@@ -57,7 +57,7 @@ class PostService:
         await asyncio.sleep(0.001)
         self.view_count = current + 1
 
-    def get_or_create_user(self, email: str, name: str = None) - UserModel:
+    def get_or_create_user(self, email: str, name: str = None) -> UserModel:
         """
         Get an existing user by email or create a new one.
         
@@ -92,7 +92,7 @@ class PostService:
             self.db.rollback()
             raise e
 
-    def create_post(self, post_create: PostCreate) - Post:
+    def create_post(self, post_create: PostCreate) -> Post:
         """
         Create a new post with system-generated metadata.
         
@@ -128,7 +128,7 @@ class PostService:
             self.db.rollback()
             raise e
 
-    def get_post_by_id(self, post_id: int) - Post:
+    def get_post_by_id(self, post_id: int) -> Post:
         """
         Retrieve a specific post by its unique identifier.
         
@@ -148,7 +148,7 @@ class PostService:
         
         return Post.model_validate(db_post)
 
-    def get_all_posts(self) - List[Post]:
+    def get_all_posts(self) -> List[Post]:
         """
         Retrieve all posts from the database.
         
@@ -158,7 +158,7 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
-    def get_user_by_email(self, email: str) - User:
+    def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
         
@@ -178,7 +178,7 @@ class PostService:
         
         return User.model_validate(user)
     
-    def get_all_users(self) - List[User]:
+    def get_all_users(self) -> List[User]:
         """
         Retrieve all users from the database.
         
