@@ -131,13 +131,7 @@ async def get_aggregated_data(
 ) -> dict:
     """
     Retrieve aggregated data of posts, comments, and stats.
-
-    This endpoint demonstrates concurrent data fetching. If one of the
-    fetching tasks fails, the entire request will fail.
     """
-    # Using asyncio.gather without return_exceptions=True
-    # If any of these coroutines fail, asyncio.gather will propagate the exception
-    # immediately, canceling the other running tasks.
     posts, comments, stats = await asyncio.gather(
         asyncio.to_thread(post_service.get_all_posts),
         _fetch_comments_dummy(),
