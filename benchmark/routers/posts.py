@@ -164,11 +164,8 @@ async def background_user_activity_task():
     """
     A background task that is supposed to use the request-specific context.
     """
-    try:
-        user = current_user.get()
-        print(f"Background task running for user: {user}")
-    except LookupError:
-        print("Background task failed: current_user context variable not found.")
+    user = current_user.get()
+    print(f"Background task running for user: {user}")
 
 
 @user_router.post("/process_activity", status_code=status.HTTP_202_ACCEPTED)
