@@ -16,9 +16,8 @@ from benchmark.schemas import Post, PostCreate, User
 
 def get_max_length(config: dict) -> int:
     """
-    Simulates an expensive operation to get max content length from config.
+    Utility to make code clearer, get max content length from config.
     """
-    # In a real scenario, this could be a complex calculation or DB query.
     return config.get("MAX_CONTENT_LENGTH", 10000)
 
 
