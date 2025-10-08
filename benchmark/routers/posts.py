@@ -109,14 +109,18 @@ def get_post(
         )
 
 
-async def _fetch_comments_dummy():
-    """Dummy async function to fetch comments."""
+async def _fetch_comments():
+    """async function to fetch comments."""
+
+    # For now we sleep and return a dummy comment, a future pr will address these issue, aswell as having the function directly in the service.
     await asyncio.sleep(0.05)
     return [{"id": 1, "content": "A great post!"}]
 
 
-async def _fetch_stats_dummy_fails():
-    """Dummy async function that is designed to fail."""
+async def _fetch_stats():
+    """async function ."""
+
+    # For now we raise and sleep, a future pr will address these issue, aswell as having the function directly in the service.
     await asyncio.sleep(0.01)
     raise ValueError("Could not fetch stats")
 
