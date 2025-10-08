@@ -124,6 +124,7 @@ def get_post_stats(db: Session = Depends(get_db)):
     Returns:
         A dictionary with post statistics
     """
+    # For now we query the db inside the route, this not production ready and is only the basis of a futur pr.
     total = db.query(func.count(PostModel.id)).scalar()
     avg_length = db.query(func.avg(func.length(PostModel.content))).scalar()
     return {"total_posts": total, "average_length": avg_length or 0}
