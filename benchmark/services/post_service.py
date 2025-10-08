@@ -188,12 +188,12 @@ class PostService:
         async with self.post_lock:
             await asyncio.sleep(0.01)
             async with self.user_lock:
-                # Simulate work
+                # Simulate work for now, will be address in a future pr
                 pass
 
     async def update_user_and_post(self):
         async with self.user_lock:
             await asyncio.sleep(0.01)
             async with self.post_lock:
-                # Simulate work
+                # Simulate work for now, will be address in a future pr
                 pass
