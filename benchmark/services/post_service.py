@@ -143,7 +143,7 @@ class PostService:
 
     async def process_post(self, post_id: int) -> Post:
         """
-        Simulates processing a post asynchronously.
+        Process a post asynchronously.
         
         Args:
             post_id: The unique identifier of the post
@@ -154,10 +154,9 @@ class PostService:
         Raises:
             PostNotFoundException: If no post exists with the given ID
         """
-        # In a real app, this might be a complex async operation
-        # Here we simulate it by getting the post and adding a small delay.
         post = self.get_post_by_id(post_id)
-        await asyncio.sleep(0.01) # Simulate async I/O work
+        # For now, no processing, we simulate it with a sleep, this merge request is the premisce of futur work.
+        await asyncio.sleep(0.01)
         return post
 
     def get_all_posts(self) -> List[Post]:
