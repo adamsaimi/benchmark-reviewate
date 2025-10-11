@@ -10,6 +10,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
+from benchmark.config import MAX_CONTENT_LENGTH, MIN_TITLE_LENGTH
 from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
 
@@ -179,3 +180,49 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def validate_post_content(self, post: PostModel) -> bool:
+        """
+        Validates the content of a post.
+        
+        Args:
+            post: The post model instance to validate.
+            
+        Returns:
+            True if the post content is valid, False otherwise.
+        """
+        if not post.content:
+            return False
+        if len(post.content) > MAX_CONTENT_LENGTH:
+            return False
+        if len(post.title) < MIN_TITLE_LENGTH:
+            return False
+        return True
+
+    def format_post_title(self, post: PostModel) -> str:
+        """
+        Formats the title of a post to title case.
+        
+        Args:
+            post: The post model instance.
+            
+        Returns:
+            The formatted title string.
+        """
+        return post.title.title()
+
+    def calculate_reading_time(self, post: PostModel) -> int:
+        """
+        Calculates the estimated reading time for a post in minutes.
+        
+        Args:
+            post: The post model instance.
+            
+        Returns:
+            The estimated reading time in minutes.
+        """
+        words = post.content.split()
+        word_count = len(words)
+        # Assuming an average reading speed of 200 words per minute
+        reading_time = word_count / 200
+        return max(1, round(reading_time))
