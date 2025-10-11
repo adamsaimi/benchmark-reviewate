@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import Post as PostModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -76,6 +77,26 @@ def get_all_posts(
         A list of all posts
     """
     return post_service.get_all_posts()
+
+
+@router.get("/by-author", response_model=List[Post])
+def get_posts_by_author_email(
+    email: str, db: Session = Depends(get_db)
+) -> List[Post]:
+    """
+    Retrieve all posts by a specific author's email.
+
+    Args:
+        email: The email address of the author.
+        db: Database session injected by FastAPI.
+
+    Returns:
+        A list of posts by the specified author.
+    """
+    # This querying will be moved into the service layer in a future pr. For now we directly do it the route
+    # Authentification will be added later aswell.
+    posts = db.query(PostModel).filter(PostModel.author_email == email).all()
+    return posts
 
 
 @router.get("/{post_id}", response_model=Post)
