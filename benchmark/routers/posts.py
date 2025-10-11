@@ -204,8 +204,7 @@ def create_order(
     """
     Create a new order.
     
-    Creates a new order with the provided data. The price of the items is not
-    snapshotted and will reflect the current product price.
+    Creates a new order with the provided data.
     """
     user = db.query(UserModel).filter(UserModel.id == order_create.user_id).first()
     if not user:
