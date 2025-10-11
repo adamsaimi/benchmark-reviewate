@@ -7,6 +7,7 @@ Includes user endpoints for simplicity.
 """
 
 from typing import List
+import requests
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
@@ -19,7 +20,6 @@ from benchmark.database import get_db
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
-
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
     """
@@ -106,6 +106,17 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/external")
+async def get_external_posts():
+    """
+    Retrieve external posts from a partner service.
+    """
+    # Validation and moving this part on the service portion will be done in a future pr. For now we query an example url.
+    # This url is controlled by the project.
+    response = requests.get("https://api.example.com/posts")
+    return response.json()
 
 
 # ============================================================================
