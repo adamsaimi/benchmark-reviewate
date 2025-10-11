@@ -59,6 +59,32 @@ def create_post(
     return post_service.create_post(post_create)
 
 
+@router.post("/publish", status_code=status.HTTP_201_CREATED, response_model=Post)
+def publish_post(
+    post_create: PostCreate,
+    post_service: PostService = Depends(get_post_service)
+) -> Post:
+    """
+    Publish a new post and trigger all related side-effects.
+
+    Args:
+        post_create: The post data to create and publish
+        post_service: Injected post service instance
+
+    Returns:
+        The newly created post after all operations have completed
+    """
+    post = post_service.create_post(post_create)
+
+    post_service.send_notifications(post)
+    post_service.update_search_index(post)
+    post_service.generate_sitemap()
+    post_service.update_analytics(post)
+    post_service.sync_to_cdn(post)
+
+    return post
+
+
 @router.get("/", response_model=List[Post])
 def get_all_posts(
     post_service: PostService = Depends(get_post_service)
