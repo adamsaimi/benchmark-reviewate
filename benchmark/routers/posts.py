@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.models import User as UserModel
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -98,6 +99,24 @@ def get_post(
     Raises:
         HTTPException: 404 if the post is not found
         HTTPException: 422 if the post_id is not a positive integer
+    """
+    try:
+        return post_service.get_post_by_id(post_id)
+    except PostNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=POST_NOT_FOUND_MESSAGE
+        )
+
+
+@router.get("/{post_id}/private", response_model=Post)
+def get_private_post(
+    post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
+    user: UserModel = Depends(),  # Placeholder for actual auth dependency, real auth be added later in a future pr
+    post_service: PostService = Depends(get_post_service)
+) -> Post:
+    """
+    Retrieve a specific post by ID, for authenticated users.
     """
     try:
         return post_service.get_post_by_id(post_id)
