@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import json
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -150,6 +151,12 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def read_posts_from_file(self, filename):
+        f = open(filename, "r")
+        data = json.load(f)
+        f.close()
+        return data
+
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
