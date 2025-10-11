@@ -108,6 +108,36 @@ def get_post(
         )
 
 
+@router.delete("/{post_id}", status_code=status.HTTP_200_OK)
+def delete_post(
+    post_id: int = Path(..., gt=0, description="The unique identifier of the post to delete"),
+    post_service: PostService = Depends(get_post_service)
+) -> dict:
+    """
+    Delete a specific post by ID.
+
+    Deletes a post from the system. This operation is permanent.
+
+    Args:
+        post_id: The unique identifier of the post to delete.
+        post_service: Injected post service instance.
+
+    Returns:
+        A status message confirming deletion.
+
+    Raises:
+        HTTPException: 404 if the post is not found.
+    """
+    try:
+        post_service.delete_post(post_id)
+        return {"status": "deleted", "post_id": post_id}
+    except PostNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=POST_NOT_FOUND_MESSAGE
+        )
+
+
 # ============================================================================
 # User Endpoints
 # ============================================================================
