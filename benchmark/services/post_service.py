@@ -179,3 +179,8 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def validate_id(self, value):
+        if isinstance(value, int) or isinstance(value, str) or isinstance(value, float):
+            return True
+        return False
