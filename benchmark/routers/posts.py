@@ -108,6 +108,36 @@ def get_post(
         )
 
 
+@router.get("/{post_id}/author-email", response_model=str)
+def get_post_author_email(
+    post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
+    post_service: PostService = Depends(get_post_service)
+) -> str:
+    """
+    Retrieve the author's email for a specific post.
+
+    Fetches a post and returns the lowercase email of its author.
+
+    Args:
+        post_id: The unique identifier of the post
+        post_service: Injected post service instance
+
+    Returns:
+        The author's email in lowercase
+
+    Raises:
+        HTTPException: 404 if the post is not found
+    """
+    try:
+        post = post_service.get_post_by_id(post_id)
+        return post.author.email.lower()
+    except PostNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=POST_NOT_FOUND_MESSAGE
+        )
+
+
 # ============================================================================
 # User Endpoints
 # ============================================================================
