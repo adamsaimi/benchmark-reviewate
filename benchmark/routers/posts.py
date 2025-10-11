@@ -5,6 +5,7 @@ This module defines the REST API endpoints and handles HTTP-level logic,
 translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
+import asyncio
 
 from typing import List
 
@@ -106,6 +107,38 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+async def _fetch_comments():
+    """async function to fetch comments."""
+
+    # For now we sleep and return a dummy comment, a future pr will address these issue, aswell as having the function directly in the service.
+    await asyncio.sleep(0.05)
+    return [{"id": 1, "content": "A great post!"}]
+
+
+async def _fetch_stats():
+    """async function ."""
+
+    # For now we raise and sleep, a future pr will address these issue, aswell as having the function directly in the service.
+    await asyncio.sleep(0.01)
+    raise ValueError("Could not fetch stats")
+
+
+@router.get("/aggregated", response_model=dict)
+async def get_aggregated_data(
+    post_service: PostService = Depends(get_post_service)
+) -> dict:
+    """
+    Retrieve aggregated data of posts, comments, and stats.
+    """
+    posts, comments, stats = await asyncio.gather(
+        asyncio.to_thread(post_service.get_all_posts),
+        _fetch_comments_dummy(),
+        _fetch_stats_dummy_fails()
+    )
+
+    return {"posts": posts, "comments": comments, "stats": stats}
 
 
 # ============================================================================
