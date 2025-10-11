@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-002",
+  "issue_name": "Missing Database Index",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/models.py",
+      "line_number": 55,
+      "comment": "The 'author_email' column is being added without a database index. The new '/posts/by-author' endpoint filters directly on this column, which will force the database to perform a full table scan for every request. As the 'posts' table grows, this query will become a significant performance bottleneck. To ensure efficient lookups, an index should be added to this column. The fix is to add `index=True` to the column definition: `author_email = Column(String, index=True)`."
+    }
+  ],
+  "title": "feat: Add search by author email",
+  "body": "Implemented endpoint to find posts by author email address."
+}

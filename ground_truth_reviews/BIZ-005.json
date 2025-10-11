@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-005",
+  "issue_name": "Subscription Renewal Without Payment Validation",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 233,
+      "comment": "This method attempts to renew a subscription and charge the customer without first validating that the payment method on file is still valid. This can lead to failed transactions if the card has expired, been cancelled, or has insufficient funds. Such failures can cause service interruptions for the customer and revenue loss for the business. Before charging the customer, you should implement a check to validate the payment method. If it's invalid, notify the customer to update their payment details instead of attempting the charge."
+    }
+  ],
+  "title": "feat: Add subscription auto-renewal",
+  "body": "Automatic subscription renewal for seamless service. See https://github.com/Reviewate/benchmark/issues/155"
+}

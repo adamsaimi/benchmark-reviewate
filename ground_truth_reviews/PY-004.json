@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-004",
+  "issue_name": "Missing Type Hints",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 214,
+      "comment": "The newly added utility methods (`calculate_reading_time`, `format_post_summary`, `merge_posts`) are missing type hints for their parameters and return values. Adding type hints is a best practice in modern Python that significantly improves code clarity and maintainability. It allows static analysis tools like Mypy to catch potential bugs before runtime and enhances developer experience with better autocompletion and error checking. Please add appropriate type hints, for example: `def calculate_reading_time(content: str) -> int:` and `def format_post_summary(post: Post, max_length: int) -> str:`."
+    }
+  ],
+  "title": "feat: Add post utility functions",
+  "body": "Helper methods for post processing and formatting."
+}

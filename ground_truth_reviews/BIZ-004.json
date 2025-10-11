@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-004",
+  "issue_name": "Promotional Discount Stacking Not Controlled",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 208,
+      "comment": "The current implementation iterates through all provided promotional codes and applies them sequentially without any validation. This creates a business logic vulnerability where a user can stack multiple discounts on a single order, leading to unintended price reductions and potential revenue loss. Business rules require that only one promotional code can be applied per order. To fix this, we must add a validation check at the beginning of the method to ensure the `promo_codes` list contains no more than one code. If it does, a `ValidationError` or a similar exception should be raised."
+    }
+  ],
+  "title": "feat: Add promotional code support",
+  "body": "Customers can now apply promo codes to orders. See https://github.com/Reviewate/benchmark/issues/150"
+}

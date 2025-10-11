@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-010",
+  "issue_name": "Incorrect Dictionary Key Update",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 224,
+      "comment": "This method attempts to modify the `post_stats` dictionary by deleting items from it while iterating over its keys. This is not a safe operation and will raise a `RuntimeError: dictionary changed size during iteration` as soon as the first item is deleted. \n\nTo fix this, you should avoid modifying a collection while iterating over it. A safe approach is to first collect all the keys you want to delete into a separate list, and then iterate over that list to remove the items from the original dictionary. For example:\n\n```python\nto_delete = [post_id for post_id, stat in post_stats.items() if not stat]\nfor post_id in to_delete:\n    del post_stats[post_id]\n```\n\nAlternatively, a dictionary comprehension can be used to create a new, filtered dictionary, which is often cleaner:\n\n```python\nreturn {post_id: stat for post_id, stat in post_stats.items() if stat}\n```"
+    }
+  ],
+  "title": "feat: Add post stats cleanup",
+  "body": "Implemented cleanup utility to remove empty entries from post statistics."
+}

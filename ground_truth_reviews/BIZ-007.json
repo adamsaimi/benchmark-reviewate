@@ -1,0 +1,19 @@
+{
+  "issue_id": "BIZ-007",
+  "issue_name": "Price Change Applied to Existing Orders",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/models.py",
+      "line_number": 107,
+      "comment": "The `total` property calculates the order item's total by dynamically fetching the product's current price from the database. This introduces a critical business logic flaw: if the product price is updated, it will retroactively change the total for past orders, leading to incorrect billing. The price of an item should be captured and stored at the time of purchase. To fix this, add a `price_at_purchase` column to the `OrderItem` model and use that stored value for all calculations."
+    },
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 255,
+      "comment": "This endpoint creates `OrderItem` instances by only providing the `product_id` and `quantity`, without capturing the product's price at the time of the transaction. This relies on the flawed `OrderItem` model, which looks up the price dynamically. This can cause significant billing issues if product prices change after an order is placed. The order creation logic should fetch the current price, and store it explicitly on the `OrderItem` record to ensure price consistency."
+    }
+  ],
+  "title": "feat: Add order item tracking",
+  "body": "Track individual items in orders with quantities. See https://github.com/Reviewate/benchmark/issues/148"
+}

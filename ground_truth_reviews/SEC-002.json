@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-002",
+  "issue_name": "Missing Authentication Check",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 128,
+      "comment": "The `delete_post` endpoint is missing an authentication check. This makes it possible for any unauthenticated user to delete arbitrary posts from the database simply by knowing their ID. This is a critical security vulnerability as it allows for unauthorized data modification and destruction. To fix this, you must enforce authentication on this endpoint by adding a dependency that verifies the user's identity, ensuring only authorized users can perform this action."
+    }
+  ],
+  "title": "feat: Add post deletion endpoint",
+  "body": "Implemented endpoint to allow post deletion for content management."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-003",
+  "issue_name": "Inventory Not Reserved During Checkout",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 72,
+      "comment": "The current implementation processes payment before attempting to decrement or reserve inventory. This creates a critical race condition. If two users try to buy the last item simultaneously, both might pass the initial stock check, both might be charged, but only one will get the item. This leads to a bad user experience and complex refund logic. To fix this, inventory for the items in the cart should be reserved within a database transaction *before* calling the payment gateway. If the reservation fails, the transaction is aborted, and payment is not attempted. If payment fails after a successful reservation, the reservation must be rolled back."
+    }
+  ],
+  "title": "feat: Add checkout processing",
+  "body": "Implemented payment processing and inventory management. See https://github.com/Reviewate/benchmark/issues/156"
+}

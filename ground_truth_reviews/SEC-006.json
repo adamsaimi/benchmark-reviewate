@@ -1,0 +1,24 @@
+{
+  "issue_id": "SEC-006",
+  "issue_name": "Insecure Password Storage",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/models.py",
+      "line_number": 48,
+      "comment": "This change introduces a `password` column to the `Post` model as a plain `String`. Storing passwords or sensitive data in plaintext in the database is a major security risk. If the database is compromised, these passwords will be exposed immediately. All passwords should be hashed using a strong, salted hashing algorithm like bcrypt or Argon2."
+    },
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 71,
+      "comment": "This endpoint accepts a `password` field in plain text within the request body. While HTTPS encrypts data in transit, this practice is still insecure as it can expose the password in logs, application memory, and other intermediary systems. More importantly, it facilitates the storage of the password in plaintext in the backend. Sensitive data like passwords should never be handled in their raw form beyond initial validation and should be hashed as soon as possible."
+    },
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 145,
+      "comment": "The service layer is directly assigning the plaintext password from the request object to the database model. This is the core of the insecure password storage vulnerability. The password should be hashed using a library like `passlib` with a strong algorithm like bcrypt before it is stored. Never store plaintext passwords or other sensitive secrets."
+    }
+  ],
+  "title": "feat: Add password-protected posts",
+  "body": "Implemented password protection for private posts."
+}

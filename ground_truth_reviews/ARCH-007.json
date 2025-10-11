@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-007",
+  "issue_name": "Violation of Interface Segregation",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 18,
+      "comment": "The `PostRepository` interface violates the Interface Segregation Principle. It's a 'fat' interface that bundles too many responsibilities (CRUD, search, import/export, validation). Clients like `ReadOnlyPostRepository` are forced to implement methods they don't need, leading to boilerplate code that raises `NotImplementedError`. This creates unnecessary coupling and makes the system harder to maintain. A better approach would be to split this large interface into smaller, more cohesive interfaces, such as `Readable`, `Writable`, and `Searchable`. This way, clients can implement only the functionalities they actually provide."
+    }
+  ],
+  "title": "refactor: Add repository pattern",
+  "body": "Introduced repository abstraction for better data access."
+}

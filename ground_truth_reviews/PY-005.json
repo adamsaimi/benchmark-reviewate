@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-005",
+  "issue_name": "Using os.path Instead of pathlib",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 213,
+      "comment": "This method uses `os.path.join` for constructing a file path. While functional, the `pathlib` module offers a more modern, readable, and object-oriented approach to filesystem paths that is generally preferred. It handles path separators automatically across different operating systems and makes path manipulation more intuitive. Consider refactoring this to use `pathlib.Path` for better code clarity and robustness. For example: `from pathlib import Path; return Path(__file__).parent / 'uploads' / filename`."
+    }
+  ],
+  "title": "feat: Add file upload path helper",
+  "body": "Helper to construct upload file paths."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-004",
+  "issue_name": "Insecure File Uploads",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 170,
+      "comment": "The new /upload-avatar endpoint saves uploaded files using the client-provided filename directly into /uploads. This allows attackers to upload files with dangerous extensions or crafted filenames (including path traversal), which can lead to remote code execution, overwritten files, or other severe consequences. Fix by validating file extensions against an allowlist, generating a safe randomized filename (e.g., UUID) instead of using file.filename, enforcing size/type limits, and scanning or sanitizing uploaded content. Also ensure the upload directory is not served as executable content and apply restrictive permissions."
+    }
+  ],
+  "title": "feat: Add user avatar upload functionality",
+  "body": "Implemented an endpoint for users to upload their profile pictures."
+}

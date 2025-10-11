@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-007",
+  "issue_name": "Using * Imports",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 10,
+      "comment": "Using wildcard imports (`from ... import *`) pollutes the global namespace, making the code harder to read and debug. It's unclear where specific classes or functions like `APIRouter` or `HTTPException` come from without searching the imported modules. This can also lead to name collisions if two modules export an object with the same name. It is a best practice to explicitly import only the names required from a module, for example: `from fastapi import APIRouter, HTTPException, status, Depends, Path`."
+    }
+  ],
+  "title": "refactor: Simplify imports",
+  "body": "Streamlined import statements for cleaner code."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-010",
+  "issue_name": "Semaphore Misuse Leading to Resource Exhaustion",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 123,
+      "comment": "The current implementation uses `asyncio.gather` to process all post IDs concurrently without any limits. If the input list `post_ids` is large, this will spawn a correspondingly large number of concurrent tasks. Each task might hold system resources, such as a database connection from the pool. This can lead to resource exhaustion, overwhelming the database or the application server itself, and potentially causing service denial. To prevent this, we should limit the number of concurrent operations using a semaphore. By wrapping the asynchronous call within `async with semaphore:`, we can ensure that only a fixed number of tasks execute at any given time, protecting our system resources."
+    }
+  ],
+  "title": "feat: Add batch processing endpoint",
+  "body": "Process multiple posts concurrently for better performance."
+}

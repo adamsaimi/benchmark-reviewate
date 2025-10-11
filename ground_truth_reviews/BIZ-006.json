@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-006",
+  "issue_name": "Customer Lifetime Value Calculation Incomplete",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 237,
+      "comment": "The current implementation of `calculate_customer_lifetime_value` is critically flawed as it only considers gross revenue from orders. This provides an inaccurate and inflated measure of a customer's true value. A correct CLV calculation must also account for all associated costs, including refunds, returns, and customer acquisition costs. By ignoring these deductions, the business may misallocate resources based on misleading profitability metrics. To fix this, the function should be updated to subtract total refunds and acquisition costs from the total revenue to reflect the actual net profit from a customer."
+    }
+  ],
+  "title": "feat: Add CLV calculation",
+  "body": "Customer lifetime value metrics for analytics dashboard. See See https://github.com/Reviewate/benchmark/issues/149"
+}

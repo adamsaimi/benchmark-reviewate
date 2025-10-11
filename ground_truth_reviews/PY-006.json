@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-006",
+  "issue_name": "Not Using Dataclasses",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 38,
+      "comment": "This class is a simple data container. Instead of manually implementing `__init__`, `__repr__`, and `__eq__`, it's better to use the `@dataclass` decorator from Python's standard library. This will make the code more concise, less error-prone, and easier to maintain by automatically generating these common methods. You can refactor this by adding `from dataclasses import dataclass`, decorating the class with `@dataclass`, and then defining only the fields with type hints."
+    }
+  ],
+  "title": "feat: Add post metadata class",
+  "body": "Track additional metadata for posts."
+}

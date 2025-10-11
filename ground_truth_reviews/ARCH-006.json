@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-006",
+  "issue_name": "Missing Abstraction Layer",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 182,
+      "comment": "This service directly imports and instantiates a `redis.Redis` client, creating a tight coupling between the business logic and a specific external library. This design has several drawbacks: 1) It makes unit testing difficult, as the `cache_post` method cannot be tested without a live Redis server. 2) It violates the Dependency Inversion Principle, as the high-level `PostService` now depends on the low-level detail of a Redis client. 3) It makes it hard to swap out the caching implementation for another one (like Memcached or a simple in-memory cache) in the future. To fix this, an abstraction layer (e.g., a `CacheService` abstract base class or protocol) should be introduced. The `PostService` should then depend on this abstraction, and a concrete `RedisCacheService` implementation can be injected via dependency injection."
+    }
+  ],
+  "title": "feat: Add Redis caching",
+  "body": "Integrated Redis for post caching to improve performance."
+}

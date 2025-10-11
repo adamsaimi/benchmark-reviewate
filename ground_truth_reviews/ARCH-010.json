@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-010",
+  "issue_name": "Configuration in Code",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/config.py",
+      "line_number": 45,
+      "comment": "Hard-coding configuration values like `MAX_POST_LENGTH`, `CACHE_TTL`, `ADMIN_EMAIL`, and especially the `SECRET_KEY` directly into the source code is an anti-pattern. This practice makes the application inflexible, as any change to these values requires modifying the code and redeploying the entire application. More critically, committing secrets like `SECRET_KEY` to version control is a significant security vulnerability. These settings should be moved into the `Settings` class to be managed through environment variables, which is the pattern already established in this file. This approach allows for easy configuration changes across different environments (dev, staging, production) without altering the code and keeps sensitive information secure."
+    }
+  ],
+  "title": "feat: Add application configuration",
+  "body": "Configured application settings and limits."
+}

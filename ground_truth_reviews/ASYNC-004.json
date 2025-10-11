@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-004",
+  "issue_name": "Improper Task Cancellation Handling",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 201,
+      "comment": "This `finally` block is empty, which leads to a resource leak when the async task is cancelled. When a client disconnects from the streaming endpoint, FastAPI raises an `asyncio.CancelledError`. While the `finally` block is executed, it lacks the necessary cleanup logic, leaving resources like `resource_connection` open. Over time, this will exhaust system resources. To fix this, you should either add the cleanup logic directly to the `finally` block or explicitly catch `asyncio.CancelledError`, close the resource, and then re-raise the exception."
+    }
+  ],
+  "title": "feat: Add post streaming functionality",
+  "body": "Implemented streaming API for posts to handle large datasets."
+}

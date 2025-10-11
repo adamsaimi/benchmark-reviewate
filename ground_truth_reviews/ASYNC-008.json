@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-008",
+  "issue_name": "Incorrect Use of asyncio.gather",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 147,
+      "comment": "The current implementation of `asyncio.gather` does not handle potential exceptions from the gathered coroutines. If any of the tasks (e.g., `_fetch_stats_dummy_fails`) raises an exception, `gather` will immediately propagate that exception, canceling any other pending tasks. This creates a fragile endpoint where a failure in a single, non-critical sub-task can cause the entire operation to fail.\n\nTo make this more robust, you should use the `return_exceptions=True` parameter. This allows `gather` to complete all tasks, returning either the result or the exception for each one. You can then iterate through the results and handle failures gracefully without losing the successful results from other tasks."
+    }
+  ],
+  "title": "feat: Add aggregated data endpoint",
+  "body": "Fetch posts with related data in a single request."
+}

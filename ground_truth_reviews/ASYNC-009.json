@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-009",
+  "issue_name": "Context Variable Not Propagating",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 191,
+      "comment": "The background task is created using `asyncio.create_task` without explicitly propagating the current context. In Python versions prior to 3.11, `asyncio.create_task` does not automatically copy context variables. As a result, when `background_user_activity_task` runs, it will not have access to the `current_user` variable set in the request handler, leading to a `LookupError`. This can cause silent failures or loss of critical request-specific data in background jobs.\n\nTo fix this, you should manually copy the context and run the task within that copied context:\n```python\nimport contextvars\n\n# ... inside the endpoint\nctx = contextvars.copy_context()\ncoro = background_user_activity_task()\nctx.run(asyncio.create_task, coro)\n```\nThis ensures that all context variables from the request handler are available to the spawned task."
+    }
+  ],
+  "title": "feat: Add user context tracking",
+  "body": "Implemented user tracking across async operations."
+}

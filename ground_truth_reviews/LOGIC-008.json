@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-008",
+  "issue_name": "Float Comparison with Equality",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 203,
+      "comment": "Directly comparing floating-point numbers with the '==' operator is unreliable due to the inherent precision limitations of how they are represented in binary. This can lead to unexpected failures where two numbers that should be identical are not. A better approach is to check if the numbers are 'close enough' by comparing their absolute difference against a small tolerance (epsilon). The `math.isclose()` function is ideal for this purpose, as it provides a robust way to handle these comparisons."
+    }
+  ],
+  "title": "feat: Add post length analytics",
+  "body": "Implemented average post length calculation for content analytics dashboard."
+}

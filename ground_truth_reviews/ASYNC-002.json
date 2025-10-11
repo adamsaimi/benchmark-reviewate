@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-002",
+  "issue_name": "Missing Await Keyword",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 123,
+      "comment": "The `post_service.get_post_by_id` function is an async coroutine. Calling it without the `await` keyword does not execute the function but instead returns a coroutine object. Consequently, the `post` variable holds this coroutine object, not the expected `Post` model instance. When the next line attempts to access `post.title`, it will raise an `AttributeError` at runtime because the coroutine object has no 'title' attribute. This will result in an unhandled server error. To fix this, you must `await` the function call: `post = await post_service.get_post_by_id(post_id)`."
+    }
+  ],
+  "title": "feat: Add get post title endpoint",
+  "body": "Quick endpoint to fetch just the title of a post."
+}

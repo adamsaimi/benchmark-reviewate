@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-009",
+  "issue_name": "Missing Response Caching",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 137,
+      "comment": "This endpoint performs two aggregate database queries (`COUNT` and `AVG`) on every single request. These operations can be resource-intensive, especially as the 'posts' table grows. Since this statistical data is unlikely to change frequently, re-calculating it on every call is inefficient and can lead to performance bottlenecks under load. To mitigate this, consider implementing a caching mechanism. A time-based cache (e.g., using `fastapi-cache` with an expiration of a few minutes) would prevent redundant database queries by serving a stored result for subsequent requests, significantly improving response time and reducing database load."
+    }
+  ],
+  "title": "feat: Add posts statistics endpoint",
+  "body": "Implemented real-time statistics calculation for posts analytics."
+}

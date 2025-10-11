@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-009",
+  "issue_name": "Shipping Cost Not Calculated Based on Business Rules",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 231,
+      "comment": "The current implementation of `calculate_shipping` uses a hardcoded flat rate. This fails to account for crucial business rules, such as offering free shipping for orders over $50, or calculating costs based on package weight, destination, and shipping method. This will lead to inaccurate charges, causing either revenue loss or customer dissatisfaction. The function should be updated to implement the dynamic shipping cost calculation based on the defined business logic."
+    }
+  ],
+  "title": "feat: Add shipping cost calculation",
+  "body": "Calculate shipping costs for orders. See https://github.com/Reviewate/benchmark/issues/154"
+}

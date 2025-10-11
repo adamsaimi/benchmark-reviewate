@@ -1,0 +1,19 @@
+{
+  "issue_id": "ARCH-005",
+  "issue_name": "Anemic Domain Model",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/models.py",
+      "line_number": 40,
+      "comment": "The `Post` model is defined here as a pure data container with no behavior. While this is simple, it leads to an 'Anemic Domain Model' where all business logic (like validation, formatting, etc.) is pushed into service layers. This violates the object-oriented principle of keeping data and the behavior that operates on that data together. To create a richer, more maintainable domain model, we should start adding business logic relevant to a post (e.g., `calculate_reading_time`) directly into this class."
+    },
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 210,
+      "comment": "These new methods (`validate_post_content`, `format_post_title`, `calculate_reading_time`) operate on `Post` data but are located in the `PostService`. This is a classic symptom of the Anemic Domain Model anti-pattern. Business logic that is intrinsically tied to a domain object should be encapsulated within the object itself. For example, `calculate_reading_time` should be a method on the `Post` model (`post.calculate_reading_time()`) rather than a service method that takes a post as an argument (`post_service.calculate_reading_time(post)`). This improves code organization, discoverability, and adherence to OOP principles."
+    }
+  ],
+  "title": "refactor: Extract post logic to service",
+  "body": "Centralized post-related operations in service layer."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-007",
+  "issue_name": "Mixing Sync and Async Database Calls",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 123,
+      "comment": "This endpoint is declared as `async def`, which means it runs on the asyncio event loop. However, the database call `db.query(PostModel).all()` is a synchronous, blocking I/O operation. Executing a blocking call like this in an async function will freeze the entire event loop, preventing the server from handling any other concurrent requests until the database query completes. This negates the primary benefit of using an asynchronous framework like FastAPI. To fix this, you should use an asynchronous database driver (e.g., `asyncpg`) and an async-compatible ORM session (like SQLAlchemy's `AsyncSession`). All database operations should then be performed using `await`."
+    }
+  ],
+  "title": "feat: Add quick post query endpoint",
+  "body": "Added lightweight endpoint for fetching posts."
+}

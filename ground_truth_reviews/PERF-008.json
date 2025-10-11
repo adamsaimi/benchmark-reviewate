@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-008",
+  "issue_name": "Inefficient Loop with Function Calls",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 202,
+      "comment": "The call to `get_max_length(config)` is inside the `for` loop. Since the `config` dictionary doesn't change during the loop's execution, the function's return value will be the same for every iteration. This leads to unnecessary and potentially expensive repeated computations, especially if `get_max_length` were to perform a database query or a complex calculation. To optimize this, the value should be fetched once before the loop and stored in a local variable."
+    }
+  ],
+  "title": "feat: Add configurable post length filtering",
+  "body": "Implemented post filtering based on configurable length thresholds."
+}

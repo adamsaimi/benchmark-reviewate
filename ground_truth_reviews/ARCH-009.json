@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-009",
+  "issue_name": "Lack of Event-Driven Architecture",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 71,
+      "comment": "This endpoint introduces tight synchronous coupling between several unrelated operations. When a user publishes a post, the API call will not return until sending notifications, updating the search index, regenerating the sitemap, updating analytics, and syncing to the CDN are all complete. This has several major drawbacks:\n1. **Poor Performance & User Experience**: The user has to wait for all these long-running tasks to finish, leading to a slow API response.\n2. **Lack of Resilience**: If any one of these downstream services fails (e.g., the notification service is down), the entire request fails, and the post might be in an inconsistent state.\n3. **Low Scalability**: It's difficult to scale these operations independently. A surge in post publications will put a linear load on all dependent services.\n\nA much better approach is to adopt an event-driven architecture. The `publish_post` endpoint should only be responsible for creating the post and then publishing a `post.published` event. Other services can then subscribe to this event and perform their actions asynchronously and independently. This decouples the services, improves performance, and increases the overall resilience of the system."
+    }
+  ],
+  "title": "feat: Add comprehensive post publishing",
+  "body": "Publishing now handles all related operations automatically."
+}

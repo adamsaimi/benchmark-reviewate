@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-001",
+  "issue_name": "Not Using Context Managers",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 211,
+      "comment": "Manually opening and closing file resources is discouraged because it can lead to resource leaks. If an exception occurs during `json.load(f)` (e.g., due to invalid JSON), the `f.close()` line will never be reached, and the file handle will remain open. To prevent this, you should use a context manager (`with` statement), which guarantees that the file will be closed automatically, even if errors occur. The correct implementation would be: `with open(filename, \"r\") as f: return json.load(f)`."
+    }
+  ],
+  "title": "feat: Add file-based post import",
+  "body": "Import posts from JSON files."
+}

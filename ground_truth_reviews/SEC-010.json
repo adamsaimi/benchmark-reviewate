@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-010",
+  "issue_name": "Sensitive Data Exposure in Logs",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 61,
+      "comment": "This log statement exposes sensitive user information by logging the entire `post_create` object. The object contains personally identifiable information (PII) such as `author_email` and potentially sensitive user-generated `content`. Logging PII can lead to serious security vulnerabilities and compliance issues if the logs are ever compromised. Instead of logging the entire object, you should only log non-sensitive, relevant information, such as the post title or a generated post ID. For more robust logging, consider implementing structured logging with allow/block lists to prevent accidental exposure of sensitive fields."
+    }
+  ],
+  "title": "feat: Add detailed logging for post creation",
+  "body": "Enhanced logging to track post creation with full details for debugging."
+}

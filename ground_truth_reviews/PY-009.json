@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-009",
+  "issue_name": "Using isinstance for Type Checking Multiple Times",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 206,
+      "comment": "The type check is implemented using multiple `isinstance` calls chained with `or`. This pattern is less efficient and less idiomatic than passing a tuple of types to a single `isinstance` call. The function can check against multiple types more cleanly and performantly with a single call.\n\nTo improve this, you should combine the type checks into one:\n\n```python\nif isinstance(value, (int, str, float)):\n    return True\n```"
+    }
+  ],
+  "title": "feat: Add flexible ID validation",
+  "body": "Support multiple ID formats for compatibility."
+}

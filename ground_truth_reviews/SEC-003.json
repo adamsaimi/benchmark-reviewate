@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-003",
+  "issue_name": "Hardcoded Credentials",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/config.py",
+      "line_number": 35,
+      "comment": "This change introduces a hardcoded API key directly into the configuration. Storing sensitive credentials like API keys in source code is a significant security risk, as it exposes the secret to anyone with access to the codebase and its version history. The best practice is to load secrets from the environment. Since this project uses Pydantic's `BaseSettings`, you should remove the hardcoded value and simply declare `EXTERNAL_API_KEY: str`. Pydantic will then automatically load the value from an environment variable of the same name."
+    }
+  ],
+  "title": "feat: Add external API integration",
+  "body": "Configured API key for new third-party service integration."
+}

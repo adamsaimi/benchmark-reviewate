@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-004",
+  "issue_name": "Incorrect Boolean Logic in Conditions",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 157,
+      "comment": "The boolean condition lacks explicit parentheses, leading to incorrect behavior due to operator precedence. In Python, `and` has higher precedence than `or`, so the expression is evaluated as `user.is_admin or (user.id == post.author_id and post.is_draft)`. This allows an administrator to delete any post, regardless of its draft status. If the intended logic is that only draft posts can be deleted by either an admin or the author, the condition should be grouped with parentheses like this: `(user.is_admin or user.id == post.author_id) and post.is_draft`."
+    }
+  ],
+  "title": "feat: Add post deletion authorization",
+  "body": "Implemented authorization logic for post deletion with admin override capabilities."
+}

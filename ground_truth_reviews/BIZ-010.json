@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-010",
+  "issue_name": "Tax Calculation Missing Jurisdiction Rules",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 204,
+      "comment": "The current tax calculation logic is overly simplistic and fails to meet compliance requirements. It applies a single, hardcoded flat tax rate to all orders, which will lead to incorrect tax collection and poses a significant audit risk. This implementation ignores critical factors such as the customer's shipping address for jurisdiction-based rates, tax-exempt status of certain products, and customer-specific tax exemption certificates. To fix this, the logic should be updated to determine the correct tax jurisdiction from the shipping address, calculate the taxable subtotal by excluding exempt items, check for customer exemption certificates, and then apply the appropriate combined jurisdictional tax rate."
+    }
+  ],
+  "title": "feat: Add tax calculation",
+  "body": "Calculate sales tax for orders. See https://github.com/Reviewate/benchmark/issues/152"
+}

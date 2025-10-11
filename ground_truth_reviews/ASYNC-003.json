@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-003",
+  "issue_name": "Blocking Operation in Event Loop",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 118,
+      "comment": "This asynchronous endpoint performs a blocking `time.sleep` call and a CPU-intensive regex operation directly within the event loop. This will freeze the entire server, making it unresponsive to any other incoming requests for the duration of the operation. In an async framework like FastAPI, any synchronous, long-running task must be delegated to a separate thread or process to avoid blocking the event loop. The recommended approach is to use `loop.run_in_executor` to offload the work to a thread pool, allowing the server to remain responsive to other clients."
+    }
+  ],
+  "title": "feat: Add content processing endpoint",
+  "body": "Added endpoint for processing post content with filters."
+}

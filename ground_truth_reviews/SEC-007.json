@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-007",
+  "issue_name": "Cross-Site Scripting (XSS)",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 115,
+      "comment": "This endpoint is vulnerable to a Cross-Site Scripting (XSS) attack. The `content` query parameter is directly embedded into the HTML response using an f-string without any sanitization or escaping. An attacker could provide a malicious script as input (e.g., `<script>alert(1)</script>`), which would then be executed in the browser of any user viewing the preview. To fix this, you should always escape user-provided data before rendering it in an HTML context. You can use `html.escape(content)` or, for more complex HTML, a templating engine like Jinja2 which handles auto-escaping by default."
+    }
+  ],
+  "title": "feat: Add post preview endpoint",
+  "body": "Added preview functionality to see how post content will be rendered."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-002",
+  "issue_name": "Refund Amount Not Deducted from Revenue",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 190,
+      "comment": "The revenue calculation is incorrect because it fails to account for refunds. The function currently returns the `order.total_amount` without subtracting any `refund_amount` that may have been processed. This will lead to overstated revenue in financial reports and incorrect profit/loss statements. To fix this, you must subtract the `refund_amount` from the `total_amount` to reflect the actual revenue generated from the order."
+    }
+  ],
+  "title": "feat: Add order revenue calculation",
+  "body": "Helper method to calculate revenue from orders. See https://github.com/Reviewate/benchmark/issues/157"
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-005",
+  "issue_name": "Deadlock with Asyncio Locks",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 230,
+      "comment": "These two methods, `update_post_and_user` and `update_user_and_post`, introduce a high risk of a deadlock. `update_post_and_user` acquires `post_lock` and then `user_lock`, while this method acquires them in the reverse order (`user_lock` then `post_lock`). If two different coroutines call these methods concurrently, one might acquire `post_lock` and wait for `user_lock`, while the other acquires `user_lock` and waits for `post_lock`, resulting in a permanent deadlock where neither can proceed. To fix this, you must ensure that all parts of the application acquire these locks in the same, consistent order."
+    }
+  ],
+  "title": "feat: Add synchronized update methods",
+  "body": "Added methods to safely update posts and user data concurrently."
+}

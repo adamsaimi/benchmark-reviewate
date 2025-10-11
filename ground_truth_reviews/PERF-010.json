@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-010",
+  "issue_name": "Inefficient Data Structure Choice",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 183,
+      "comment": "The membership test `p.id in published_ids` is inefficient because `published_ids` is a list. This results in a linear scan for each post, leading to a time complexity of O(n*m) where 'n' is the number of posts and 'm' is the number of published IDs. For large lists, this can cause significant performance degradation. To optimize this, convert `published_ids` to a set before the list comprehension to leverage its O(1) average time complexity for lookups, which would improve the overall performance to O(n+m)."
+    }
+  ],
+  "title": "feat: Add published posts filter",
+  "body": "Implemented filtering to show only published posts from a list."
+}

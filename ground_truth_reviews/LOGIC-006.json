@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-006",
+  "issue_name": "Time Zone Naive Datetime Comparison",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 198,
+      "comment": "The comparison `datetime.now() > db_post.created_at` is unsafe because it compares a naive datetime object with a timezone-aware one. The `created_at` field is stored with timezone information (UTC), while `datetime.now()` produces a naive datetime based on the system's local time. This will raise a `TypeError` at runtime, preventing the code from executing correctly. To fix this, you must use a timezone-aware datetime for the current time. The recommended approach is to import `timezone` from the `datetime` module and use `datetime.now(timezone.utc)` for the comparison."
+    }
+  ],
+  "title": "feat: Add post expiration check",
+  "body": "Added functionality to check if posts have expired based on their creation date."
+}

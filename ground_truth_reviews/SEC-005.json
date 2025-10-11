@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-005",
+  "issue_name": "Mass Assignment Vulnerability",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 136,
+      "comment": "This endpoint is vulnerable to mass assignment. By accepting a raw dictionary and using `setattr` to update the model, an attacker can modify any attribute of the `Post` object, including protected fields like `id`, `author_id`, or `created_at`. This could allow an unauthorized user to change a post's author, for example. To fix this, replace the `data: dict` parameter with a dedicated Pydantic model for updates that explicitly lists only the fields that should be user-modifiable (e.g., `title`, `content`)."
+    }
+  ],
+  "title": "feat: Add flexible post update",
+  "body": "Added PATCH endpoint for flexible post updates accepting any fields."
+}

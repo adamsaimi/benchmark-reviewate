@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-001",
+  "issue_name": "SQL Injection Vulnerability",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 124,
+      "comment": "The code constructs a raw SQL query using an f-string, which directly embeds the `title` query parameter into the SQL statement. This is a classic SQL injection vulnerability. An attacker can manipulate the `title` parameter to alter the query's logic, potentially accessing, modifying, or deleting data they should not have access to. To mitigate this, always use parameterized queries, which separate the SQL logic from the data. Instead of string formatting, you should use SQLAlchemy's ORM capabilities, e.g., `db.query(PostModel).filter(PostModel.title.like(f'%{title}%')).all()`, or if raw SQL is necessary, use bind parameters: `query = text('SELECT * FROM posts WHERE title LIKE :pattern')` and execute it with `db.execute(query, {'pattern': f'%{title}%'})`."
+    }
+  ],
+  "title": "feat: Add post search by title",
+  "body": "Implemented search endpoint to find posts by title using pattern matching for better user experience."
+}

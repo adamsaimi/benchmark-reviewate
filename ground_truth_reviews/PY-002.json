@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-002",
+  "issue_name": "Using Bare Except",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 78,
+      "comment": "The use of a bare `except:` clause is a dangerous practice. It catches all exceptions, including system-level ones like `SystemExit` and `KeyboardInterrupt`, which can prevent the application from shutting down gracefully. More importantly, it hides all programming errors (like `TypeError`, `AttributeError`, etc.) that might occur within the `try` block, making debugging extremely difficult. Instead of catching all possible exceptions, you should only catch specific, expected exceptions (e.g., `PostNotFoundException`) and let unexpected ones propagate so they can be logged and fixed."
+    }
+  ],
+  "title": "feat: Add safe post retrieval",
+  "body": "Added error-tolerant post fetching endpoint."
+}

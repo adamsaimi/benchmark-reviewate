@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-001",
+  "issue_name": "Race Condition on Shared State",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 57,
+      "comment": "The `increment_view_count` method introduces a severe race condition. The read-modify-write operation on the shared class variable `view_count` is not atomic. The `await asyncio.sleep(0.001)` call yields control, allowing other concurrent tasks to execute the same code block before the current task has finished.\n\nThis can lead to lost updates. For example, if two tasks read `view_count` when it is 0, both will calculate the new value as 1 and write it back. The final result will be 1, instead of the expected 2. Over time, this will lead to significant data corruption and an inconsistent state for the view counter.\n\nTo resolve this, the critical section where `view_count` is modified must be protected by a synchronization primitive like `asyncio.Lock` to ensure atomicity."
+    }
+  ],
+  "title": "feat: Add view count tracking",
+  "body": "Implemented view counter for post statistics."
+}

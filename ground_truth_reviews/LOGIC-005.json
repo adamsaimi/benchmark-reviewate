@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-005",
+  "issue_name": "Mutable Default Argument",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 179,
+      "comment": "The use of a mutable object (an empty list `[]`) as a default argument for `existing_tags` is a critical flaw. In Python, default arguments are evaluated only once when the function is defined, not each time it's called. This means that every call to `add_tags` that doesn't explicitly provide the `existing_tags` argument will share and modify the exact same list object. This will lead to unexpected behavior where tags from one call will persist and appear in subsequent unrelated calls, causing state to be shared incorrectly.\n\nTo fix this, the standard practice is to use an immutable default value like `None` and then initialize a new list within the function if no list is provided.\n\nSuggested fix:\n```python\ndef add_tags(self, post_id: int, new_tag: str, existing_tags: list = None) -> List[str]:\n    if existing_tags is None:\n        existing_tags = []\n    ...\n```"
+    }
+  ],
+  "title": "feat: Add tag management for posts",
+  "body": "Implemented tag addition functionality to support post categorization."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-002",
+  "issue_name": "Integer Division Precision Loss",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 197,
+      "comment": "The current implementation uses integer division (`//`) to calculate the discount amount. This leads to a loss of precision, as any fractional part of the discount is truncated. For example, a 15% discount on a price of 150 would be calculated as 22 instead of 22.5, resulting in an incorrect final price. For financial calculations, it's crucial to maintain precision. You should use float division (`/`) or, for better accuracy with currency, use the `Decimal` type from the `decimal` module to perform these calculations."
+    }
+  ],
+  "title": "feat: Add discount calculation utility",
+  "body": "Implemented discount calculation helper method for future pricing features."
+}

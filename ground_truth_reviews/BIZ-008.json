@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-008",
+  "issue_name": "Free Trial Conversion Not Tracked",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 60,
+      "comment": "This endpoint for creating trial accounts introduces a significant business logic flaw. It allows any email to be converted to a 'trial' account without any checks to see if that user has already had a trial. Furthermore, it fails to set an expiration date for the trial period. This combination allows users to repeatedly create or switch to trial accounts, effectively bypassing the conversion to a paid plan and leading to service abuse. To mitigate this, the system must validate trial eligibility before creating the account and set a non-nullable expiration date that is enforced by the system."
+    }
+  ],
+  "title": "feat: Add free trial signup",
+  "body": "Allow users to start free trial accounts. See https://github.com/Reviewate/benchmark/issues/153"
+}

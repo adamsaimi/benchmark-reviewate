@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-008",
+  "issue_name": "Missing Factory Pattern",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 126,
+      "comment": "The instantiation logic for different exporter types is tightly coupled within this endpoint. Using a large `if-elif-else` block to select and create an object makes the code harder to maintain and extend. Each new export format will require modifying this function, which violates the Open/Closed Principle.\n\nConsider implementing a Factory pattern to encapsulate the creation logic. A dedicated `ExporterFactory` could take the format string and return the appropriate exporter instance. This would centralize the instantiation logic, decouple the endpoint from concrete exporter classes, and make it much simpler to add new formats in the future without changing this consumer code."
+    }
+  ],
+  "title": "feat: Add post export functionality",
+  "body": "Support multiple export formats for posts."
+}

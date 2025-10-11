@@ -1,0 +1,14 @@
+{
+  "issue_id": "BIZ-001",
+  "issue_name": "Missing Revenue Status Validation",
+  "category": "Business Logic & Domain Rules",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 131,
+      "comment": "The current revenue calculation is flawed because it includes orders of all statuses (e.g., pending, cancelled), leading to inflated and inaccurate financial reporting. To ensure accuracy, the query must be modified to sum totals only from completed transactions. This can be achieved by adding a filter for `Order.status == 'delivered'` to the database query."
+    }
+  ],
+  "title": "feat: Add monthly revenue reporting",
+  "body": "Implemented monthly revenue calculation endpoint for business analytics. See https://github.com/Reviewate/benchmark/issues/151"
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-005",
+  "issue_name": "Unnecessary Data Transfer",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 87,
+      "comment": "This query fetches the entire `Post` object for every record, including all columns like `id`, `title`, `content`, and `author_id`. However, the endpoint only uses the 'title' field. Loading potentially large data, like the 'content' column, into memory just to discard it is inefficient. This leads to unnecessary database load, increased network traffic, and higher memory consumption in the application. To optimize this, you should select only the specific column you need. The query should be changed to `db.query(PostModel.title).all()` or, to keep ORM features, `db.query(PostModel).with_entities(PostModel.title).all()`."
+    }
+  ],
+  "title": "feat: Add post titles endpoint",
+  "body": "Implemented endpoint to list all post titles for navigation."
+}

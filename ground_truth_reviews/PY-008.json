@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-008",
+  "issue_name": "Not Using Enumerate",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 177,
+      "comment": "The manual management of the `index` variable is unnecessary and not idiomatic Python. Initializing a counter to zero before a loop and incrementing it inside the loop is a pattern inherited from other languages. Python provides a more elegant and robust solution with the built-in `enumerate()` function. Using `enumerate()` simplifies the code, reduces the chance of errors (like forgetting to increment the counter), and makes the code's intent clearer. The loop can be refactored to `for index, post in enumerate(posts):` to achieve the same result more cleanly."
+    }
+  ],
+  "title": "feat: Add line numbering for posts",
+  "body": "Number posts in listing for better readability."
+}

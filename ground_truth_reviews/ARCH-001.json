@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-001",
+  "issue_name": "Tight Coupling Between Layers",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 62,
+      "comment": "This endpoint bypasses the service layer and interacts directly with the database models. This creates tight coupling between the presentation layer (the API router) and the data layer. Business logic, such as creating a new user and committing transactions, should be encapsulated within the service layer (`PostService`) to maintain a clean architecture, improve testability, and avoid code duplication. The controller's responsibility should be limited to handling HTTP requests and responses, delegating all business operations to the service."
+    }
+  ],
+  "title": "feat: Add quick post creation",
+  "body": "Streamlined post creation with direct database access for performance."
+}

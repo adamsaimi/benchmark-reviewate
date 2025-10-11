@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-003",
+  "issue_name": "Missing Dependency Injection",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 42,
+      "comment": "The `NotificationManager` class hard-codes its dependencies by directly instantiating `EmailClient` and `SMSClient` within the constructor. This practice, known as tight coupling, makes the code inflexible and difficult to test. For instance, unit testing this class would require making actual network connections, and changing notification providers or configurations would necessitate modifying the class's internal logic.\n\nTo improve this, we should apply the Dependency Injection pattern. The dependencies (`email_client` and `sms_client`) should be passed into the constructor as arguments, allowing the caller to control which concrete implementations are used. This decouples the `NotificationManager` from specific client implementations, making it more reusable, configurable, and easier to test with mocks.\n\nSuggested fix:\n```python\nclass NotificationManager:\n    def __init__(self, email_client: EmailClient, sms_client: SMSClient):\n        self.email_client = email_client\n        self.sms_client = sms_client\n```"
+    }
+  ],
+  "title": "feat: Add notification manager",
+  "body": "Implemented notification system for post updates."
+}

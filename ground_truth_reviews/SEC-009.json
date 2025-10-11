@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-009",
+  "issue_name": "Missing Rate Limiting",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 111,
+      "comment": "This endpoint simulates an expensive, time-consuming operation without any rate limiting. This makes it a prime target for a Denial of Service (DoS) attack. An attacker can send a large number of requests in a short period, exhausting server resources and making the application unresponsive for legitimate users. To mitigate this vulnerability, you must implement rate limiting to control how frequently a client can call this endpoint. For instance, using a library like `slowapi`, you could apply a decorator like `@limiter.limit('5/minute')` to restrict usage."
+    }
+  ],
+  "title": "feat: Add post validation endpoint",
+  "body": "Implemented comprehensive post validation with external checks."
+}

@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-003",
+  "issue_name": "Missing Null/None Check",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 146,
+      "comment": "This line directly accesses `post.author.email` without checking if `post.author` could be `None`. If a post is ever retrieved without its author relationship being loaded, this will raise an `AttributeError` and cause a 500 Internal Server Error. To improve robustness, you should add a check to ensure `post.author` is not `None` before accessing its attributes. If it is `None`, you should handle it gracefully, for example by raising a 404 HTTPException."
+    }
+  ],
+  "title": "feat: Add author email endpoint",
+  "body": "Added endpoint to retrieve post author's email for notification purposes."
+}

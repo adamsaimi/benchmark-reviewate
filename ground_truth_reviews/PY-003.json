@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-003",
+  "issue_name": "Not Using List Comprehensions",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 186,
+      "comment": "The current implementation uses an explicit for-loop to build a list of titles. This can be made more concise and idiomatic by using a list comprehension, which is generally preferred in Python for this type of transformation and filtering. A list comprehension is often more readable and can be more performant.\n\nThe body of this function can be simplified to a single line:\n```python\nreturn [post.title for post in posts if post.is_published]\n```"
+    }
+  ],
+  "title": "feat: Add published titles helper",
+  "body": "Extract published post titles for display."
+}

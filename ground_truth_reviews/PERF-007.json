@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-007",
+  "issue_name": "Unoptimized Regular Expression",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 160,
+      "comment": "The regular expression `r\"^(a+)+$\"` is vulnerable to catastrophic backtracking, which can lead to a Regular Expression Denial of Service (ReDoS) attack. The nested quantifiers `(a+)+` cause the regex engine's execution time to grow exponentially on certain inputs (e.g., a long string of 'a's followed by a non-'a' character), consuming excessive CPU and making the application unresponsive. To mitigate this, the pattern should be simplified to avoid nested quantifiers, for example, by changing it to `r\"^a+$\"."
+    }
+  ],
+  "title": "feat: Add content pattern validation",
+  "body": "Implemented regex-based content validation for post submissions."
+}

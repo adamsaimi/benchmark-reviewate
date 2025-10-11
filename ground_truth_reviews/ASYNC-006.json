@@ -1,0 +1,14 @@
+{
+  "issue_id": "ASYNC-006",
+  "issue_name": "Fire-and-Forget Task Without Error Handling",
+  "category": "Concurrency & Asynchronous Code Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 141,
+      "comment": "This background task is created using `asyncio.create_task` but is not awaited, and no reference to it is stored. This is a 'fire-and-forget' pattern that can be dangerous. If the `notify_subscribers` coroutine raises an exception, it will be silently ignored and will not be logged, potentially leading to silent failures in the notification system. To fix this, you should store a reference to the task and add a 'done' callback to properly handle exceptions, for example: `task = asyncio.create_task(send_notification(user.id)); task.add_done_callback(lambda t: t.exception() and logger.error(f'Notification failed: {t.exception()}'))`."
+    }
+  ],
+  "title": "feat: Add publish with notifications",
+  "body": "Posts now trigger subscriber notifications when published."
+}

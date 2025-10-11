@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-006",
+  "issue_name": "Synchronous I/O in Async Context",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 134,
+      "comment": "This endpoint is defined as `async` but uses the synchronous `requests` library for the HTTP GET call. This is a significant performance issue because `requests.get()` is a blocking I/O operation. When this endpoint is called, it will block the entire server's event loop, preventing it from handling any other concurrent requests until the network call completes.\n\nTo fix this and leverage the benefits of an asynchronous framework like FastAPI, you should use an asynchronous HTTP client such as `httpx`. This allows the event loop to work on other tasks while waiting for the network response, greatly improving the application's throughput and responsiveness under load.\n\nSuggested fix:\n```python\nimport httpx\n\n@router.get(\"/external\")\nasync def get_external_posts():\n    async with httpx.AsyncClient() as client:\n        response = await client.get('https://api.example.com/posts')\n        response.raise_for_status() # Good practice\n        return response.json()\n```"
+    }
+  ],
+  "title": "feat: Add external posts integration",
+  "body": "Integrated external API to fetch additional posts from partner service."
+}

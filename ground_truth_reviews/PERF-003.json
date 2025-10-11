@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-003",
+  "issue_name": "Loading Entire Table into Memory",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 141,
+      "comment": "This endpoint fetches all posts from the database using `.all()`, which loads the entire result set into memory. On a large `posts` table, this can lead to excessive memory consumption, degrading application performance and potentially causing the service to crash. For an export functionality, it's much more scalable to stream the results. You can achieve this by using SQLAlchemy's `yield_per()` to process records in batches and returning a `StreamingResponse` from FastAPI. This avoids holding all records in memory simultaneously."
+    }
+  ],
+  "title": "feat: Add post export endpoint",
+  "body": "Implemented endpoint to export all posts for backup purposes."
+}

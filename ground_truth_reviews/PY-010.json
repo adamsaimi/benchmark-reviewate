@@ -1,0 +1,14 @@
+{
+  "issue_id": "PY-010",
+  "issue_name": "Not Using __slots__",
+  "category": "Python Best Practices & Idioms",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 34,
+      "comment": "The `PostCache` class is designed as a lightweight object that may be instantiated many times. By default, Python classes use a `__dict__` to store instance attributes, which is memory-intensive when creating a large number of objects. To optimize memory usage for this class, you should define `__slots__` to pre-declare the instance attributes. This prevents the creation of `__dict__` for each instance, significantly reducing its memory footprint.\n\nSuggested fix:\n```python\nclass PostCache:\n    __slots__ = ['id', 'title', 'timestamp']\n\n    def __init__(self, id: int, title: str, timestamp: datetime):\n        self.id = id\n        self.title = title\n        self.timestamp = timestamp\n```"
+    }
+  ],
+  "title": "feat: Add post caching structure",
+  "body": "Lightweight cache objects for frequently accessed posts."
+}

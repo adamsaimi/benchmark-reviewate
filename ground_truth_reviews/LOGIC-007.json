@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-007",
+  "issue_name": "Incorrect Exception Handling Order",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 142,
+      "comment": "The exception handling order is incorrect. Catching the general `Exception` class before more specific exceptions like `ValueError` means the specific handlers will never be reached. Because `ValueError` is a subclass of `Exception`, it will always be caught by the first `except Exception` block, making the `except ValueError` block unreachable. To ensure correct error handling, exception handlers must be ordered from most specific to most general."
+    }
+  ],
+  "title": "feat: Add error handling to post creation",
+  "body": "Improved error handling and logging in post creation workflow."
+}

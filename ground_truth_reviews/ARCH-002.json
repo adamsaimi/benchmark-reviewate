@@ -1,0 +1,14 @@
+{
+  "issue_id": "ARCH-002",
+  "issue_name": "God Object Anti-Pattern",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 34,
+      "comment": "This class, `PostService`, has taken on too many unrelated responsibilities, including email notifications, payment processing, analytics, and caching, in addition to its core responsibility of managing posts. This is an instance of the 'God Object' anti-pattern.\n\nThis design violates the Single Responsibility Principle (SRP), which makes the class difficult to maintain, test, and reason about. Any change to one of these unrelated domains (e.g., updating the payment gateway logic) would necessitate modifying and re-deploying the entire post service.\n\nTo resolve this, the class should be refactored by extracting each distinct responsibility into its own dedicated service class (e.g., `EmailService`, `PaymentService`, `AnalyticsService`, `AuditLogger`, `CacheService`). The `PostService` should retain only the logic directly related to post and user management."
+    }
+  ],
+  "title": "feat: Extend post service functionality",
+  "body": "Added comprehensive features to post service for better integration."
+}

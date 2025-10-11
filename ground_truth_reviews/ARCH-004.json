@@ -1,0 +1,19 @@
+{
+  "issue_id": "ARCH-004",
+  "issue_name": "Circular Dependencies",
+  "category": "Code Architecture & Design Patterns",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 13,
+      "comment": "This import creates a circular dependency. The `posts` router module imports `get_post_author` from the `post_service` service module, while the `post_service` module imports `format_post_response` from this `posts` router module. This tight coupling makes the code hard to maintain, test, and can lead to `ImportError` exceptions at runtime. To fix this, shared functionality should be moved to a separate, independent utility module that both the router and service can import from without importing each other."
+    },
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 12,
+      "comment": "This import from the router layer (`benchmark.routers.posts`) into the service layer creates a circular dependency, as the router module already imports from this service module. This violates the principle of separation of concerns and layered architecture, leading to an `ImportError` and making the codebase brittle. Business logic should not depend on the presentation layer. The shared function `format_post_response` should be moved to a neutral utility module or its logic should be incorporated directly into the service layer if it's not truly a shared concern."
+    }
+  ],
+  "title": "refactor: Share utilities between router and service",
+  "body": "Improved code reuse by sharing helper functions."
+}

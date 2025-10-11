@@ -1,0 +1,14 @@
+{
+  "issue_id": "LOGIC-009",
+  "issue_name": "Incorrect Loop Variable Scope",
+  "category": "Correctness & Logic Errors",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 62,
+      "comment": "The lambda function defined inside the loop exhibits late binding behavior for the `validation_type` variable. Because the lambda's body is not executed until the function is called, it captures the variable by reference, not by value. As a result, when any of the validator functions are eventually invoked, they will all use the final value of `validation_type` from the loop, which will be 'title'. This means all validators will behave as if they were the 'title' validator.\n\nTo fix this, you should capture the loop variable's value at the time of the lambda's creation by using a default argument. This creates a new scope for each iteration.\n\nFor example:\n```python\nfor validation_type in ['length', 'content', 'title']:\n    validators.append(lambda post, v_type=validation_type: f\"validating {v_type}\")\n```"
+    }
+  ],
+  "title": "feat: Add dynamic post validators",
+  "body": "Implemented configurable validation functions for post creation."
+}

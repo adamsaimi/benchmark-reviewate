@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-001",
+  "issue_name": "N+1 Query Problem",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 75,
+      "comment": "This implementation introduces a severe N+1 query performance issue. While the initial call to `post_service.get_all_posts()` fetches all posts in a single query, the subsequent list comprehension iterates through each post and accesses the `p.author` relationship. Because this relationship was not eagerly loaded, SQLAlchemy triggers a separate database query for each post to fetch its author. This results in 1 query for posts + N queries for authors, which scales poorly and will lead to very slow response times under load. To fix this, you should use eager loading in the service layer. Modify the query in `PostService.get_all_posts` to use `db.query(PostModel).options(joinedload(PostModel.author)).all()` to fetch all required data in a single, efficient database roundtrip."
+    }
+  ],
+  "title": "feat: Add author email to posts list",
+  "body": "Enhanced posts endpoint to include author email for better client-side display."
+}

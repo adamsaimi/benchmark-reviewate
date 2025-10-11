@@ -1,0 +1,14 @@
+{
+  "issue_id": "SEC-008",
+  "issue_name": "Insecure Direct Object Reference",
+  "category": "Security Vulnerabilities",
+  "reviews": [
+    {
+      "file": "benchmark/routers/posts.py",
+      "line_number": 144,
+      "comment": "This endpoint exhibits an Insecure Direct Object Reference (IDOR) vulnerability. While it correctly requires authentication, it fails to verify that the authenticated user (`current_user`) is the actual owner of the post being requested. The code fetches the post using only its `post_id`. As a result, any authenticated user can view any other user's post by simply guessing or incrementing the `post_id` in the URL.\n\nTo fix this, you must add an authorization check. The service layer should be updated to accept the current user's ID and filter the query to ensure the post's `author_id` matches the user's ID. For example: `db.query(Post).filter(Post.id == post_id, Post.author_id == user.id).first()`. If no post is found, a 404 Not Found error should be returned to avoid leaking information about the existence of posts."
+    }
+  ],
+  "title": "feat: Add private post access",
+  "body": "Added endpoint for authenticated users to access detailed post information."
+}

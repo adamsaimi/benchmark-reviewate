@@ -1,0 +1,14 @@
+{
+  "issue_id": "PERF-004",
+  "issue_name": "Inefficient String Concatenation",
+  "category": "Performance Issues",
+  "reviews": [
+    {
+      "file": "benchmark/services/post_service.py",
+      "line_number": 217,
+      "comment": "The current implementation uses the `+=` operator inside a loop to build the report string. In Python, strings are immutable, so each `+=` operation creates a new string and copies the contents of the old and new parts. This results in O(n\u00b2) time complexity, which can be very slow if there is a large number of posts. To improve performance, it's recommended to append each formatted string to a list and then use `'\\n'.join()` at the end to create the final report string in a single, efficient operation."
+    }
+  ],
+  "title": "feat: Add post summary report generator",
+  "body": "Implemented report generation for post summaries."
+}
