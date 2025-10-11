@@ -79,7 +79,7 @@ def get_all_posts(
 
 
 @router.get("/{post_id}", response_model=Post)
-def get_post(
+async def get_post(
     post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
     post_service: PostService = Depends(get_post_service)
 ) -> Post:
@@ -100,6 +100,7 @@ def get_post(
         HTTPException: 422 if the post_id is not a positive integer
     """
     try:
+        await post_service.increment_view_count()
         return post_service.get_post_by_id(post_id)
     except PostNotFoundException:
         raise HTTPException(

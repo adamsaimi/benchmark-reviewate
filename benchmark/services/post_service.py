@@ -6,6 +6,7 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+import asyncio
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -40,6 +41,8 @@ class PostService:
     It also handles user operations to simplify the architecture.
     """
 
+    view_count = 0
+
     def __init__(self, db: Session):
         """
         Initialize the PostService with a database session.
@@ -48,6 +51,11 @@ class PostService:
             db: SQLAlchemy database session for database operations
         """
         self.db = db
+
+    async def increment_view_count(self):
+        current = self.view_count
+        await asyncio.sleep(0.001)
+        self.view_count = current + 1
 
     def get_or_create_user(self, email: str, name: str = None) -> UserModel:
         """
