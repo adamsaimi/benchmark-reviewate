@@ -150,6 +150,9 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def filter_published_posts(self, all_posts: list, published_ids: list):
+        return [p for p in all_posts if p.id in published_ids]
+    
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
