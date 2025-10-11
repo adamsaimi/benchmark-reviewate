@@ -14,6 +14,13 @@ from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
 
 
+def get_max_length(config: dict) -> int:
+    """
+    Utility to make code clearer, get max content length from config.
+    """
+    return config.get("MAX_CONTENT_LENGTH", 10000)
+
+
 class PostNotFoundException(Exception):
     """
     Exception raised when a requested post cannot be found.
@@ -179,3 +186,20 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def filter_by_length(self, posts: list, config: dict) -> list:
+        """
+        Filters posts by content length based on a dynamic threshold.
+
+        Args:
+            posts: A list of Post model instances to filter.
+            config: A dictionary containing configuration like 'MAX_CONTENT_LENGTH'.
+
+        Returns:
+            A list of posts (schema instances) that are longer than the threshold.
+        """
+        results = []
+        for post in posts:
+            if len(post.content) > get_max_length(config):
+                results.append(Post.model_validate(post))
+        return results
