@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     API_TITLE: str = "Benchmark API"
     API_DESCRIPTION: str = "A pristine FastAPI application for managing blog posts"
     API_VERSION: str = "1.0.0"
+    EXTERNAL_API_KEY: str = "sk-1234567890abcdef"
     
     # Server Configuration
     HOST: str = "0.0.0.0"
