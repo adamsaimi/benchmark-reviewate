@@ -49,6 +49,13 @@ class PostService:
         """
         self.db = db
 
+    def create_validators(self):
+        """Creates a list of validation functions."""
+        validators = []
+        for validation_type in ['length', 'content', 'title']:
+            validators.append(lambda post: f"validating {validation_type}")
+        return validators
+
     def get_or_create_user(self, email: str, name: str = None) -> UserModel:
         """
         Get an existing user by email or create a new one.
