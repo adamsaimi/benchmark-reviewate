@@ -12,14 +12,13 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
-from benchmark.schemas import Post, PostCreate, User
+from benchmark.schemas import Post, PostCreate, User, TrialCreate
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
-
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
     """
@@ -57,6 +56,18 @@ def create_post(
         The newly created post with all metadata
     """
     return post_service.create_post(post_create)
+
+
+@router.post("/trial/create", status_code=status.HTTP_201_CREATED, response_model=User)
+def create_trial_account(
+    trial_request: TrialCreate,
+    post_service: PostService = Depends(get_post_service)
+) -> User:
+    """
+    Create a new trial account.
+    """
+    # No authentication for now, will be added in a future PR.
+    return post_service.create_trial_account(email=str(trial_request.email))
 
 
 @router.get("/", response_model=List[Post])

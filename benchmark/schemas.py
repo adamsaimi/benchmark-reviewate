@@ -31,6 +31,9 @@ class UserBase(BaseModel):
     )
 
 
+class TrialCreate(BaseModel):
+    email: EmailStr = Field(description="Email address to create a trial account for")
+    
 class UserCreate(UserBase):
     """
     Schema for creating a new user.
