@@ -1,20 +1,13 @@
 import os
 import json
-import subprocess
 import argparse
 import sys
-import shutil
 from typing import List, Literal
 from collections import defaultdict
 import requests
 from pydantic import BaseModel, Field
 
-# Assuming your Prompter class is in a file named prompter.py
-import os
-import sys
-
-# Ensure the project root is on sys.path so this file can be run as a script
-# (prevents "attempted relative import with no known parent package" errors).
+# Ensure the project root is on sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
@@ -23,27 +16,46 @@ from pull_request_generator.prompter import Prompter
 
 # --- Configuration ---
 GROUND_TRUTH_DIR = "ground_truth_reviews"
-# The GITHUB_TOKEN is now essential for making API calls.
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 if not GITHUB_TOKEN:
-    print("❌ ERROR: GITHUB_TOKEN environment variable not set. Please set it to your GitHub Personal Access Token.")
+    print("❌ ERROR: GITHUB_TOKEN environment variable not set.")
     sys.exit(1)
 
-# --- Pydantic Models ---
+SEVERITY_WEIGHTS = {
+    "Critical": 10.0,
+    "Major": 5.0,
+    "Minor": 2.0,
+    "Style": 1.0
+}
+DISCOVERY_BONUS_WEIGHT = 0.5 # Bonus points for each valid discovery
 
-# UPDATED Pydantic model to match the new, high-resolution validator prompt's output.
-class ValidationResponse(BaseModel):
-    total_atomic_requirements: int = Field(description="The total number of distinct reviewable points in the ground truth.")
-    matched_atomic_requirements: int = Field(description="The number of atomic requirements successfully identified by the agent.")
-    noise_comment_count: int = Field(description="The number of agent comments that were unrelated to the ground truth.")
+# --- Pydantic Models ---
+class DecomposedRequirement(BaseModel):
+    requirement_description: str = Field(description="A single, distinct, and actionable piece of feedback.")
+    severity: Literal["Critical", "Major", "Minor", "Style"] = Field(description="The severity of the issue.")
+
+class TriageResponse(BaseModel):
+    requirements: List[DecomposedRequirement]
+
+class ScoredRequirement(BaseModel):
+    requirement_description: str
+    severity: Literal["Critical", "Major", "Minor", "Style"]
+    match_score: float = Field(..., ge=0.0, le=1.0, description="Quality of the agent's match (0.0=missed, 0.5=vague, 1.0=perfect).")
+    justification: str = Field(description="Brief reasoning for the match_score.")
+
+class ValidDiscovery(BaseModel):
+    comment: str = Field(description="The agent's comment that was a valid new finding.")
+    justification: str = Field(description="Why this is a relevant and correct suggestion for the code diff.")
+
+class FinalEvaluationResponse(BaseModel):
+    scored_requirements: List[ScoredRequirement]
+    valid_discoveries: List[ValidDiscovery]
+    noise_comment_count: int
 
 # --- Helper Functions ---
 
-# check_prerequisites is no longer needed as we're using the REST API directly.
-# If you still want to use `gh` for something, you can keep it.
-
 def fetch_pr(repo_name: str) -> list:
-    """Fetches all open pull requests from the specified repository."""
+    # ... (no changes needed)
     print(f"\n--- Fetching Open Pull Requests for {repo_name} ---")
     all_prs = []
     page = 1
@@ -62,8 +74,9 @@ def fetch_pr(repo_name: str) -> list:
     print(f"  Found {len(all_prs)} open pull requests.")
     return all_prs
 
+
 def fetch_pr_reviews_comment(repo_name: str, pr_number: int) -> list:
-    """Fetches all review comments for a given pull request."""
+    # ... (no changes needed)
     print(f"  -> Fetching reviews for PR #{pr_number}...")
     response = requests.get(f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments",
                             headers={"Authorization": f"Bearer {GITHUB_TOKEN}"})
@@ -75,15 +88,32 @@ def fetch_pr_reviews_comment(repo_name: str, pr_number: int) -> list:
         print(f"  ❌ ERROR: Could not fetch reviews for PR #{pr_number}. Error: {response.text}")
         return []
 
+# NEW: Function to fetch the code diff
+def fetch_pr_diff(repo_name: str, pr_number: int) -> str:
+    """Fetches the code diff for a given pull request."""
+    print(f"  -> Fetching diff for PR #{pr_number}...")
+    url = f"https://api.github.com/repos/{repo_name}/pulls/{pr_number}"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3.diff"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.text
+    else:
+        print(f"  ❌ WARNING: Could not fetch diff for PR #{pr_number}. Error: {response.text}")
+        return ""
+
 def calculate_metrics(tp, fp, fn):
-    """Calculates Precision, Recall, and F1-Score, handling division by zero."""
+    # ... (no changes needed)
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
     return {"precision": precision, "recall": recall, "f1": f1}
 
-def print_report(scores: dict):
-    """Prints the final, formatted report, now handling floats."""
+
+def print_report(scores: dict, token_usage: dict = None):
+    # ... (no changes needed, it already handles floats)
     print("\n\n======================================================")
     print("          AI Code Review Benchmark Results          ")
     print("======================================================")
@@ -91,9 +121,9 @@ def print_report(scores: dict):
     # Overall Performance
     overall = calculate_metrics(scores['overall']['tp'], scores['overall']['fp'], scores['overall']['fn'])
     print("\n--- Overall Performance ---")
-    print(f"  True Positives:  {scores['overall']['tp']:.2f}") # Format as float
-    print(f"  False Positives: {scores['overall']['fp']:.2f}")
-    print(f"  False Negatives: {scores['overall']['fn']:.2f}")
+    print(f"  True Positives (Weighted):  {scores['overall']['tp']:.2f}") # Format as float
+    print(f"  False Positives (Noise):    {scores['overall']['fp']:.2f}")
+    print(f"  Unexpected Good Reviews (Weighted): {scores['overall']['fn']:.2f}")
     print(f"  ---------------------------")
     print(f"  Precision:       {overall['precision']:.2%}")
     print(f"  Recall:          {overall['recall']:.2%}")
@@ -114,36 +144,42 @@ def print_report(scores: dict):
     for difficulty, counts in sorted(scores['difficulty'].items()):
         metrics = calculate_metrics(counts['tp'], counts['fp'], counts['fn'])
         print(f"{difficulty:<20} | {metrics['precision']:>9.1%} | {metrics['recall']:>9.1%} | {metrics['f1']:>9.4f} | {counts['tp']:>6.2f} | {counts['fp']:>6.2f} | {counts['fn']:>6.2f}")
+    
+    # Token Usage Summary (if provided)
+    if token_usage:
+        print("\n--- Token Usage Summary ---")
+        print(f" Prompt Tokens = {token_usage['input_tokens']}, Completion Tokens = {token_usage['output_tokens']}")
+    
     print("\n======================================================")
+
+        
 
 def main(repo_name: str):
     """Main script to orchestrate the scoring process."""
     
-    # --- Load all necessary data ---
     print("\n--- Loading Benchmark Data ---")
     try:
-        with open("pull_request_generator/taxonomy.json", 'r', encoding='utf-8') as f:
+        with open("taxonomy.json", 'r', encoding='utf-8') as f:
             taxonomy = {item['issue_id']: item for item in json.load(f)}
-        print(f"Loaded {len(taxonomy)} issues from taxonomy.")
-        
         ground_truth_files = [f for f in os.listdir(GROUND_TRUTH_DIR) if f.endswith('.json')]
         issues_data = {}
         for filename in ground_truth_files:
             issue_id = filename.split('.')[0]
             with open(os.path.join(GROUND_TRUTH_DIR, filename), 'r', encoding='utf-8') as f:
                 issues_data[issue_id] = json.load(f)
-        print(f"Loaded {len(issues_data)} ground truth files.")
-
     except FileNotFoundError as e:
         print(f"❌ ERROR: A required data file was not found: {e}. Exiting.")
         sys.exit(1)
         
-    # --- Initialize ---
-    # NOTE: Your Prompter class might need to be updated to accept a model name
-    validator_prompter = Prompter(prompt_file="score/validator.txt")
-    validator_prompt_template = validator_prompter.get_prompt()
+    token_usage = {"input_tokens": 0, "output_tokens": 0}
+        
+    # --- Initialize TWO Prompters for our two agents ---
+    triage_prompter = Prompter(prompt_file="score/triage.txt")
+    triage_prompt_template = triage_prompter.get_prompt()
     
-    # Use defaultdict for easy counting with floats
+    evaluator_prompter = Prompter(prompt_file="score/validator.txt")
+    evaluator_prompt_template = evaluator_prompter.get_prompt()
+    
     scores = {
         'overall': defaultdict(float),
         'category': defaultdict(lambda: defaultdict(float)),
@@ -155,64 +191,82 @@ def main(repo_name: str):
         print("No open pull requests found. Exiting.")
         return
 
-    # --- Main Loop: Iterate through each PR ---
     print("\n--- Starting Evaluation Loop ---")
     for pr in pull_requests:
         pr_branch = pr['head']['ref']
         pr_number = pr['number']
         
-        # Find the corresponding issue_id from the branch name
         issue_id = next((k for k in issues_data if k in pr_branch), None)
         if not issue_id:
-            print(f"  Skipping PR #{pr_number} ({pr_branch}) - No matching issue ID found in branch name.")
             continue
 
         print(f"\nProcessing {issue_id} (PR: #{pr_number})...")
-        
-        # --- NEW ALGORITHM IMPLEMENTATION ---
-        ground_truth_comment = issues_data[issue_id]['ground_truth_reviews'][0]['comment']
+
+        ground_truth_comment = [review['comment'] for review in issues_data[issue_id]['reviews']]
         agent_comments = fetch_pr_reviews_comment(repo_name, pr_number)
+        code_diff = fetch_pr_diff(repo_name, pr_number)
         
         try:
-            # Format the list of agent comments as a JSON string for the prompt
-            agent_comments_json = json.dumps(agent_comments, indent=2)
-            
-            prompt = validator_prompt_template.format(
-                ground_truth_comment=ground_truth_comment,
-                agent_comments_json=agent_comments_json
+            # --- AGENT 1: Triage Architect ---
+            print("     [Agent 1] Decomposing ground truth and assigning severity...")
+            triage_prompt = triage_prompt_template.format(ground_truth_comment=ground_truth_comment)
+            triage_response, input_tokens, output_tokens = triage_prompter.call_gemini_api(triage_prompt, TriageResponse)
+            print(f"     -> Triage complete: Found {len(triage_response.requirements)} atomic requirements.")
+
+            token_usage['input_tokens'] += input_tokens
+            token_usage['output_tokens'] += output_tokens
+
+            # --- AGENT 2: Evaluation Analyst ---
+            print("     [Agent 2] Matching comments, scoring quality, and analyzing discoveries...")
+            evaluator_prompt = evaluator_prompt_template.format(
+                scoring_rubric_json=json.dumps([r.model_dump() for r in triage_response.requirements], indent=2),
+                agent_comments_json=json.dumps(agent_comments, indent=2),
+                code_diff=code_diff
             )
+            evaluation, input_tokens, output_tokens = evaluator_prompter.call_gemini_api(evaluator_prompt, FinalEvaluationResponse)
+            print(f"     -> Evaluation complete.")
+            token_usage['input_tokens'] += input_tokens
+            token_usage['output_tokens'] += output_tokens
+
+            # --- NEW WEIGHTED SCORING ALGORITHM ---
+            total_possible_score = 0
+            tp_weighted = 0
             
-            print(f"     Validating semantics with LLM...")
-            validation: ValidationResponse = validator_prompter.call_gemini_api(prompt, ValidationResponse)
-            print(f"     -> LLM Verdict: Matched {validation.matched_atomic_requirements}/{validation.total_atomic_requirements} requirements with {validation.noise_comment_count} noise comments.")
+            # 1. Calculate weighted scores from rubric
+            for scored_req in evaluation.scored_requirements:
+                weight = SEVERITY_WEIGHTS.get(scored_req.severity, 1.0)
+                total_possible_score += weight
+                tp_weighted += (scored_req.match_score * weight)
 
-            # --- Classification and Counting ---
-            tp = float(validation.matched_atomic_requirements)
-            fn = float(validation.total_atomic_requirements - validation.matched_atomic_requirements)
-            fp = float(validation.noise_comment_count)
+            # 2. Add bonus points for valid discoveries
+            discovery_bonus = len(evaluation.valid_discoveries) * DISCOVERY_BONUS_WEIGHT
+            tp_weighted += discovery_bonus
 
+            # 3. Calculate final TP, FN, FP
+            fn_weighted = total_possible_score - (tp_weighted - discovery_bonus) # Don't let bonus reduce FN
+            fp = float(evaluation.noise_comment_count)
+
+            # --- Aggregate scores ---
             category = taxonomy[issue_id]['category']
             difficulty = taxonomy[issue_id]['difficulty']
 
-            scores['overall']['tp'] += tp
-            scores['overall']['fn'] += fn
+            scores['overall']['tp'] += tp_weighted
+            scores['overall']['fn'] += fn_weighted
             scores['overall']['fp'] += fp
             
-            scores['category'][category]['tp'] += tp
-            scores['category'][category]['fn'] += fn
+            scores['category'][category]['tp'] += tp_weighted
+            scores['category'][category]['fn'] += fn_weighted
             scores['category'][category]['fp'] += fp
             
-            scores['difficulty'][difficulty]['tp'] += tp
-            scores['difficulty'][difficulty]['fn'] += fn
+            scores['difficulty'][difficulty]['tp'] += tp_weighted
+            scores['difficulty'][difficulty]['fn'] += fn_weighted
             scores['difficulty'][difficulty]['fp'] += fp
 
         except Exception as e:
             print(f"     ❌ An error occurred during processing for {issue_id}: {e}")
-            # Optionally, you could add to an error count here
             continue
 
-    # --- Final Report ---
-    print_report(scores)
+    print_report(scores, token_usage)
 
 
 if __name__ == "__main__":

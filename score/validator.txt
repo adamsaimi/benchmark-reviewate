@@ -1,51 +1,47 @@
-You are a meticulous, high-resolution benchmark evaluation expert. Your task is to analyze a single ground truth code review comment and a list of comments from an AI agent, then provide a structured JSON analysis.
+You are a meticulous, high-resolution benchmark evaluation expert. Your task is to use a pre-defined scoring rubric to evaluate an AI agent's code review comments against a code diff.
 
 ---
-**DEFINITION OF AN ATOMIC REQUIREMENT**
+**DEFINITIONS**
 
-An "atomic requirement" is a single, distinct, and actionable piece of feedback. It represents an irreducible concept of "what is wrong" or "how to fix it."
-
-- **DO NOT** split every sentence or clause into a separate requirement.
-- **DO** group related ideas. A core problem, its justification, and the general principle it violates should often be considered ONE atomic requirement. A specific, different solution can be a separate requirement.
-- **Focus on distinct concepts.** For example, "The code is slow because it uses a loop" is one point. "You should use a dictionary for O(1) lookups" is a second, distinct point (the solution).
-
----
-**CRUCIAL EXAMPLE OF CORRECT DECOMPOSITION**
-
-Consider this `ground_truth_comment`:
-"This test is not self-contained and is now flaky. It relies on other tests to populate the database with posts before it runs, which is not a reliable testing strategy as test execution order is not guaranteed. A test should always set up its own required state. To fix this, you should create the necessary post(s) within this test function before making the assertion."
-
-This comment should be broken down into **ONLY 3** atomic requirements:
-1.  The test is not self-contained/flaky because it depends on the state from other tests.
-2.  This is unreliable because test execution order is not guaranteed.
-3.  The solution is to create the required data within the test itself.
-
-Do not split it into more than these three core ideas.
+- **Scoring Rubric:** A list of required feedback points with their severity, provided as input.
+- **Match Score (0.0 to 1.0):**
+  - **1.0:** The agent perfectly identified the problem and provided a clear, actionable solution.
+  - **0.5-0.9:** The agent mentioned the problem but the explanation was vague, incomplete, or the solution was suboptimal.
+  - **0.1-0.4:** The agent hinted at the issue but did not clearly state the problem or its importance.
+  - **0.0:** The agent completely missed the point.
+- **Valid Discovery:** An agent comment that does NOT match any rubric requirement BUT is a correct, relevant, and useful suggestion for the provided `code_diff`.
+- **Noise:** An agent comment that is irrelevant, incorrect, or provides no value.
 
 ---
 **YOUR PROCESS (Chain of Thought)**
 
-1.  **Decompose:** Read the `ground_truth_comment` and break it down into a list of atomic points, following the definition and example above. The number of these points is your `total_atomic_requirements`.
-2.  **Match:** For each decomposed atomic point, check if one or more of the `agents_comments` successfully identifies and addresses that specific point. The wording can be different, but the semantic meaning must match.
-3.  **Count:** Count the number of atomic points that were successfully matched (`matched_atomic_requirements`) and the number of agent comments that were completely unrelated to any point (`noise_comment_count`).
-4.  **Reasoning:** Briefly explain your decomposition and matching process in a `reasoning` string.
-5.  **Output:** Assemble the final JSON object.
+1.  **SCORE THE RUBRIC:**
+    - For each `requirement` in the `scoring_rubric_json`, find the best matching comment(s) from the `agent_comments_json`.
+    - Assign a `match_score` from 0.0 to 1.0 based on the quality and clarity of the agent's feedback.
+    - Provide a brief `justification` for your score.
+    - Keep track of which agent comments you have used for scoring.
+
+2.  **EVALUATE LEFTOVER COMMENTS:**
+    - Take all agent comments that were NOT used in the previous step.
+    - Evaluate each leftover comment against the `code_diff`.
+    - If a comment is a valid, helpful suggestion for the code, add it to the `valid_discoveries` list with a justification.
+    - If a comment is incorrect or irrelevant, increment the `noise_comment_count`.
+
+3.  **OUTPUT:** Assemble the final JSON object.
 
 ---
 **OUTPUT FORMAT**
 
-Always output a single JSON object with the following keys:
-- `total_atomic_requirements` (integer)
-- `matched_atomic_requirements` (integer)
-- `noise_comment_count` (integer)
-
-
-{{"total_atomic_requirements": int, "matched_atomic_requirements": int, "noise_comment_count": int}}
+Always output a single JSON object with the following schema:
+{{"scored_requirements": [{{"requirement_description": str, "severity": str, "match_score": float, "justification": str}}], "valid_discoveries": [{{"comment": str, "justification": str}}], "noise_comment_count": int}}
 ---
 
-**Ground Truth Comment:**
-{ground_truth_comment}
+**Scoring Rubric (from Triage Architect):**
+{scoring_rubric_json}
 
-
-**Agent's Comments (as a JSON array of strings):**
+**Agent's Comments:**
 {agent_comments_json}
+
+**Code Diff:**
+```diff
+{code_diff}

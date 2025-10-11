@@ -3,7 +3,7 @@ import os
 import json
 from google import genai
 from pydantic import BaseModel
-from typing import Type, TypeVar
+from typing import Tuple, Type, TypeVar
 
 
 T = TypeVar('T')
@@ -28,7 +28,7 @@ class Prompter:
             taxonomy = json.load(taxonomy_file)
         return taxonomy
 
-    def call_gemini_api(self, prompt: str, prompt_response_class: Type[T]) -> T:
+    def call_gemini_api(self, prompt: str, prompt_response_class: Type[T]) -> Tuple[T, int, int]:
         """
         Calls Gemini API to get a prompt object.
         Returns an instantiated Pydantic object of the provided class type.
@@ -42,6 +42,9 @@ class Prompter:
                 "response_schema": prompt_response_class.model_json_schema(),
             },
         )
+        input_tokens = response.usage_metadata.prompt_token_count
+        output_tokens = response.usage_metadata.candidates_token_count
+
         prompt_obj: T = prompt_response_class.model_validate_json(response.text)
-        return prompt_obj
+        return prompt_obj, input_tokens, output_tokens
     
