@@ -367,13 +367,8 @@
   },
   {
     "issue_id": "SEC-004",
-<<<<<<< Updated upstream
-    "generated": true,
-    "issue_name": "Insufficient Authorization Check",
-=======
     "generated": false,
     "issue_name": "Insecure File Uploads",
->>>>>>> Stashed changes
     "category": "Security Vulnerabilities",
     "description": "Allowing users to upload files without proper restrictions on file type, name, or content can lead to remote code execution (e.g., uploading a web shell) or denial-of-service.",
     "difficulty": "Medium",
