@@ -7,8 +7,10 @@ Includes user endpoints for simplicity.
 """
 
 from typing import List
+import time
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
@@ -19,6 +21,10 @@ from benchmark.database import get_db
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
+
+
+class PostValidationPayload(BaseModel):
+    content: str
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -106,6 +112,23 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.post("/validate", status_code=status.HTTP_200_OK)
+def validate_post_content(payload: PostValidationPayload):
+    """
+    Post validation endpoint.
+    """
+    # Simulate an expensive operation for now, complex logic will be added later in a future pr.
+    time.sleep(1)  # Represents a 1-second processing time
+
+    # Dummy validation logic, complex logic will be added later in a future pr.
+    if len(payload.content) > 500:
+        return {"valid": False, "message": "Content is too long"}
+    if "exploit" in payload.content:
+        return {"valid": False, "message": "Malicious content detected"}
+    
+    return {"valid": True, "message": "Content is valid"}
 
 
 # ============================================================================
