@@ -6,12 +6,21 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+from decimal import Decimal
 from typing import List
+
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
+
+# We will make a db model later in a future pr, this pr focus only on the calculation
+class Order(BaseModel):
+    total: Decimal
+    country_code_delivery: str
+    tax_exempt: bool
 
 
 class PostNotFoundException(Exception):
@@ -179,3 +188,7 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def calculate_tax(self, order: Order) -> Decimal:
+        TAX_RATE = Decimal("0.08")
+        return order.total * TAX_RATE
