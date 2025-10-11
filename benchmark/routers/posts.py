@@ -8,13 +8,16 @@ Includes user endpoints for simplicity.
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi import APIRouter, HTTPException, status, Depends, Path, UploadFile, File
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
+
+import shutil
+import os
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -157,3 +160,15 @@ def get_user_by_email(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
+        
+
+@router.post("/upload-avatar", status_code=status.HTTP_201_CREATED)
+def upload_avatar(file: UploadFile = File(...)):
+    """
+    Save uploaded avatar using the original filename provided by the client.
+    """
+    os.makedirs("/uploads", exist_ok=True)
+    file_path = os.path.join("/uploads", file.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return {"filename": file.filename}
