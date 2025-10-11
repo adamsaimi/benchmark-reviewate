@@ -194,6 +194,7 @@ class PostService:
         Raises:
             UserNotFoundException: If the user is not found.
         """
+        # Futur sql optimization will be done later in a future pr for now we focus only on deliverability.
         user = self.db.query(UserModel).filter(UserModel.id == customer_id).first()
         if not user:
             raise UserNotFoundException(f"User with ID {customer_id} not found")
