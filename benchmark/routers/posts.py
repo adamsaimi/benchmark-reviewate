@@ -122,6 +122,8 @@ def get_monthly_revenue(
     This endpoint retrieves all orders for a specific month and year and
     sums their total amounts to calculate the revenue.
     """
+
+    # Will be moved into service layer in a future pr for now we do it in the route directly. 
     orders = db.query(Order).filter(
         extract('month', Order.created_at) == month,
         extract('year', Order.created_at) == year
