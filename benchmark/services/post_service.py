@@ -31,6 +31,24 @@ class UserNotFoundException(Exception):
     pass
 
 
+class PostMetadata:
+    """A simple data container for post metadata."""
+    def __init__(self, author: str, tags: List[str], views: int):
+        self.author = author
+        self.tags = tags
+        self.views = views
+
+    def __repr__(self):
+        return f"PostMetadata(author='{self.author}', tags={self.tags}, views={self.views})"
+
+    def __eq__(self, other):
+        if not isinstance(other, PostMetadata):
+            return NotImplemented
+        return (self.author == other.author and
+                self.tags == other.tags and
+                self.views == other.views)
+
+
 class PostService:
     """
     Service class encapsulating all post-related business operations.
