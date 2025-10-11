@@ -6,19 +6,30 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
-from typing import List
+from typing import List, Dict
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
 from benchmark.schemas import Post, PostCreate, User
-from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
+from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException, CheckoutException
 from benchmark.database import get_db
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
+
+
+# Schemas for checkout
+class CheckoutItem(BaseModel):
+    product_id: int
+    quantity: int
+
+class CheckoutRequest(BaseModel):
+    items: List[CheckoutItem]
+    payment_info: Dict[str, str]
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -32,6 +43,28 @@ def get_post_service(db: Session = Depends(get_db)) -> PostService:
         PostService instance with the database session
     """
     return PostService(db)
+
+
+# ============================================================================
+# Checkout Endpoint
+# ============================================================================
+
+@router.post("/checkout/process", status_code=status.HTTP_200_OK)
+def process_checkout(
+    request: CheckoutRequest,
+    post_service: PostService = Depends(get_post_service)
+):
+    """
+    Process a checkout request.
+    """
+    try:
+        result = post_service.process_checkout(request.items, request.payment_info)
+        return result
+    except CheckoutException as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
 
 
 # ============================================================================
