@@ -115,6 +115,8 @@ def update_post(
     data: dict,
     db: Session = Depends(get_db)
 ) -> Post:
+
+    ## For now we query the db directly in the route, a future pr will address it so that we use the service instead.
     post = db.query(PostModel).filter(PostModel.id == post_id).first()
 
     if not post:
