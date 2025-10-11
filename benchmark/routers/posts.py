@@ -6,6 +6,7 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
+import asyncio
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
@@ -106,6 +107,27 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.post("/{post_id}/publish", status_code=status.HTTP_202_ACCEPTED)
+async def publish_post(
+    post_id: int = Path(..., gt=0, description="The ID of the post to publish"),
+    post_service: PostService = Depends(get_post_service)
+):
+    """
+    Publish a post, triggering background notifications to subscribers.
+    """
+    try:
+        post_service.get_post_by_id(post_id)
+    except PostNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=POST_NOT_FOUND_MESSAGE
+        )
+
+    asyncio.create_task(post_service.notify_subscribers(post_id))
+
+    return {"message": "Post publication triggered. Notifications are being sent in the background."}
 
 
 # ============================================================================
