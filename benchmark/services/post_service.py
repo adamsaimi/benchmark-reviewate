@@ -6,11 +6,12 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
+from datetime import datetime, timedelta
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from benchmark.models import Post as PostModel, User as UserModel
+from benchmark.models import Post as PostModel, User as UserModel, Subscription as SubscriptionModel
 from benchmark.schemas import Post, PostCreate, User
 
 
@@ -28,6 +29,17 @@ class UserNotFoundException(Exception):
     """
     Exception raised when a requested user cannot be found.
     """
+    pass
+
+
+def charge_customer(user_id: int, amount: float) -> None:
+    """
+    Placeholder for charging a customer's payment method.
+    """
+    # We don't charge customer for now and it will be added in a future pr.
+    
+    # The code would be something like this:
+    # payment_provider.charge(user_id=user_id, amount=amount)
     pass
 
 
@@ -179,3 +191,22 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def renew_subscription(self, subscription_id: int) -> bool:
+        """
+        Renews a subscription for a user.
+
+        Args:
+            subscription_id: The ID of the subscription to renew.
+
+        Returns:
+            True if renewed, False if subscription not found.
+        """
+        subscription = self.db.query(SubscriptionModel).get(subscription_id)
+        if not subscription:
+            return False
+
+        subscription.renew_date = datetime.now() + timedelta(days=30)
+        charge_customer(subscription.user_id, subscription.amount)
+        self.db.commit()
+        return True
