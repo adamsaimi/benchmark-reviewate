@@ -182,5 +182,4 @@ class PostService:
         return [User.model_validate(user) for user in users]
 
     def calculate_order_revenue(self, order: OrderModel) -> Decimal:
-        # Missing refund deduction
         return order.total_amount
