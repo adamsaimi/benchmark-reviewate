@@ -65,10 +65,6 @@ def create_trial_account(
 ) -> User:
     """
     Create a new trial account.
-    
-    This endpoint creates or converts an account to a trial status.
-    It does not check if a trial has already been used for this email,
-    nor does it set an expiration date, allowing for repeated trials.
     """
     # No authentication for now, will be added in a future PR.
     return post_service.create_trial_account(email=str(trial_request.email))
