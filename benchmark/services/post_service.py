@@ -7,6 +7,7 @@ with no knowledge of HTTP-specific constructs.
 """
 
 from typing import List
+from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -150,6 +151,25 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def is_post_expired(self, post_id: int) -> bool:
+        """
+        Checks if a post is considered expired based on its creation date.
+
+        Args:
+            post_id: The ID of the post to check.
+
+        Returns:
+            True if the post is expired, False otherwise.
+
+        Raises:
+            PostNotFoundException: If the post is not found.
+        """
+        db_post = self.db.query(PostModel).filter(PostModel.id == post_id).first()
+        if db_post is None:
+            raise PostNotFoundException(f"Post with ID {post_id} not found")
+        
+        return datetime.now() > db_post.created_at
+
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
