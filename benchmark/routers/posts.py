@@ -6,7 +6,7 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
-from typing import List
+from typing import List, Any, Dict
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
@@ -19,6 +19,32 @@ from benchmark.database import get_db
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
+
+
+class JsonExporter:
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+    def export(self, posts: List[Post]) -> Dict[str, Any]:
+        # In a real scenario, this would export to JSON
+        return {"format": "json", "count": len(posts), "config": self.config}
+
+class CsvExporter:
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+    def export(self, posts: List[Post]) -> Dict[str, Any]:
+        # In a real scenario, this would export to CSV
+        return {"format": "csv", "count": len(posts), "config": self.config}
+
+class XmlExporter:
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+    def export(self, posts: List[Post]) -> Dict[str, Any]:
+        # In a real scenario, this would export to XML
+        return {"format": "xml", "count": len(posts), "config": self.config}
+
+config_json: Dict[str, Any] = {"indent": 2}
+config_csv: Dict[str, Any] = {"delimiter": ","}
+config_xml: Dict[str, Any] = {"root_element": "posts"}
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -76,6 +102,38 @@ def get_all_posts(
         A list of all posts
     """
     return post_service.get_all_posts()
+
+
+@router.post("/export", response_model=Dict[str, Any])
+def export_posts(
+    format: str,
+    post_service: PostService = Depends(get_post_service)
+) -> Dict[str, Any]:
+    """
+    Export all posts to a specified format.
+
+    Args:
+        format: The export format ('json', 'csv', or 'xml')
+        post_service: Injected post service instance
+
+    Returns:
+        A confirmation of the export operation.
+    """
+    exporter: Any = None
+    if format == 'json':
+        exporter = JsonExporter(config_json)
+    elif format == 'csv':
+        exporter = CsvExporter(config_csv)
+    elif format == 'xml':
+        exporter = XmlExporter(config_xml)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported format: {format}"
+        )
+
+    posts = post_service.get_all_posts()
+    return exporter.export(posts)
 
 
 @router.get("/{post_id}", response_model=Post)
