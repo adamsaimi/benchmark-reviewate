@@ -6,12 +6,13 @@ translating between HTTP requests/responses and service layer operations.
 Includes user endpoints for simplicity.
 """
 
+import asyncio
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi import APIRouter, HTTPException, status, Depends, Path, Header
 from sqlalchemy.orm import Session
 
-from benchmark.config import POST_NOT_FOUND_MESSAGE
+from benchmark.config import POST_NOT_FOUND_MESSAGE, current_user
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
@@ -157,3 +158,25 @@ def get_user_by_email(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
+
+
+async def background_user_activity_task():
+    """
+    A background task that is supposed to use the request-specific context.
+    """
+    user = current_user.get()
+    print(f"Background task running for user: {user}")
+
+
+@user_router.post("/process_activity", status_code=status.HTTP_202_ACCEPTED)
+async def process_user_activity(user_email: str = Header(..., alias="X-User-Email")):
+    """
+    Processes a user activity in the background.
+    
+    This endpoint simulates starting a background task that needs user context.
+    """
+    current_user.set(user_email)
+    
+    asyncio.create_task(background_user_activity_task())
+    
+    return {"message": "User activity processing started in the background."}
