@@ -53,3 +53,22 @@ class Post(Base):
     
     def __repr__(self) -> str:
         return f"<Post(id={self.id}, title='{self.title}', author_id={self.author_id})>"
+
+class Order(Base):
+    """
+    Order database model.
+
+    Represents an order in the system.
+    """
+    
+    __tablename__ = "orders"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    total = Column(String(100), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    destination = Column(String(255), nullable=False)
+    weight = Column(Integer, nullable=False)
+    
+    
+    def __repr__(self) -> str:
+        return f"<Order(id={self.id}, total='{self.total}', destination='{self.destination}')>"
