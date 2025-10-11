@@ -7,6 +7,8 @@ Includes user endpoints for simplicity.
 """
 
 from typing import List
+from datetime import datetime
+from pydantic import BaseModel
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlalchemy.orm import Session
@@ -15,10 +17,42 @@ from benchmark.config import POST_NOT_FOUND_MESSAGE
 from benchmark.schemas import Post, PostCreate, User
 from benchmark.services.post_service import PostService, PostNotFoundException, UserNotFoundException
 from benchmark.database import get_db
+from benchmark.models import User as UserModel, Product, Order as OrderModel, OrderItem as OrderItemModel
 
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
+order_router = APIRouter(prefix="/orders", tags=["Orders"])
+
+
+# Schemas for Orders
+class OrderItemCreate(BaseModel):
+    product_id: int
+    quantity: int
+
+
+class OrderCreate(BaseModel):
+    user_id: int
+    items: List[OrderItemCreate]
+
+
+class OrderItem(BaseModel):
+    id: int
+    product_id: int
+    quantity: int
+
+    class Config:
+        from_attributes = True
+
+
+class Order(BaseModel):
+    id: int
+    user_id: int
+    created_at: datetime
+    items: List[OrderItem]
+
+    class Config:
+        from_attributes = True
 
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
@@ -157,3 +191,46 @@ def get_user_by_email(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
+
+# ============================================================================
+# Order Endpoints
+# ============================================================================
+
+@order_router.post("/", status_code=status.HTTP_201_CREATED, response_model=Order)
+def create_order(
+    order_create: OrderCreate,
+    db: Session = Depends(get_db)
+):
+    """
+    Create a new order.
+    
+    Creates a new order with the provided data.
+    """
+    # For now we won't use service layer for requesting db, this will be addressed in a future pr.
+    user = db.query(UserModel).filter(UserModel.id == order_create.user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    product_ids = {item.product_id for item in order_create.items}
+    products = db.query(Product).filter(Product.id.in_(list(product_ids))).all()
+    if len(products) != len(product_ids):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="One or more products not found"
+        )
+
+    db_order = OrderModel(user_id=order_create.user_id)
+    db.add(db_order)
+    db.flush()
+
+    for item_data in order_create.items:
+        db_item = OrderItemModel(
+            order_id=db_order.id,
+            product_id=item_data.product_id,
+            quantity=item_data.quantity
+        )
+        db.add(db_item)
+
+    db.commit()
+    db.refresh(db_order)
+    return db_order
