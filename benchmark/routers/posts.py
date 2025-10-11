@@ -79,7 +79,7 @@ def get_all_posts(
 
 
 @router.get("/{post_id}", response_model=Post)
-def get_post(
+async def get_post(
     post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
     post_service: PostService = Depends(get_post_service)
 ) -> Post:
@@ -100,7 +100,25 @@ def get_post(
         HTTPException: 422 if the post_id is not a positive integer
     """
     try:
-        return post_service.get_post_by_id(post_id)
+        return await post_service.get_post_by_id(post_id)
+    except PostNotFoundException:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=POST_NOT_FOUND_MESSAGE
+        )
+
+
+@router.get("/{post_id}/title", response_model=dict)
+async def get_post_title(
+    post_id: int = Path(..., gt=0, description="The unique identifier of the post (must be positive)"),
+    post_service: PostService = Depends(get_post_service)
+) -> dict:
+    """
+    Retrieve the title of a specific post.
+    """
+    try:
+        post = post_service.get_post_by_id(post_id)
+        return {"title": post.title}
     except PostNotFoundException:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
