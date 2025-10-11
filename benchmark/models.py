@@ -66,9 +66,10 @@ class Order(Base):
     __tablename__ = "orders"
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    total = Column(Numeric(10, 2), nullable=False)
+    price = Column(Numeric(10, 2), nullable=False)
     customer_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    refunded = Column(Numeric(10, 2), nullable=True)
     
     # Relationship to user
     customer = relationship("User", back_populates="orders")
