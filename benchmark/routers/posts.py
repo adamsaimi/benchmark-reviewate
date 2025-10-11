@@ -206,6 +206,7 @@ def create_order(
     
     Creates a new order with the provided data.
     """
+    # For now we won't use service layer for requesting db, this will be addressed in a future pr.
     user = db.query(UserModel).filter(UserModel.id == order_create.user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
