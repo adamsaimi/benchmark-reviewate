@@ -185,8 +185,6 @@ class PostService:
         """
         Calculates the Customer Lifetime Value (CLV).
 
-        This is a simplified calculation that only considers total revenue.
-
         Args:
             customer_id: The ID of the customer (user).
 
@@ -201,5 +199,4 @@ class PostService:
             raise UserNotFoundException(f"User with ID {customer_id} not found")
         
         orders = self.db.query(OrderModel).filter(OrderModel.customer_id == customer_id).all()
-        # Flawed calculation: Only sums order totals, ignoring refunds, returns, and acquisition costs.
-        return sum(order.total for order in orders)
+        return sum(order.price for order in orders)
