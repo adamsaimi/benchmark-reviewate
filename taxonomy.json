@@ -367,30 +367,32 @@
   },
   {
     "issue_id": "SEC-004",
+<<<<<<< Updated upstream
     "generated": true,
     "issue_name": "Insufficient Authorization Check",
+=======
+    "generated": false,
+    "issue_name": "Insecure File Uploads",
+>>>>>>> Stashed changes
     "category": "Security Vulnerabilities",
-    "description": "Authenticated users can access or modify resources they shouldn't own, leading to unauthorized data access or modification.",
+    "description": "Allowing users to upload files without proper restrictions on file type, name, or content can lead to remote code execution (e.g., uploading a web shell) or denial-of-service.",
     "difficulty": "Medium",
-    "flawed_snippet": "@app.put('/posts/{post_id}')\ndef update_post(post_id: int, data: dict, user: User = Depends(get_current_user)):\n    post = db.query(Post).filter(Post.id == post_id).first()\n    post.update(data)\n    return post",
-    "suggested_fix": "Check ownership before allowing update: `if post.author_id != user.id and not user.is_admin:\n    raise HTTPException(403, 'Not authorized')\npost.update(data)`",
+    "flawed_snippet": "@app.post('/upload-avatar')\ndef upload_avatar(file: UploadFile = File(...)):\n    with open(f'/uploads/{file.filename}', 'wb') as buffer:\n        shutil.copyfileobj(file.file, buffer)\n    return {'filename': file.filename}",
+    "suggested_fix": "Validate file extensions against an allowlist, generate a safe, random filename (e.g., using UUID) instead of using the client-provided name, and consider scanning files for malware.",
     "generation_strategy": {
       "type": "single-file",
       "changes": [
         {
           "step": 1,
-          "file": "benchmark/routers/posts.py",
+          "file": "benchmark/routers/users.py",
           "operation": "modify",
-          "instruction": "Modify the update_post endpoint (POST '/posts/{post_id}') to accept authenticated user via Depends(get_current_user) but do NOT check if the user is the post owner. Allow any authenticated user to update any post without ownership verification.",
-          "context_files": [
-            "benchmark/services/post_service.py",
-            "benchmark/models.py"
-          ]
+          "instruction": "Add a new endpoint POST '/users/upload-avatar' that accepts a file. The endpoint should save the file using the original filename provided by the user ('file.filename') to an '/uploads' directory without validating the file extension or content type, introducing a file upload vulnerability.",
+          "context_files": []
         }
       ],
       "pr_info": {
-        "title": "feat: Add post update endpoint",
-        "body": "Implemented endpoint for authenticated users to update posts."
+        "title": "feat: Add user avatar upload functionality",
+        "body": "Implemented an endpoint for users to upload their profile pictures."
       }
     }
   },
