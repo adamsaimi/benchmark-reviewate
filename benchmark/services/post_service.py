@@ -150,6 +150,22 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def get_published_titles(self, posts: List[PostModel]) -> List[str]:
+        """
+        Filters a list of posts and returns the titles of the published ones.
+
+        Args:
+            posts: A list of PostModel objects.
+
+        Returns:
+            A list of strings containing the titles of published posts.
+        """
+        published_titles = []
+        for post in posts:
+            if post.is_published:
+                published_titles.append(post.title)
+        return published_titles
+
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
