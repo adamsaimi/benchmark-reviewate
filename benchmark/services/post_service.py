@@ -84,6 +84,29 @@ class PostService:
             self.db.rollback()
             raise e
 
+    def create_trial_account(self, email: str) -> UserModel:
+        """
+        Creates or updates a user to have a trial account.
+
+        This method does not check for previous trials and does not set an
+        expiration date, allowing for potential abuse.
+        """
+        try:
+            user = self.db.query(UserModel).filter(UserModel.email == email).first()
+            if not user:
+                user = UserModel(email=email, name=email.split('@')[0])
+                self.db.add(user)
+
+            user.account_type = 'trial'
+            user.trial_expires_at = None
+            
+            self.db.commit()
+            self.db.refresh(user)
+            return user
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise e
+
     def create_post(self, post_create: PostCreate) -> Post:
         """
         Create a new post with system-generated metadata.

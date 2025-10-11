@@ -24,6 +24,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     email = Column(String(255), nullable=False, unique=True, index=True)
     name = Column(String(100), nullable=False)
+    account_type = Column(String(50), nullable=False, default="free")
+    trial_expires_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     
     # Relationship to posts
