@@ -12,6 +12,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from benchmark.models import Post as PostModel, User as UserModel
 from benchmark.schemas import Post, PostCreate, User
+from benchmark.routers.posts import format_post_response
 
 
 class PostNotFoundException(Exception):
@@ -179,3 +180,13 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+def get_post_author(post_id: int, db: Session):
+    """
+    Get the author of a post.
+    """
+    post_data = format_post_response(post_id)
+    db_post = db.query(PostModel).filter(PostModel.id == post_data['id']).first()
+    if db_post is None:
+        raise PostNotFoundException(f"Post with ID {post_id} not found")
+    return {"author_name": db_post.author.name}
