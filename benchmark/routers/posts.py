@@ -116,8 +116,9 @@ def search_posts_by_title(
     db: Session = Depends(get_db)
 ):
     """
-    Search for posts by title using a raw SQL query.
+    Search for posts by title.
     """
+    # will move this code into the service layer in a future pr, for now we do everything on the route.
     query = f"SELECT * FROM posts WHERE title LIKE '%{title}%'"
     posts = db.query(PostModel).from_statement(text(query)).all()
     return posts
