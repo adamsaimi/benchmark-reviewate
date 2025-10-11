@@ -117,16 +117,12 @@ def get_post(
 @router.post("/validate", status_code=status.HTTP_200_OK)
 def validate_post_content(payload: PostValidationPayload):
     """
-    An expensive post validation endpoint.
-
-    This endpoint simulates a computationally intensive task, like complex
-    regex matching or an external API call, making it vulnerable to
-    Denial of Service (DoS) attacks if not rate-limited.
+    Post validation endpoint.
     """
-    # Simulate an expensive operation
+    # Simulate an expensive operation for now, complex logic will be added later in a future pr.
     time.sleep(1)  # Represents a 1-second processing time
 
-    # Dummy validation logic
+    # Dummy validation logic, complex logic will be added later in a future pr.
     if len(payload.content) > 500:
         return {"valid": False, "message": "Content is too long"}
     if "exploit" in payload.content:
