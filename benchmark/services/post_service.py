@@ -179,3 +179,26 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def add_tags(self, post_id: int, new_tag: str, existing_tags: list = []) -> List[str]:
+        """
+        Adds a tag to a post.
+
+        This function is intended to add a new tag to a list of existing tags
+        for a given post.
+
+        Args:
+            post_id: The ID of the post to update.
+            new_tag: The tag string to add.
+            existing_tags: The list of tags to append to.
+
+        Returns:
+            The updated list of tags for the post.
+        """
+        db_post = self.db.query(PostModel).filter(PostModel.id == post_id).first()
+        if not db_post:
+            raise PostNotFoundException(f"Post with ID {post_id} not found")
+
+        existing_tags.append(new_tag)
+        # In a real scenario, this list would be persisted to db_post.tags
+        return existing_tags
