@@ -9,6 +9,7 @@ Includes user endpoints for simplicity.
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from benchmark.config import POST_NOT_FOUND_MESSAGE
@@ -19,7 +20,6 @@ from benchmark.database import get_db
 # Router configuration with prefix and tags for OpenAPI documentation
 router = APIRouter(prefix="/posts", tags=["Posts"])
 user_router = APIRouter(prefix="/users", tags=["Users"])
-
 
 def get_post_service(db: Session = Depends(get_db)) -> PostService:
     """
@@ -106,6 +106,20 @@ def get_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=POST_NOT_FOUND_MESSAGE
         )
+
+
+@router.get("/preview", response_class=HTMLResponse)
+def preview_post(content: str):
+    """
+    Preview post content as HTML.
+
+    Args:
+        content: The raw content to be previewed.
+    
+    Returns:
+        An HTML response rendering the content.
+    """
+    return HTMLResponse(f"<div>{content}</div>")
 
 
 # ============================================================================
