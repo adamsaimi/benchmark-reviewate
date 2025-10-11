@@ -150,6 +150,13 @@ class PostService:
         db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
         return [Post.model_validate(post) for post in db_posts]
     
+    def calculate_discount(self, price: int, discount_percent: int) -> int:
+        """
+        Calculates the final price after a discount.
+        """
+        discount = price * discount_percent // 100
+        return price - discount
+
     def get_user_by_email(self, email: str) -> User:
         """
         Retrieve a user by email address.
