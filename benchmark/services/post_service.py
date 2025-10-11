@@ -87,9 +87,6 @@ class PostService:
     def create_trial_account(self, email: str) -> UserModel:
         """
         Creates or updates a user to have a trial account.
-
-        This method does not check for previous trials and does not set an
-        expiration date, allowing for potential abuse.
         """
         try:
             user = self.db.query(UserModel).filter(UserModel.email == email).first()
