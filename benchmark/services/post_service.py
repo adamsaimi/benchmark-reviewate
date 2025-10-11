@@ -116,7 +116,10 @@ class PostService:
             self.db.refresh(db_post)
             
             return Post.model_validate(db_post)
-        except SQLAlchemyError as e:
+        except Exception as e:
+            self.db.rollback()
+            raise e
+        except ValueError as e:
             self.db.rollback()
             raise e
 
