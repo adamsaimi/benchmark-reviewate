@@ -9,8 +9,9 @@ with no knowledge of HTTP-specific constructs.
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from decimal import Decimal
 
-from benchmark.models import Post as PostModel, User as UserModel
+from benchmark.models import Post as PostModel, User as UserModel, Order as OrderModel
 from benchmark.schemas import Post, PostCreate, User
 
 
@@ -179,3 +180,6 @@ class PostService:
         """
         users = self.db.query(UserModel).order_by(UserModel.created_at.desc()).all()
         return [User.model_validate(user) for user in users]
+
+    def calculate_order_revenue(self, order: OrderModel) -> Decimal:
+        return order.total_amount
