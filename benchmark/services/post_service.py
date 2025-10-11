@@ -140,15 +140,15 @@ class PostService:
         
         return Post.model_validate(db_post)
 
-    def get_all_posts(self) -> List[Post]:
+    def get_all_posts(self) -> List[PostModel]:
         """
         Retrieve all posts from the database.
         
         Returns:
-            A list of all posts in the system, ordered by creation date (newest first)
+            A list of all post model instances in the system
         """
-        db_posts = self.db.query(PostModel).order_by(PostModel.created_at.desc()).all()
-        return [Post.model_validate(post) for post in db_posts]
+        db_posts = self.db.query(PostModel).all()
+        return db_posts
     
     def get_user_by_email(self, email: str) -> User:
         """

@@ -47,7 +47,9 @@ class Post(Base):
     content = Column(Text, nullable=False)
     author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    
+
+    # For now store the email directly instead of using relationship, this will be adressed in a future pr
+    author_email = Column(String(255), nullable=False, index=True)
     # Relationship to user
     author = relationship("User", back_populates="posts")
     

@@ -59,10 +59,8 @@ def create_post(
     return post_service.create_post(post_create)
 
 
-@router.get("/", response_model=List[Post])
-def get_all_posts(
-    post_service: PostService = Depends(get_post_service)
-) -> List[Post]:
+@router.get("/")
+def get_all_posts(post_service: PostService = Depends(get_post_service)):
     """
     Retrieve all posts.
     
@@ -75,7 +73,25 @@ def get_all_posts(
     Returns:
         A list of all posts
     """
-    return post_service.get_all_posts()
+    posts = post_service.get_all_posts()
+    for p in posts:
+        user = post_service.get_user_by_email(p.author_email)
+    return [
+        {
+            "id": p.id,
+            "title": p.title,
+            "content": p.content,
+            "author_id": p.author_id,
+            "created_at": p.created_at,
+            "author": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "created_at": user.created_at,
+            },
+        }
+        for p in posts
+    ]
 
 
 @router.get("/{post_id}", response_model=Post)
