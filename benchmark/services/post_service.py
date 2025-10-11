@@ -6,11 +6,12 @@ It provides a clean separation between the API layer and data operations,
 with no knowledge of HTTP-specific constructs.
 """
 
-from typing import List
+import time
+from typing import List, Dict
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
-from benchmark.models import Post as PostModel, User as UserModel
+from benchmark.models import Post as PostModel, User as UserModel, Product as ProductModel, Inventory as InventoryModel, Order as OrderModel, OrderItem as OrderItemModel
 from benchmark.schemas import Post, PostCreate, User
 
 
@@ -27,6 +28,13 @@ class PostNotFoundException(Exception):
 class UserNotFoundException(Exception):
     """
     Exception raised when a requested user cannot be found.
+    """
+    pass
+
+
+class CheckoutException(Exception):
+    """
+    Exception raised for checkout related errors.
     """
     pass
 
@@ -48,6 +56,56 @@ class PostService:
             db: SQLAlchemy database session for database operations
         """
         self.db = db
+
+    def process_checkout(self, items: List[Dict], payment_info: Dict) -> Dict:
+        """
+        Process a checkout.
+        """
+        # A preliminary check for stock. 
+        order_items = []
+        for item_data in items:
+            product = self.db.query(ProductModel).get(item_data['product_id'])
+            if not product or product.inventory.quantity < item_data['quantity']:
+                raise CheckoutException(f"Product {product.name if product else 'ID ' + str(item_data['product_id'])} is out of stock.")
+            order_items.append({"product": product, "quantity": item_data['quantity']})
+
+
+        # Dummy payment processing.
+        # Payment will be introduced in a future pr. In this pr we only add the checkout logic while simulating payment.
+        # Payment authentification and security checks are omitted for now and will be added in a future pr.
+        time.sleep(0.1)  # Simulate network latency for payment gateway
+        payment_successful = payment_info.get("token") != "fail"
+
+        if not payment_successful:
+            raise CheckoutException("Payment failed.")
+
+        try:
+            order = OrderModel(status="paid")
+            self.db.add(order)
+            
+            for item in order_items:
+                inventory = self.db.query(InventoryModel).filter(
+                    InventoryModel.product_id == item["product"].id
+                ).with_for_update().first()
+
+                if inventory.quantity < item["quantity"]:
+                    self.db.rollback()
+                    raise CheckoutException(f"Could not reserve stock for {item['product'].name} after payment.")
+                
+                inventory.quantity -= item["quantity"]
+                
+                order_item_db = OrderItemModel(
+                    product_id=item["product"].id,
+                    quantity=item["quantity"]
+                )
+                order.items.append(order_item_db)
+
+            self.db.commit()
+            self.db.refresh(order)
+            return {"order_id": order.id, "status": order.status}
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     def get_or_create_user(self, email: str, name: str = None) -> UserModel:
         """
