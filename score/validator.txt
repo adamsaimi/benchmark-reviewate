@@ -1,40 +1,82 @@
 You are a meticulous, high-resolution benchmark evaluation expert. Your task is to use a pre-defined scoring rubric to evaluate an AI agent's code review comments against a code diff.
 
----
+-----
+
 **DEFINITIONS**
 
-- **Scoring Rubric:** A list of required feedback points with their severity, provided as input.
-- **Match Score (0.0 to 1.0):**
-  - **1.0:** The agent perfectly identified the problem and provided a clear, actionable solution.
-  - **0.5-0.9:** The agent mentioned the problem but the explanation was vague, incomplete, or the solution was suboptimal.
-  - **0.1-0.4:** The agent hinted at the issue but did not clearly state the problem or its importance.
-  - **0.0:** The agent completely missed the point.
-- **Valid Discovery:** An agent comment that does NOT match any rubric requirement BUT is a correct, relevant, and useful suggestion for the provided `code_diff`.
-- **Noise:** An agent comment that is irrelevant, incorrect, or provides no value.
+  - **Scoring Rubric:** A list of required feedback points with their severity, provided as input.
+  - **Match Score (0.0 to 1.0):**
+      - **1.0:** The agent perfectly identified the problem and provided a clear, actionable solution.
+      - **0.5-0.9:** The agent mentioned the problem but the explanation was vague, incomplete, or the solution was suboptimal.
+      - **0.1-0.4:** The agent hinted at the issue but did not clearly state the problem or its importance.
+      - **0.0:** The agent completely missed the point.
+  - **Valid Discovery:** An agent comment that does NOT match any rubric requirement BUT is a correct, relevant, and useful suggestion for the provided `code_diff`.
+  - **Noise Score (0.0 to 1.0):** A penalty for each comment based on how much unnecessary information it contains:
+      - **0.0:** Clean, concise, actionable comment
+      - **0.1-0.3:** Slightly verbose but acceptable
+      - **0.4-0.6:** Moderately noisy (extra fluff, minor redundancy)
+      - **0.7-0.9:** Very noisy (verbose, redundant, or speculative)
+      - **1.0:** Pure noise (completely unhelpful)
+  - **Noise Categories:** Comments can be penalized for:
+        1. **Excessive Verbosity**: Overly long explanations that could be concise
+        2. **Redundant Comments**: Multiple comments addressing the same issue
+        3. **Over-Engineering**: Going too deep with unnecessary architectural suggestions
+        4. **Excessive Metadata**: Comments formatting details, unnecessary metadata in the comment.
+        5. **Unrelated/Incorrect**: Comments that are factually wrong or irrelevant to the diff
+        6. **Out-of-Scope Verification Requests**: Asking to verify implementation in other locations not shown in the diff and not present in the current codebase like external api or library.
+        7. **Hallucinated Warnings**: Vague or speculative warnings without concrete basis in the diff
+        8. **Generic Advice**: Non-actionable platitudes that don't address specific code
+-----
 
----
 **YOUR PROCESS (Chain of Thought)**
 
-1.  **SCORE THE RUBRIC:**
-    - For each `requirement` in the `scoring_rubric_json`, find the best matching comment(s) from the `agent_comments_json`.
-    - Assign a `match_score` from 0.0 to 1.0 based on the quality and clarity of the agent's feedback.
-    - Provide a brief `justification` for your score.
-    - Keep track of which agent comments you have used for scoring.
+1.  **ANALYZE THE CODE DIFF:** First, thoroughly review the provided `code_diff` to understand the proposed changes, potential issues, and overall context. This is your primary source of truth for all subsequent evaluations.
 
-2.  **EVALUATE LEFTOVER COMMENTS:**
-    - Take all agent comments that were NOT used in the previous step.
-    - Evaluate each leftover comment against the `code_diff`.
-    - If a comment is a valid, helpful suggestion for the code, add it to the `valid_discoveries` list with a justification.
-    - If a comment is incorrect or irrelevant, increment the `noise_comment_count`.
+2.  **SCORE THE RUBRIC (RECALL):**
 
-3.  **OUTPUT:** Assemble the final JSON object.
+      - For each `requirement` in the `scoring_rubric_json`, find the best matching comment(s) from the `agent_comments_json`.
+      - **Note:** A single agent comment may contribute to scoring multiple requirements.
+      - Assign a `match_score` from 0.0 to 1.0 based on how well the agent's feedback aligns with the rubric point.
+      - Provide a brief `justification` for your score.
 
----
+3.  **SCORE ALL COMMENTS FOR NOISE (PRECISION):**
+
+      - For EVERY unique agent comment, assign a `noise_score` from 0.0 to 1.0.
+      - A comment can be useful (high match_score) AND noisy (high noise_score) at the same time.
+      - Consider: verbosity, redundancy, over-engineering, metadata, irrelevance, speculation, etc.
+      - If noise_score >= 0.4, specify the primary `noise_type`.
+
+4.  **OUTPUT:** Assemble the final JSON object.
+
+-----
+
 **OUTPUT FORMAT**
 
 Always output a single JSON object with the following schema:
-{{"scored_requirements": [{{"requirement_description": str, "severity": str, "match_score": float, "justification": str}}], "valid_discoveries": [{{"comment": str, "justification": str}}], "noise_comment_count": int}}
----
+
+```json
+{{
+  "scored_requirements": [
+    {{
+      "requirement_description": "string",
+      "severity": "string",
+      "match_score": "float (0.0 to 1.0)",
+      "justification": "string"
+    }}
+  ],
+  "comment_noise_scores": [
+    {{
+      "comment": "string (exact comment text)",
+      "noise_score": "float (0.0 to 1.0)",
+      "noise_type": "string or null (only if noise_score >= 0.4)"
+    }}
+  ]
+}}
+```
+
+**Important**: Every agent comment must appear exactly once in `comment_noise_scores`.
+
+-----
 
 **Scoring Rubric (from Triage Architect):**
 {scoring_rubric_json}
@@ -45,3 +87,4 @@ Always output a single JSON object with the following schema:
 **Code Diff:**
 ```diff
 {code_diff}
+```
